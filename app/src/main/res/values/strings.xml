@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">IoT</string>
-    <string name="title_activity_maps">Map</string>
-    <string name="bluetooth_uuid">00001101-0000-1000-8000-00805F9B34FB</string>
+
+    <!-- Bluetooth Dialog -->
+    <string name="bluetooth_main">Bluetooth Connect</string>
+    <string name="bluetooth_pair">Paired Device</string>
+    <string name="bluetooth_not_pair">Other Devices</string>
+    <string name="bluetooth_search">Search Devices</string>
 </resources>

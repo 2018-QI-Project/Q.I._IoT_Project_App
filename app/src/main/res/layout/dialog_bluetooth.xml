@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutBluetooth"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/laBluetoothMain"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/bluetooth_main"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@+id/laBluetoothPairedDevice"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/laBluetoothPairedDevice"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/bluetooth_pair"
+        app:layout_constraintBottom_toTopOf="@+id/lvBluetoothPairedDevice"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/laBluetoothMain" />
+
+    <ListView
+        android:id="@+id/lvBluetoothPairedDevice"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/laBluetoothOtherDevice"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/laBluetoothPairedDevice" />
+
+    <TextView
+        android:id="@+id/laBluetoothOtherDevice"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/bluetooth_not_pair"
+        app:layout_constraintBottom_toTopOf="@+id/lvBluetoothOtherDevices"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lvBluetoothPairedDevice" />
+
+    <ListView
+        android:id="@+id/lvBluetoothOtherDevices"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/btnBluetoothSearch"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/laBluetoothOtherDevice" />
+
+    <Button
+        android:id="@+id/btnBluetoothSearch"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/bluetooth_search"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lvBluetoothOtherDevices" />
+</android.support.constraint.ConstraintLayout>
