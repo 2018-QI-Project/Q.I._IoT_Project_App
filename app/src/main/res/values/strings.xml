@@ -1,6 +1,19 @@
 <resources>
     <string name="app_name">IoT</string>
 
+    <!-- Static String -->
+    <string name="email">E-Mail</string>
+    <string name="password">Password</string>
+    <string name="submit">Submit</string>
+
+    <!-- Sign In Activity -->
+    <string name="sign_in">Sign In</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="forgot_password">Forgot Password?</string>
+
+    <!-- Forgot Password Activity -->
+    <string name="forgot_password_main">Reset Password</string>
+
     <!-- Bluetooth Dialog -->
     <string name="bluetooth_main">Bluetooth Connect</string>
     <string name="bluetooth_pair">Paired Device</string>
