@@ -15,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Sign Up Button Click Event Listener
-        Button btnSignUp = (Button)findViewById(R.id.btnSignUp);
+        Button btnSignUp = findViewById(R.id.btnSignUp);
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Forgot Password Click Event Listener
-        TextView txtForgotPassword = (TextView)findViewById(R.id.txtSignInForgotPassword);
+        TextView txtForgotPassword = findViewById(R.id.txtSignInForgotPassword);
         txtForgotPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

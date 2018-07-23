@@ -12,7 +12,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forgot_password);
 
-        Button btnSubmit = (Button)findViewById(R.id.btnResetPasswordSubmit);
+        Button btnSubmit = findViewById(R.id.btnResetPasswordSubmit);
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
