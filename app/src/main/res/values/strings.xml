@@ -4,12 +4,25 @@
     <!-- Static String -->
     <string name="email">E-Mail</string>
     <string name="password">Password</string>
+    <string name="full_name">Full Name</string>
+    <string name="age">Age</string>
+    <string name="previous_health_condition">Previous Health Condition</string>
+    <string name="sex">Sex</string>
     <string name="submit">Submit</string>
 
     <!-- Sign In Activity -->
     <string name="sign_in">Sign In</string>
+    <string name="forgot_password"><u>Forgot Password?</u></string>
+
+    <!-- Sign Up Activity -->
     <string name="sign_up">Sign Up</string>
-    <string name="forgot_password">Forgot Password?</string>
+    <string name="repeat_password">Repeat Password</string>
+    <string name="optional">Optional</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="disease1">Disease1</string>
+    <string name="disease2">Disease2</string>
+    <string name="disease3">Disease3</string>
 
     <!-- Forgot Password Activity -->
     <string name="forgot_password_main">Reset Password</string>
