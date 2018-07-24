@@ -18,7 +18,7 @@ public class SignInActivity extends AppCompatActivity {
         btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(SignInActivity.this, MapsActivity.class);
+                Intent intent = new Intent(SignInActivity.this, MapFragment.class);
                 startActivity(intent);
             }
         });

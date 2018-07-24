@@ -10,6 +10,13 @@
     <string name="sex">Sex</string>
     <string name="submit">Submit</string>
 
+    <!-- Sensor String -->
+    <string name="co">CO</string>
+    <string name="so2">SO<sub>2</sub></string>
+    <string name="no2">NO<sub>2</sub></string>
+    <string name="o3">O<sub>3</sub></string>
+    <string name="temperature">Temperature</string>
+
     <!-- Sign In Activity -->
     <string name="sign_in">Sign In</string>
     <string name="forgot_password"><u>Forgot Password?</u></string>
@@ -26,6 +33,9 @@
 
     <!-- Forgot Password Activity -->
     <string name="forgot_password_main">Reset Password</string>
+
+    <!-- Previous Data Activity -->
+    <string name="previous_data_main">Previous Data</string>
 
     <!-- Bluetooth Dialog -->
     <string name="bluetooth_main">Bluetooth Connect</string>
