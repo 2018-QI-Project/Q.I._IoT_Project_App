@@ -22,7 +22,7 @@ public class RequestMessageToServer extends AsyncTask<String, Void, String> impl
     @Override
     protected String doInBackground(String... strings) {
         HttpURLConnection serverConnection = null;
-        String serverURL = "http://" + SERVER_ADDRESS + SERVER_DIRECTORY + SERVER_FILE_NAME;
+        String serverURL = "http://" + SERVER_ADDRESS + SERVER_FILE_NAME;
         try {
             // GET 형식으로 메세지 보내기
             serverURL += strings[0];

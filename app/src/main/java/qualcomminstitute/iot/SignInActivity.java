@@ -18,7 +18,7 @@ public class SignInActivity extends AppCompatActivity {
         btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(SignInActivity.this, MapFragment.class);
+                Intent intent = new Intent(SignInActivity.this, MainActivity.class);
                 startActivity(intent);
             }
         });
@@ -30,6 +30,7 @@ public class SignInActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(SignInActivity.this, SignUpActivity.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
 

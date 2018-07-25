@@ -1,7 +1,7 @@
 package qualcomminstitute.iot;
 
 import android.Manifest;
-import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,10 +25,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
-    private Activity mainActivity;
     private MapView mapView = null;
     private GoogleMap mMap;
     private final int LOCATION_PERMISSION = 0;
+
+    public MapFragment() {
+
+    }
 
     @Nullable
     @Override
@@ -38,6 +40,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mapView = view.findViewById(R.id.mapNearAir);
         mapView.getMapAsync(this);
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if(mapView != null)
+        {
+            mapView.onCreate(savedInstanceState);
+        }
     }
 
     /**
@@ -79,9 +90,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     LatLng myPlace = new LatLng(lat, lng);
                     mMap.addMarker(new MarkerOptions().position(myPlace).title("Here is my position!"));
                     mMap.addCircle(new CircleOptions().center(myPlace).radius(100).strokeColor(Color.RED).fillColor(Color.BLUE));
-                    // 2 is Most Zoom Out
-                    // 21 is Most Zoom In
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myPlace, 21.0f));
+                    // 2.0f is Most Zoom Out
+                    // 21.0f is Most Zoom In
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myPlace, 19.0f));
                 }
             }
         }
@@ -90,7 +101,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private void settingGPS() {
         // Acquire a reference to the system Location Manager
-        locationManager = (LocationManager) mainActivity.getSystemService(Context.LOCATION_SERVICE);
+        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {

@@ -17,7 +17,7 @@ public class SendMessageToServer extends AsyncTask<String, Void, Void> implement
     @Override
     protected Void doInBackground(String... strings) {
         HttpURLConnection serverConnection = null;
-        String serverURL = "http://" + SERVER_ADDRESS + SERVER_DIRECTORY + SERVER_FILE_NAME;
+        String serverURL = "http://" + SERVER_ADDRESS + SERVER_FILE_NAME;
         try {
             URL url = new URL(serverURL);
             // POST 데이터 전송을 위한 자료구조

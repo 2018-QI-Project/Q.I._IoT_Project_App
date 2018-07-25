@@ -50,11 +50,11 @@
 
         </activity>
 
-        <activity
-            android:name=".MapFragment">
+        <activity android:name=".MainActivity">
+
         </activity>
 
-        <activity android:name=".PreviousDataActivity">
+        <activity android:name=".PreviousDataFragment">
 
         </activity>
     </application>
