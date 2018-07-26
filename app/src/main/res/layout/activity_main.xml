@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
     <android.support.v4.widget.DrawerLayout
-        android:id="@+id/drawerLayout"
+        android:id="@+id/layDrawerLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -14,16 +14,19 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <FrameLayout
-            android:id="@+id/frameLayout"
+            android:id="@+id/layFrameLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent">
+            <include layout="@layout/menu_toolbar"/>
+        </FrameLayout>
 
-        <ListView
-            android:id="@+id/listView"
-            android:layout_width="match_parent"
+        <android.support.design.widget.NavigationView
+            android:id="@+id/navView"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:theme="@style/ListViewStyle"
-            android:layout_gravity="start" />
+            android:layout_gravity="start"
+            android:fitsSystemWindows="true"
+            app:menu="@menu/menu_main" />
 
     </android.support.v4.widget.DrawerLayout>
 </android.support.constraint.ConstraintLayout>

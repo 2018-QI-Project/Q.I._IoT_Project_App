@@ -16,11 +16,11 @@
     <color name="base">#AAAAAA</color>
     <color name="iron">#CCCCCC</color>
 
-    <color name="colorPrimary">#E43F3F</color>
-    <color name="colorPrimaryDark">#E12929</color>
-    <color name="colorPrimaryDarker">#CC1D1D</color>
+    <color name="colorPrimary">@color/monsoon</color>
+    <color name="colorPrimaryDark">@color/oil</color>
+    <color name="colorPrimaryDarker">@color/iron</color>
     <color name="accent">#FFFFFF</color>
-    <color name="backGround">#4557C7</color>
+    <color name="backGround">@color/jumbo</color>
 
     <!-- Default Color -->
     <!--

@@ -5,21 +5,17 @@
     tools:context="com.example.x01_drawer.MainActivity" >
 
     <item
-        android:id="@+id/menu1"
-        android:orderInCategory="100"
-        app:showAsAction="always"
+        android:id="@+id/menuMain"
         android:icon="@android:drawable/ic_menu_gallery"
-        android:title="menu1"/>
+        android:title="@string/menu_main"/>
 
     <item
-        android:id="@+id/menu2"
-        android:orderInCategory="200"
-        app:showAsAction="never"
-        android:title="menu2"/>
+        android:id="@+id/menuSensor"
+        android:icon="@android:drawable/ic_menu_gallery"
+        android:title="@string/menu_sensor"/>
 
     <item
-        android:id="@+id/menu3"
-        android:orderInCategory="300"
-        app:showAsAction="never"
-        android:title="menu3"/>
+        android:id="@+id/menuPrevious"
+        android:icon="@android:drawable/ic_menu_gallery"
+        android:title="@string/menu_previous_data"/>
 </menu>

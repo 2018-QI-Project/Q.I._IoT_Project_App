@@ -2,7 +2,7 @@
     <string name="app_name">IoT</string>
 
     <!-- Static String -->
-    <string name="email">E-Mail</string>
+    <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="full_name">Full Name</string>
     <string name="age">Age</string>
@@ -30,6 +30,15 @@
     <string name="respiratory_disease">Respiratory Disease</string>
     <string name="cardiovascular_disease">Cardiovascular Disease</string>
     <string name="sign_up_sign_in">Already a member? <u>Sign In</u></string>
+
+    <!-- Menu String -->
+    <string name="menu_main">Main</string>
+    <string name="menu_sensor">Sensor</string>
+    <string name="menu_previous_data">Previous Data</string>
+
+    <!-- Main Activity -->
+    <string name="drawer_open">Drawer Open</string>
+    <string name="drawer_close">Drawer Close</string>
 
     <!-- Forgot Password Activity -->
     <string name="forgot_password_main">Reset Password</string>

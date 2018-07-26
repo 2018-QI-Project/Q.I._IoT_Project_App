@@ -1,40 +1,110 @@
 package qualcomminstitute.iot;
 
-import android.annotation.SuppressLint;
-import android.app.Fragment;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.PersistableBundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.Menu;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 
 public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
+    private ActionBarDrawerToggle drawerToggle;
+    private Toolbar toolbar;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        initLayout();
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        drawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Pass the event to ActionBarDrawerToggle, if it returns
+        // true, then it has handled the app icon touch event
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        // Handle your other action bar items...
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void initLayout() {
+        toolbar = (Toolbar) findViewById(R.id.barMainToolBar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setHomeAsUpIndicator(R.mipmap.ic_menu_white_24dp);
+
+        drawerLayout = (DrawerLayout) findViewById(R.id.layDrawerLayout);
+        navigationView = (NavigationView) findViewById(R.id.navView);
+        drawerToggle = new ActionBarDrawerToggle(
+                this,
+                drawerLayout,
+                toolbar,
+                R.string.drawer_open,
+                R.string.drawer_close
+        );
+        drawerLayout.addDrawerListener(drawerToggle);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch(item.getItemId()) {
+                    case R.id.menuMain:
+
+                        break;
+                    case R.id.menuSensor:
+
+                        break;
+                    case R.id.menuPrevious:
+
+                        break;
+                }
+
+                drawerLayout.closeDrawer(GravityCompat.START);
+                return false;
+            }
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+}
+    /*
+    private DrawerLayout drawerLayout;
     private ListView listView;
     private ActionBarDrawerToggle drawerToggle;
-    private List<String> slidingMenu = new ArrayList <> ();
+    private List<String> slidingMenu = new ArrayList<> ();
 
     public MainActivity() {
         Collections.addAll(slidingMenu, new String[]{
-                "프래그먼트 1",
-                "프래그먼트 2",
-                "프래그먼트 3"
         });
     }
 
@@ -150,13 +220,13 @@ public class MainActivity extends AppCompatActivity {
         }
         int id = item.getItemId();
         switch (id) {
-            case R.id.menu1:
+            case R.id.menuMain:
                 alert(item.getTitle().toString());
                 return true;
-            case R.id.menu2:
+            case R.id.menuSensor:
                 alert(item.getTitle().toString());
                 return true;
-            case R.id.menu3:
+            case R.id.menuPrevious:
                 alert(item.getTitle().toString());
                 return true;
             default:
@@ -168,8 +238,8 @@ public class MainActivity extends AppCompatActivity {
     @ Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         boolean isSlidingMenuOpened = drawerLayout.isDrawerOpen(listView);
-        menu.findItem(R.id.menu2).setVisible(!isSlidingMenuOpened);
-        menu.findItem(R.id.menu3).setVisible(!isSlidingMenuOpened);
+        menu.findItem(R.id.menuSensor).setVisible(!isSlidingMenuOpened);
+        menu.findItem(R.id.menuPrevious).setVisible(!isSlidingMenuOpened);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -203,3 +273,4 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
+    */

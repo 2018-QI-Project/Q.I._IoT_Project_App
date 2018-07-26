@@ -6,29 +6,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/txtSignUp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/sign_up"
-        android:textColor="@color/black"
-        android:textSize="30sp"
-        tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="8dp" />
-
     <android.support.design.widget.TextInputLayout
         android:id="@+id/laySignUpEmail"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="32dp"
         app:layout_constraintBottom_toTopOf="@+id/laySignUpPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtSignUp">
+        app:layout_constraintTop_toTopOf="parent">
 
         <EditText
             android:id="@+id/txtSignUpEmail"
@@ -37,7 +25,7 @@
             android:ems="10"
             android:hint="@string/email"
             android:inputType="textEmailAddress"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:textSize="20sp" />
     </android.support.design.widget.TextInputLayout>
 
@@ -62,7 +50,7 @@
             android:ems="10"
             android:hint="@string/password"
             android:inputType="textPassword"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:textSize="20sp"
             tools:layout_editor_absoluteX="198dp" />
     </android.support.design.widget.TextInputLayout>
@@ -88,7 +76,7 @@
             android:ems="10"
             android:hint="@string/repeat_password"
             android:inputType="textPassword"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:textSize="20sp"
             tools:layout_editor_absoluteY="44dp" />
     </android.support.design.widget.TextInputLayout>
@@ -98,11 +86,9 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/laySignUpOptional"
+        app:layout_constraintBottom_toTopOf="@+id/laySignUpAge"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/laySignUpRepeatPassword">
@@ -114,69 +100,23 @@
             android:ems="10"
             android:hint="@string/full_name"
             android:inputType="textPersonName"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:textSize="20sp"
             tools:layout_editor_absoluteX="198dp"
             tools:layout_editor_absoluteY="88dp" />
     </android.support.design.widget.TextInputLayout>
-
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/laySignUpOptional"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/laySignUpAge"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/laySignUpFullName">
-
-        <TextView
-            android:id="@+id/txtSignUpOptional"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/optional"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="2dp"
-            android:layout_centerInParent="true"
-            android:layout_marginEnd="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginStart="8dp"
-            android:background="@color/black"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/txtSignUpOptional"
-            app:layout_constraintTop_toTopOf="parent" />
-    </android.support.constraint.ConstraintLayout>
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/laySignUpAge"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/ragSignUpSex"
+        app:layout_constraintBottom_toTopOf="@+id/ragSignUpGender"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/laySignUpOptional">
+        app:layout_constraintTop_toBottomOf="@+id/laySignUpFullName">
 
         <EditText
             android:id="@+id/txtSignUpAge"
@@ -185,38 +125,36 @@
             android:ems="10"
             android:hint="@string/age"
             android:inputType="numberDecimal"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:textSize="20sp"
             tools:layout_editor_absoluteX="198dp"
             tools:layout_editor_absoluteY="168dp" />
     </android.support.design.widget.TextInputLayout>
 
     <TextView
-        android:id="@+id/txtSignUpSex"
+        android:id="@+id/txtSignUpGender"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="32dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="32dp"
         android:layout_marginStart="8dp"
         android:text="@string/gender"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/txtSignUpPreviousHealthCondition"
-        app:layout_constraintEnd_toStartOf="@+id/ragSignUpSex"
+        app:layout_constraintEnd_toStartOf="@+id/ragSignUpGender"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/laySignUpAge" />
 
     <RadioGroup
-        android:id="@+id/ragSignUpSex"
+        android:id="@+id/ragSignUpGender"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/txtSignUpPreviousHealthCondition"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/txtSignUpSex"
+        app:layout_constraintStart_toEndOf="@+id/txtSignUpGender"
         app:layout_constraintTop_toBottomOf="@+id/laySignUpAge">
 
         <RadioButton
@@ -224,9 +162,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:checked="false"
+            android:checked="true"
             android:text="@string/male"
-            android:textColor="@color/black"
+            android:hint="@string/gender"
+            android:textColor="@color/white"
             android:textSize="20sp" />
 
         <RadioButton
@@ -236,7 +175,8 @@
             android:layout_weight="1"
             android:checked="false"
             android:text="@string/female"
-            android:textColor="@color/black"
+            android:hint="@string/gender"
+            android:textColor="@color/white"
             android:textSize="20sp"
             tools:layout_editor_absoluteX="106dp"
             tools:layout_editor_absoluteY="329dp" />
@@ -249,41 +189,41 @@
         android:layout_marginTop="8dp"
         android:gravity="center"
         android:text="@string/exist_health_condition"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ragSignUpSex" />
-
-    <CheckBox
-        android:id="@+id/ckbHeartDisease"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/respiratory_disease"
-        android:textColor="@color/black"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toTopOf="@+id/btnSingUpSubmit"
-        app:layout_constraintEnd_toStartOf="@+id/ckbRespiratoryDisease"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtSignUpPreviousHealthCondition" />
+        app:layout_constraintTop_toBottomOf="@+id/ragSignUpGender" />
 
     <CheckBox
         android:id="@+id/ckbRespiratoryDisease"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
+        android:hint="@string/respiratory_disease"
+        android:text="@string/respiratory_disease"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@+id/btnSingUpSubmit"
+        app:layout_constraintEnd_toStartOf="@+id/ckbCardiovascularDisease"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtSignUpPreviousHealthCondition" />
+
+    <CheckBox
+        android:id="@+id/ckbCardiovascularDisease"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:hint="@string/cardiovascular_disease"
         android:text="@string/cardiovascular_disease"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="15sp"
         app:layout_constraintBottom_toTopOf="@+id/btnSingUpSubmit"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/ckbHeartDisease"
+        app:layout_constraintStart_toEndOf="@+id/ckbRespiratoryDisease"
         app:layout_constraintTop_toBottomOf="@+id/txtSignUpPreviousHealthCondition" />
 
     <Button
@@ -291,8 +231,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="32dp"
-        android:layout_marginLeft="32dp"
-        android:layout_marginRight="32dp"
         android:layout_marginStart="32dp"
         android:text="@string/submit"
         android:textColor="@color/black"
@@ -300,7 +238,7 @@
         app:layout_constraintBottom_toTopOf="@+id/txtSignUpSignIn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ckbRespiratoryDisease" />
+        app:layout_constraintTop_toBottomOf="@+id/ckbCardiovascularDisease" />
 
     <TextView
         android:id="@+id/txtSignUpSignIn"
@@ -308,12 +246,10 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="@string/sign_up_sign_in"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

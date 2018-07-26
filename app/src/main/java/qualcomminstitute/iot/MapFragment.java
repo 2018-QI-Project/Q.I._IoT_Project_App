@@ -64,13 +64,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         settingGPS();
-        getMyLocation();
     }
 
     private LocationManager locationManager;
     private LocationListener locationListener;
 
-    private Location getMyLocation() {
+    private void getMyLocation() {
         Location currentLocation = null;
         // Register the listener with the Location Manager to receive location updates
         if(getActivity() != null) {
@@ -96,7 +95,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 }
             }
         }
-        return currentLocation;
+
     }
 
     private void settingGPS() {
@@ -108,6 +107,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 double latitude = location.getLatitude();
                 double longitude = location.getLongitude();
                 // TODO 위도, 경도로 하고 싶은 것
+                getMyLocation();
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
