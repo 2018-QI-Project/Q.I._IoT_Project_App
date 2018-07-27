@@ -29,14 +29,13 @@ import java.util.Map;
 
 import static qualcomminstitute.iot.NetworkInterface.REST_API;
 import static qualcomminstitute.iot.NetworkInterface.SERVER_ADDRESS;
+import static qualcomminstitute.iot.NetworkInterface.TOAST_DEFAULT_FAILED;
+import static qualcomminstitute.iot.NetworkInterface.TOAST_EXCEPTION;
+import static qualcomminstitute.iot.NetworkInterface.TOAST_SIGN_IN_PASSWORD_FAILED;
+import static qualcomminstitute.iot.NetworkInterface.TOAST_SIGN_IN_REGISTER;
+import static qualcomminstitute.iot.NetworkInterface.TOAST_SIGN_IN_VERIFY;
 
 public class SignInActivity extends AppCompatActivity {
-    private final String TOAST_SIGN_IN_VERIFY = "Email isn't Valid. Please Check Verify Email.";
-    private final String TOAST_SIGN_IN_PASSWORD_FAILED = "Sign In Failed. Please Check Password.";
-    private final String TOAST_SIGN_IN_REGISTER = "Sign In Failed. Please Check Email.";
-    private final String TOAST_SIGN_IN_DEFAULT_FAILED = "Sign In Failed. Please Contact Server Manager.";
-    private final String TOAST_EXCEPTION = "Please Try Again.";
-
     private EditText viewEmail, viewPassword;
     private Button viewSignIn, viewSignUp;
     private TextView viewForgotPassword;
@@ -78,8 +77,8 @@ public class SignInActivity extends AppCompatActivity {
                                 URL url = new URL(serverURL);
                                 // POST 데이터 전송을 위한 자료구조
                                 Map<String,Object> params = new LinkedHashMap<>();
-                                params.put("email", viewEmail.getText().toString());
-                                params.put("password", viewPassword.getText().toString());
+                                params.put(NetworkInterface.SIGN_IN_MESSAGE.get("EMAIL"), viewEmail.getText().toString());
+                                params.put(NetworkInterface.SIGN_IN_MESSAGE.get("PASSWORD"), viewPassword.getText().toString());
 
                                 // POST 데이터들을 UTF-8로 인코딩
                                 StringBuilder postData = new StringBuilder();
@@ -94,8 +93,8 @@ public class SignInActivity extends AppCompatActivity {
                                 // URL을 통한 서버와의 연결 설정
                                 serverConnection = (HttpURLConnection)url.openConnection();
                                 serverConnection.setRequestMethod("POST");
-                                serverConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                                serverConnection.setRequestProperty("client", NetworkInterface.SIGN_IN_MESSAGE.get("TYPE"));
+                                serverConnection.setRequestProperty("Content-Type", NetworkInterface.POST_HEADER);
+                                serverConnection.setRequestProperty(NetworkInterface.SIGN_IN_MESSAGE.get("CLIENT_KEY"), NetworkInterface.SIGN_IN_MESSAGE.get("CLIENT_VALUE"));
                                 serverConnection.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
 
                                 // POST 데이터를 설정
@@ -116,12 +115,12 @@ public class SignInActivity extends AppCompatActivity {
                                 JSONObject rootObject = new JSONObject(response.toString());
 
                                 if(rootObject.has(NetworkInterface.SIGN_IN_MESSAGE.get("SUCCESS"))) {
-                                    SharedPreferences token = getSharedPreferences("Token", MODE_PRIVATE);
+                                    SharedPreferences token = getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
                                     SharedPreferences.Editor tokenEditor = token.edit();
 
                                     Utility.displayToastMessage(handler, SignInActivity.this, "Success !");
 
-                                    tokenEditor.putString("auth", rootObject.getString(NetworkInterface.SIGN_IN_MESSAGE.get("SUCCESS")));
+                                    tokenEditor.putString(PreferenceName.preferenceToken, rootObject.getString(NetworkInterface.SIGN_IN_MESSAGE.get("SUCCESS")));
                                     tokenEditor.apply();
 
                                     Intent intent = new Intent(SignInActivity.this, MainActivity.class);
@@ -139,7 +138,7 @@ public class SignInActivity extends AppCompatActivity {
                                             Utility.displayToastMessage(handler, SignInActivity.this, TOAST_SIGN_IN_REGISTER);
                                             break;
                                         default:
-                                            Utility.displayToastMessage(handler, SignInActivity.this, TOAST_SIGN_IN_DEFAULT_FAILED);
+                                            Utility.displayToastMessage(handler, SignInActivity.this, TOAST_DEFAULT_FAILED);
                                             break;
                                     }
                                 }

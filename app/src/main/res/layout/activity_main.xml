@@ -16,14 +16,14 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <include layout="@layout/menu_toolbar"/>
 
             <FrameLayout
                 android:id="@+id/layFrameLayout"
                 android:layout_below="@id/barMainToolBar"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-            </FrameLayout>
+                android:layout_height="match_parent"/>
         </RelativeLayout>
 
         <android.support.design.widget.NavigationView
