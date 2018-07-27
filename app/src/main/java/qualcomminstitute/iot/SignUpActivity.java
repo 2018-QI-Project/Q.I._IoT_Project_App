@@ -89,11 +89,11 @@ public class SignUpActivity extends AppCompatActivity {
                                 StringBuilder postData = new StringBuilder();
                                 for(Map.Entry<String,Object> param : params.entrySet()) {
                                     if(postData.length() != 0) postData.append('&');
-                                    postData.append(URLEncoder.encode(param.getKey(), "UTF-8"));
+                                    postData.append(URLEncoder.encode(param.getKey(), NetworkInterface.ENCODE));
                                     postData.append('=');
-                                    postData.append(URLEncoder.encode(String.valueOf(param.getValue()), "UTF-8"));
+                                    postData.append(URLEncoder.encode(String.valueOf(param.getValue()), NetworkInterface.ENCODE));
                                 }
-                                byte[] postDataBytes = postData.toString().getBytes("UTF-8");
+                                byte[] postDataBytes = postData.toString().getBytes(NetworkInterface.ENCODE);
 
                                 Log.d("POST", postData.toString());
 

@@ -3,6 +3,7 @@ package qualcomminstitute.iot;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Network;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.annotation.Nullable;
@@ -81,17 +82,17 @@ public class SignInActivity extends AppCompatActivity {
                                 StringBuilder postData = new StringBuilder();
                                 for(Map.Entry<String,Object> param : params.entrySet()) {
                                     if(postData.length() != 0) postData.append('&');
-                                    postData.append(URLEncoder.encode(param.getKey(), "UTF-8"));
+                                    postData.append(URLEncoder.encode(param.getKey(), NetworkInterface.ENCODE));
                                     postData.append('=');
-                                    postData.append(URLEncoder.encode(String.valueOf(param.getValue()), "UTF-8"));
+                                    postData.append(URLEncoder.encode(String.valueOf(param.getValue()), NetworkInterface.ENCODE));
                                 }
-                                byte[] postDataBytes = postData.toString().getBytes("UTF-8");
+                                byte[] postDataBytes = postData.toString().getBytes(NetworkInterface.ENCODE);
 
                                 // URL을 통한 서버와의 연결 설정
                                 serverConnection = (HttpURLConnection)url.openConnection();
                                 serverConnection.setRequestMethod("POST");
                                 serverConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                                serverConnection.setRequestProperty("client", "app");
+                                serverConnection.setRequestProperty("client", NetworkInterface.SIGN_IN_MESSAGE.get("TYPE"));
                                 serverConnection.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
 
                                 // POST 데이터를 설정
@@ -113,18 +114,18 @@ public class SignInActivity extends AppCompatActivity {
 
                                 Looper.prepare();
 
-                                if(rootObject.has("token_app")) {
+                                if(rootObject.has(NetworkInterface.SIGN_IN_MESSAGE.get("SUCCESS"))) {
                                     SharedPreferences token = getSharedPreferences("Token", MODE_PRIVATE);
                                     SharedPreferences.Editor tokenEditor = token.edit();
                                     Toast.makeText(SignInActivity.this, "Success!", Toast.LENGTH_SHORT).show();
-                                    tokenEditor.putString("auth", rootObject.getString("token_app"));
+                                    tokenEditor.putString("auth", rootObject.getString(NetworkInterface.SIGN_IN_MESSAGE.get("SUCCESS")));
                                     tokenEditor.apply();
 
                                     Intent intent = new Intent(SignInActivity.this, MainActivity.class);
                                     startActivity(intent);
                                 }
                                 else {
-                                    switch(rootObject.getString("error")) {
+                                    switch(rootObject.getString(NetworkInterface.SIGN_IN_MESSAGE.get("FAILED"))) {
                                         case "Unauthorized User":
                                             Toast.makeText(SignInActivity.this, TOAST_SIGN_IN_VERIFY, Toast.LENGTH_SHORT).show();
                                             break;

@@ -5,7 +5,7 @@ import java.util.Map;
 
 public interface NetworkInterface {
     String SERVER_ADDRESS = "teamd-iot.calit2.net/";
-    String ENCODE = "utf-8";
+    String ENCODE = "UTF-8";
     Map<String, String> REST_API = new LinkedHashMap<String, String>(){
         {
             put("SIGN_IN","accounts/authenticate");
@@ -17,6 +17,8 @@ public interface NetworkInterface {
             put("TYPE", "app");
             put("EMAIL","email");
             put("PASSWORD","password");
+            put("SUCCESS", "token_app");
+            put("FAILED", "error");
         }
     };
     Map<String, String> SIGN_UP_MESSAGE = new LinkedHashMap<String, String>(){
