@@ -84,7 +84,7 @@ public class SignUpActivity extends AppCompatActivity {
         viewSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(validate()) {
+                if(Utility.validateInputForm(SignUpActivity.this, viewEmail, viewPassword, viewFullName, viewAge) && Utility.validatePassword(viewPassword, viewRepeatPassword)) {
                     progressDialog.show();
 
                     final RadioButton gender = findViewById(viewGender.getCheckedRadioButtonId());
@@ -181,56 +181,5 @@ public class SignUpActivity extends AppCompatActivity {
                 finish();
             }
         });
-    }
-
-    // View에 입력한 데이터가 양식에 맞는지 검사
-    private boolean validate() {
-        String email = viewEmail.getText().toString();
-        String password = viewPassword.getText().toString();
-        String repeatPassword = viewRepeatPassword.getText().toString();
-        String name = viewFullName.getText().toString();
-        String age = viewAge.getText().toString();
-
-        if (!email.matches(InputFormCondition.EMAIL_CONDITION)) {
-            viewEmail.setError(InputFormCondition.ERROR_EMAIL);
-            viewEmail.requestFocus();
-            return false;
-        } else {
-            viewEmail.setError(null);
-        }
-
-        if (!password.matches(InputFormCondition.PASSWORD_CONDITION)) {
-            viewPassword.setError(InputFormCondition.ERROR_PASSWORD);
-            viewPassword.requestFocus();
-            return false;
-        } else {
-            viewPassword.setError(null);
-        }
-
-        if(!password.equals(repeatPassword)) {
-            viewRepeatPassword.setError(InputFormCondition.ERROR_REPEAT_PASSWORD);
-            viewRepeatPassword.requestFocus();
-            return false;
-        } else {
-            viewRepeatPassword.setError(null);
-        }
-
-        if(!name.matches(InputFormCondition.FULL_NAME_CONDITION)) {
-            viewFullName.setError(InputFormCondition.ERROR_FULL_NAME);
-            viewFullName.requestFocus();
-            return false;
-        } else {
-            viewFullName.setError(null);
-        }
-
-        if(!age.matches(InputFormCondition.AGE_CONDITION)) {
-            viewAge.setError(InputFormCondition.ERROR_AGE);
-            viewAge.requestFocus();
-            return false;
-        } else {
-            viewAge.setError(null);
-        }
-
-        return true;
     }
 }

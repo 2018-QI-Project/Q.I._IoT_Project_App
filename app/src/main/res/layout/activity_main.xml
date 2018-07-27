@@ -13,12 +13,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <FrameLayout
-            android:id="@+id/layFrameLayout"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <include layout="@layout/menu_toolbar"/>
-        </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/layFrameLayout"
+                android:layout_below="@id/barMainToolBar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+            </FrameLayout>
+        </RelativeLayout>
 
         <android.support.design.widget.NavigationView
             android:id="@+id/navView"

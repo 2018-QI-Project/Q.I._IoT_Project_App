@@ -164,7 +164,6 @@
             android:layout_weight="1"
             android:checked="true"
             android:text="@string/male"
-            android:hint="@string/gender"
             android:textColor="@color/white"
             android:textSize="20sp" />
 
@@ -175,7 +174,6 @@
             android:layout_weight="1"
             android:checked="false"
             android:text="@string/female"
-            android:hint="@string/gender"
             android:textColor="@color/white"
             android:textSize="20sp"
             tools:layout_editor_absoluteX="106dp"
@@ -202,7 +200,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:hint="@string/respiratory_disease"
         android:text="@string/respiratory_disease"
         android:textColor="@color/white"
         android:textSize="15sp"
@@ -217,7 +214,6 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
-        android:hint="@string/cardiovascular_disease"
         android:text="@string/cardiovascular_disease"
         android:textColor="@color/white"
         android:textSize="15sp"

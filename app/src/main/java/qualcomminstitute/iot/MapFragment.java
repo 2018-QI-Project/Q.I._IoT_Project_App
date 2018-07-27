@@ -30,7 +30,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private final int LOCATION_PERMISSION = 0;
 
     public MapFragment() {
-
     }
 
     @Nullable
@@ -64,6 +63,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         settingGPS();
+        getMyLocation();
     }
 
     private LocationManager locationManager;
@@ -91,7 +91,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     mMap.addCircle(new CircleOptions().center(myPlace).radius(100).strokeColor(Color.RED).fillColor(Color.BLUE));
                     // 2.0f is Most Zoom Out
                     // 21.0f is Most Zoom In
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myPlace, 19.0f));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myPlace, 21.0f));
                 }
             }
         }
@@ -107,7 +107,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 double latitude = location.getLatitude();
                 double longitude = location.getLongitude();
                 // TODO 위도, 경도로 하고 싶은 것
-                getMyLocation();
+
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -119,5 +119,47 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             public void onProviderDisabled(String provider) {
             }
         };
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mapView.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mapView.onStop();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mapView.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mapView.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mapView.onPause();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mapView.onLowMemory();
     }
 }

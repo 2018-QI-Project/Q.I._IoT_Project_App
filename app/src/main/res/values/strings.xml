@@ -45,12 +45,17 @@
     <!-- Forgot Password Activity -->
     <string name="forgot_password_main">Reset Password</string>
 
-    <!-- Previous Data Activity -->
+    <!-- Previous Data Fragment -->
     <string name="previous_data_main">Previous Data</string>
 
-    <!-- Bluetooth Dialog -->
+    <!-- Bluetooth Fragment -->
     <string name="bluetooth_main">Bluetooth Connect</string>
     <string name="bluetooth_pair">Paired Device</string>
     <string name="bluetooth_not_pair">Other Devices</string>
     <string name="bluetooth_search">Search Devices</string>
+
+    <!-- Change Password Fragment -->
+    <string name="current_password">Current Password</string>
+    <string name="new_password">New Password</string>
+    <string name="new_password_repeat">Repeat New Password</string>
 </resources>

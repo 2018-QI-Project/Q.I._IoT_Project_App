@@ -65,7 +65,7 @@ public class SignInActivity extends AppCompatActivity {
         viewSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(validate()) {
+                if(Utility.validateInputForm(SignInActivity.this, viewEmail, viewPassword)) {
                     // ProgressDialog 생성
                     progressDialog.show();
 
@@ -197,28 +197,5 @@ public class SignInActivity extends AppCompatActivity {
         super.onResume();
         Utility.initView(viewEmail, viewPassword);
         viewEmail.requestFocus();
-    }
-
-    private boolean validate() {
-        String email = viewEmail.getText().toString();
-        String password = viewPassword.getText().toString();
-
-        if (!email.matches(InputFormCondition.EMAIL_CONDITION)) {
-            viewEmail.setError(InputFormCondition.ERROR_EMAIL);
-            viewEmail.requestFocus();
-            return false;
-        } else {
-            viewEmail.setError(null);
-        }
-
-        if (!password.matches(InputFormCondition.PASSWORD_CONDITION)) {
-            viewPassword.setError(InputFormCondition.ERROR_PASSWORD);
-            viewPassword.requestFocus();
-            return false;
-        } else {
-            viewPassword.setError(null);
-        }
-
-        return true;
     }
 }

@@ -13,6 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import static android.support.v4.widget.DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
+
 public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -46,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
                 R.string.drawer_close
         );
         drawerLayout.addDrawerListener(drawerToggle);
+        drawerLayout.setDrawerLockMode(LOCK_MODE_LOCKED_CLOSED);
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
