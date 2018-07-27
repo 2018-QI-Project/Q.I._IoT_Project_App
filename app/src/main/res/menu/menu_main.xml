@@ -5,17 +5,17 @@
     tools:context="com.example.x01_drawer.MainActivity" >
 
     <item
-        android:id="@+id/menuMain"
+        android:id="@+id/menuRealTimeData"
         android:icon="@android:drawable/ic_menu_gallery"
-        android:title="@string/menu_main"/>
+        android:title="@string/menu_real_time_data" />
 
     <item
-        android:id="@+id/menuSensor"
+        android:id="@+id/menuSensorInformation"
         android:icon="@android:drawable/ic_menu_gallery"
-        android:title="@string/menu_sensor"/>
+        android:title="@string/menu_sensor_information" />
 
     <item
-        android:id="@+id/menuPrevious"
+        android:id="@+id/menuPreviousData"
         android:icon="@android:drawable/ic_menu_gallery"
-        android:title="@string/menu_previous_data"/>
+        android:title="@string/menu_previous_data" />
 </menu>

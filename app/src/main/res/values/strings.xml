@@ -32,8 +32,8 @@
     <string name="sign_up_sign_in">Already a member? <u>Sign In</u></string>
 
     <!-- Menu String -->
-    <string name="menu_main">Main</string>
-    <string name="menu_sensor">Sensor</string>
+    <string name="menu_real_time_data">RealTime Data</string>
+    <string name="menu_sensor_information">Sensor Information</string>
     <string name="menu_previous_data">Previous Data</string>
 
     <!-- Main Activity -->

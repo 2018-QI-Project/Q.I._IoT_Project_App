@@ -32,6 +32,12 @@ public class SignUpActivity extends AppCompatActivity {
     private CheckBox viewRespiratory, viewCardiovascular;
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        Utility.initView(viewEmail, viewPassword, viewRepeatPassword, viewFullName, viewAge);
+    }
+
+    @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
@@ -147,16 +153,16 @@ public class SignUpActivity extends AppCompatActivity {
         String name = viewFullName.getText().toString();
         String age = viewAge.getText().toString();
 
-        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            viewEmail.setError("Enter a valid email address");
+        if (email.matches(InputFormCondition.EMAIL_CONDITION)) {
+            viewEmail.setError(InputFormCondition.ERROR_EMAIL);
             viewEmail.requestFocus();
             return false;
         } else {
             viewEmail.setError(null);
         }
 
-        if (password.isEmpty() || password.length() < 4 || password.length() > 12) {
-            viewPassword.setError("Password must between 4 and 12 alphanumeric characters");
+        if (password.matches(InputFormCondition.PASSWORD_CONDITION)) {
+            viewPassword.setError(InputFormCondition.ERROR_PASSWORD);
             viewPassword.requestFocus();
             return false;
         } else {
@@ -164,23 +170,23 @@ public class SignUpActivity extends AppCompatActivity {
         }
 
         if(!password.equals(repeatPassword)) {
-            viewRepeatPassword.setError("Password isn't match");
+            viewRepeatPassword.setError(InputFormCondition.ERROR_REPEAT_PASSWORD);
             viewRepeatPassword.requestFocus();
             return false;
         } else {
             viewRepeatPassword.setError(null);
         }
 
-        if(!name.matches("^[[a-zA-Z]*\\s?]*[a-zA-Z]+$")) {
-            viewFullName.setError("Name is incorrect");
+        if(!name.matches(InputFormCondition.FULL_NAME_CONDITION)) {
+            viewFullName.setError(InputFormCondition.ERROR_FULL_NAME);
             viewFullName.requestFocus();
             return false;
         } else {
             viewFullName.setError(null);
         }
 
-        if(age.isEmpty() || !age.matches("^[0-9]*$")) {
-            viewAge.setError("Age is incorrect");
+        if(!age.matches(InputFormCondition.AGE_CONDITION)) {
+            viewAge.setError(InputFormCondition.ERROR_AGE);
             viewAge.requestFocus();
             return false;
         } else {
