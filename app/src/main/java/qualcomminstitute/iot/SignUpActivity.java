@@ -2,7 +2,7 @@ package qualcomminstitute.iot;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.os.Looper;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -13,9 +13,6 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.android.gms.common.oob.SignUp;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,6 +40,8 @@ public class SignUpActivity extends AppCompatActivity {
     private TextView viewSignIn;
     private CheckBox viewRespiratory, viewCardiovascular;
 
+    private Handler handler;
+
     private ProgressDialog progressDialog;
 
     @Override
@@ -62,6 +61,8 @@ public class SignUpActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+
+        handler = new Handler();
 
         progressDialog = new ProgressDialog(SignUpActivity.this, R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
@@ -145,7 +146,7 @@ public class SignUpActivity extends AppCompatActivity {
                                 if(rootObject.getString(NetworkInterface.SIGN_UP_MESSAGE.get("TYPE")).equals(NetworkInterface.SIGN_UP_MESSAGE.get("FAILED"))) {
                                     switch(rootObject.getString(NetworkInterface.SIGN_UP_MESSAGE.get("MESSAGE"))){
                                         case "already existed":
-                                            Utility.displayToastMessage(SignUpActivity.this, TOAST_DUPLICATE_EMAIL);
+                                            Utility.displayToastMessage(handler, SignUpActivity.this, TOAST_DUPLICATE_EMAIL);
                                             break;
                                     }
                                 }

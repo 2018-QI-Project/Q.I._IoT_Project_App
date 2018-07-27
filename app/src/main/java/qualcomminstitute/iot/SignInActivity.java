@@ -1,13 +1,10 @@
 package qualcomminstitute.iot;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Network;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -15,7 +12,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,12 +41,16 @@ public class SignInActivity extends AppCompatActivity {
     private Button viewSignIn, viewSignUp;
     private TextView viewForgotPassword;
 
+    private Handler handler;
+
     private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
+
+        handler = new Handler();
 
         progressDialog = new ProgressDialog(SignInActivity.this, R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
@@ -119,7 +119,7 @@ public class SignInActivity extends AppCompatActivity {
                                     SharedPreferences token = getSharedPreferences("Token", MODE_PRIVATE);
                                     SharedPreferences.Editor tokenEditor = token.edit();
 
-                                    Utility.displayToastMessage(SignInActivity.this, "Success !");
+                                    Utility.displayToastMessage(handler, SignInActivity.this, "Success !");
 
                                     tokenEditor.putString("auth", rootObject.getString(NetworkInterface.SIGN_IN_MESSAGE.get("SUCCESS")));
                                     tokenEditor.apply();
@@ -130,31 +130,31 @@ public class SignInActivity extends AppCompatActivity {
                                 else {
                                     switch(rootObject.getString(NetworkInterface.SIGN_IN_MESSAGE.get("MESSAGE"))) {
                                         case "Unauthorized User":
-                                            Utility.displayToastMessage(SignInActivity.this, TOAST_SIGN_IN_VERIFY);
+                                            Utility.displayToastMessage(handler, SignInActivity.this, TOAST_SIGN_IN_VERIFY);
                                             break;
                                         case "Wrong Password " :
-                                            Utility.displayToastMessage(SignInActivity.this, TOAST_SIGN_IN_PASSWORD_FAILED);
+                                            Utility.displayToastMessage(handler, SignInActivity.this, TOAST_SIGN_IN_PASSWORD_FAILED);
                                             break;
                                         case "Unregistered User":
-                                            Utility.displayToastMessage(SignInActivity.this, TOAST_SIGN_IN_REGISTER);
+                                            Utility.displayToastMessage(handler, SignInActivity.this, TOAST_SIGN_IN_REGISTER);
                                             break;
                                         default:
-                                            Utility.displayToastMessage(SignInActivity.this, TOAST_SIGN_IN_DEFAULT_FAILED);
+                                            Utility.displayToastMessage(handler, SignInActivity.this, TOAST_SIGN_IN_DEFAULT_FAILED);
                                             break;
                                     }
                                 }
                             }
                             catch(MalformedURLException e) {
                                 Log.e(this.getClass().getName(), "URL ERROR!");
-                                Utility.displayToastMessage(SignInActivity.this, TOAST_EXCEPTION);
+                                Utility.displayToastMessage(handler, SignInActivity.this, TOAST_EXCEPTION);
                             }
                             catch(JSONException e) {
                                 Log.e(this.getClass().getName(), "JSON ERROR!");
-                                Utility.displayToastMessage(SignInActivity.this, TOAST_EXCEPTION);
+                                Utility.displayToastMessage(handler, SignInActivity.this, TOAST_EXCEPTION);
                             }
                             catch(IOException e) {
                                 Log.e(this.getClass().getName(), "IO ERROR!");
-                                Utility.displayToastMessage(SignInActivity.this, TOAST_EXCEPTION);
+                                Utility.displayToastMessage(handler, SignInActivity.this, TOAST_EXCEPTION);
                             }
                             finally {
                                 progressDialog.dismiss();
