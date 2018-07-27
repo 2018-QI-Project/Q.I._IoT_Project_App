@@ -18,4 +18,14 @@
         android:id="@+id/menuPreviousData"
         android:icon="@android:drawable/ic_menu_gallery"
         android:title="@string/menu_previous_data" />
+
+    <item
+        android:id="@+id/menuChangePassword"
+        android:icon="@android:drawable/ic_menu_gallery"
+        android:title="@string/menu_change_password" />
+
+    <item
+        android:id="@+id/menuIDCancel"
+        android:icon="@android:drawable/ic_menu_gallery"
+        android:title="@string/menu_id_cancel" />
 </menu>

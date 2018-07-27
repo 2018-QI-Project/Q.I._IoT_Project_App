@@ -35,6 +35,7 @@ public class SignUpActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Utility.initView(viewEmail, viewPassword, viewRepeatPassword, viewFullName, viewAge);
+        viewEmail.requestFocus();
     }
 
     @Override
@@ -76,13 +77,13 @@ public class SignUpActivity extends AppCompatActivity {
 
                                 // POST 데이터 만들기
                                 Map<String,Object> params = new LinkedHashMap<>();
-                                params.put("email", viewEmail.getText().toString());
-                                params.put("password", viewPassword.getText().toString());
-                                params.put("name", viewFullName.getText().toString());
-                                params.put("age", Integer.parseInt(viewAge.getText().toString()));
-                                params.put("gender", gender.getText().toString().equals("Male") ? "M" : "F");
-                                params.put("respiratoryDisease", viewRespiratory.isChecked());
-                                params.put("cardiovascularDisease", viewCardiovascular.isChecked());
+                                params.put(NetworkInterface.SIGN_UP_MESSAGE.get("EMAIL"), viewEmail.getText().toString());
+                                params.put(NetworkInterface.SIGN_UP_MESSAGE.get("PASSWORD"), viewPassword.getText().toString());
+                                params.put(NetworkInterface.SIGN_UP_MESSAGE.get("FULL_NAME"), viewFullName.getText().toString());
+                                params.put(NetworkInterface.SIGN_UP_MESSAGE.get("AGE"), Integer.parseInt(viewAge.getText().toString()));
+                                params.put(NetworkInterface.SIGN_UP_MESSAGE.get("GENDER"), gender.getText().toString().equals("Male") ? "M" : "F");
+                                params.put(NetworkInterface.SIGN_UP_MESSAGE.get("BREATHE"), viewRespiratory.isChecked());
+                                params.put(NetworkInterface.SIGN_UP_MESSAGE.get("HEART"), viewCardiovascular.isChecked());
 
                                 // POST 데이터들을 UTF-8로 인코딩
                                 StringBuilder postData = new StringBuilder();

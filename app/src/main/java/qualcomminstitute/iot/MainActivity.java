@@ -19,7 +19,6 @@ public class MainActivity extends AppCompatActivity {
     private ActionBarDrawerToggle drawerToggle;
     private Toolbar toolbar;
     private Handler handler;
-    private String[] FRAGMENT_NAME = {"Real Time Data", "Sensor Information", "Previous Sensor Data"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +33,9 @@ public class MainActivity extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
         if(getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(FRAGMENT_NAME[0]);
+            getSupportActionBar().setTitle(FragmentName.REAL_DATA.getName());
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            displayView(FragmentName.REAL_DATA.ordinal());
         }
 
         drawerToggle = new ActionBarDrawerToggle(
@@ -51,21 +51,33 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch(item.getItemId()) {
                     case R.id.menuRealTimeData:
-                        if(getActionBar() != null) {
-                            getActionBar().setTitle(FRAGMENT_NAME[0]);
-                            displayView(0);
+                        if(getSupportActionBar() != null) {
+                            getSupportActionBar().setTitle(FragmentName.REAL_DATA.getName());
+                            displayView(FragmentName.REAL_DATA.ordinal());
                         }
                         break;
                     case R.id.menuSensorInformation:
-                        if(getActionBar() != null) {
-                            getActionBar().setTitle(FRAGMENT_NAME[1]);
-                            displayView(1);
+                        if(getSupportActionBar() != null) {
+                            getSupportActionBar().setTitle(FragmentName.SENSOR_INFORMATION.getName());
+                            displayView(FragmentName.SENSOR_INFORMATION.ordinal());
                         }
                         break;
                     case R.id.menuPreviousData:
-                        if(getActionBar() != null) {
-                            getActionBar().setTitle(FRAGMENT_NAME[2]);
-                            displayView(2);
+                        if(getSupportActionBar() != null) {
+                            getSupportActionBar().setTitle(FragmentName.PREVIOUS_DATA.getName());
+                            displayView(FragmentName.PREVIOUS_DATA.ordinal());
+                        }
+                        break;
+                    case R.id.menuChangePassword:
+                        if(getSupportActionBar() != null) {
+                            getSupportActionBar().setTitle(FragmentName.CHANGE_PASSWORD.getName());
+                            displayView(FragmentName.CHANGE_PASSWORD.ordinal());
+                        }
+                        break;
+                    case R.id.menuIDCancel :
+                        if(getSupportActionBar() != null) {
+                            getSupportActionBar().setTitle(FragmentName.ID_CANCEL.getName());
+                            displayView(FragmentName.ID_CANCEL.ordinal());
                         }
                         break;
                 }
@@ -74,13 +86,6 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-
-        if (savedInstanceState == null) {
-            displayView(0);
-            if(getActionBar() != null) {
-                getActionBar().setTitle(FRAGMENT_NAME[0]);
-            }
-        }
     }
 
     @Override
@@ -121,13 +126,19 @@ public class MainActivity extends AppCompatActivity {
         Fragment fragment = null;
         switch (position) {
             case 0:
-                fragment = new BluetoothFragment();
+                fragment = new MapFragment();
                 break;
             case 1:
-                fragment = new MapFragment();
+                fragment = new BluetoothFragment();
                 break;
             case 2:
                 fragment = new PreviousDataFragment();
+                break;
+            case 3:
+                fragment = new ChangePasswordFragment();
+                break;
+            case 4:
+                fragment = new IDCancelFragment();
                 break;
             default:
                 break;

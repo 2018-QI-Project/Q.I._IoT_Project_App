@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -107,17 +108,10 @@ public class SignInActivity extends AppCompatActivity {
                                 }
                                 br.close();
 
-                                // ProgressDialog 제거
-                                new android.os.Handler().post(
-                                        new Runnable() {
-                                            public void run() {
-                                                progressDialog.dismiss();
-                                                finish();
-                                            }
-                                        });
-
                                 // 응답 메세지 JSON 파싱
                                 JSONObject rootObject = new JSONObject(response.toString());
+
+                                Looper.prepare();
 
                                 if(rootObject.has("token_app")) {
                                     SharedPreferences token = getSharedPreferences("Token", MODE_PRIVATE);
@@ -194,6 +188,7 @@ public class SignInActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Utility.initView(viewEmail, viewPassword);
+        viewEmail.requestFocus();
     }
 
     private boolean validate() {
