@@ -18,7 +18,7 @@ public interface NetworkInterface {
             put("EMAIL","email");
             put("PASSWORD","password");
             put("SUCCESS", "token_app");
-            put("FAILED", "error");
+            put("MESSAGE", "value");
         }
     };
     Map<String, String> SIGN_UP_MESSAGE = new LinkedHashMap<String, String>(){
@@ -31,7 +31,8 @@ public interface NetworkInterface {
             put("BREATHE","respiratoryDisease");
             put("HEART","cardiovascularDisease");
             put("TYPE", "type");
-            put("FAILED", "value");
+            put("FAILED", "error");
+            put("MESSAGE", "value");
         }
     };
 }

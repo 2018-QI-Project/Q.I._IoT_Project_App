@@ -110,8 +110,6 @@ public class SignInActivity extends AppCompatActivity {
                                 }
                                 br.close();
 
-
-
                                 // 응답 메세지 JSON 파싱
                                 JSONObject rootObject = new JSONObject(response.toString());
 
@@ -129,7 +127,7 @@ public class SignInActivity extends AppCompatActivity {
                                     startActivity(intent);
                                 }
                                 else {
-                                    switch(rootObject.getString(NetworkInterface.SIGN_IN_MESSAGE.get("FAILED"))) {
+                                    switch(rootObject.getString(NetworkInterface.SIGN_IN_MESSAGE.get("MESSAGE"))) {
                                         case "Unauthorized User":
                                             Toast.makeText(SignInActivity.this, TOAST_SIGN_IN_VERIFY, Toast.LENGTH_SHORT).show();
                                             break;

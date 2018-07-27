@@ -2,6 +2,7 @@ package qualcomminstitute.iot;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -141,8 +142,11 @@ public class SignUpActivity extends AppCompatActivity {
                                 // 응답 메세지 JSON 파싱
                                 JSONObject rootObject = new JSONObject(response.toString());
 
-                                if(rootObject.has(NetworkInterface.SIGN_UP_MESSAGE.get("TYPE"))) {
-                                    switch(rootObject.getString(NetworkInterface.SIGN_UP_MESSAGE.get("TYPE"))){
+                                // Toast 메세지를 위한 Looper 준비
+                                Looper.prepare();
+
+                                if(rootObject.getString(NetworkInterface.SIGN_UP_MESSAGE.get("TYPE")).equals(NetworkInterface.SIGN_UP_MESSAGE.get("FAILED"))) {
+                                    switch(rootObject.getString(NetworkInterface.SIGN_UP_MESSAGE.get("MESSAGE"))){
                                         case "already existed":
                                             progressDialog.dismiss();
                                             Toast.makeText(SignUpActivity.this, TOAST_DUPLICATE_EMAIL, Toast.LENGTH_SHORT).show();
