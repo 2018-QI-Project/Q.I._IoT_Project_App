@@ -37,6 +37,7 @@ public class SignInActivity extends AppCompatActivity {
     private final String TOAST_SIGN_IN_PASSWORD_FAILED = "Sign In Failed. Please Check Password.";
     private final String TOAST_SIGN_IN_REGISTER = "Sign In Failed. Please Check Email.";
     private final String TOAST_SIGN_IN_DEFAULT_FAILED = "Sign In Failed. Please Contact Server Manager.";
+    private final String TOAST_EXCEPTION = "Please Try Again.";
 
     private EditText viewEmail, viewPassword;
     private Button viewSignIn, viewSignUp;
@@ -109,9 +110,12 @@ public class SignInActivity extends AppCompatActivity {
                                 }
                                 br.close();
 
+
+
                                 // 응답 메세지 JSON 파싱
                                 JSONObject rootObject = new JSONObject(response.toString());
 
+                                // Toast 메세지를 위한 Looper 준비
                                 Looper.prepare();
 
                                 if(rootObject.has(NetworkInterface.SIGN_IN_MESSAGE.get("SUCCESS"))) {
@@ -143,12 +147,18 @@ public class SignInActivity extends AppCompatActivity {
                             }
                             catch(MalformedURLException e) {
                                 Log.e(this.getClass().getName(), "URL ERROR!");
+                                progressDialog.dismiss();
+                                Toast.makeText(SignInActivity.this, TOAST_EXCEPTION, Toast.LENGTH_SHORT).show();
                             }
                             catch(JSONException e) {
                                 Log.e(this.getClass().getName(), "JSON ERROR!");
+                                progressDialog.dismiss();
+                                Toast.makeText(SignInActivity.this, TOAST_EXCEPTION, Toast.LENGTH_SHORT).show();
                             }
                             catch(IOException e) {
                                 Log.e(this.getClass().getName(), "IO ERROR!");
+                                progressDialog.dismiss();
+                                Toast.makeText(SignInActivity.this, TOAST_EXCEPTION, Toast.LENGTH_SHORT).show();
                             }
                             finally {
                                 if(serverConnection != null) {

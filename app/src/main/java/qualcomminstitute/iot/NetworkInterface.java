@@ -30,6 +30,8 @@ public interface NetworkInterface {
             put("GENDER","gender");
             put("BREATHE","respiratoryDisease");
             put("HEART","cardiovascularDisease");
+            put("TYPE", "type");
+            put("FAILED", "value");
         }
     };
 }

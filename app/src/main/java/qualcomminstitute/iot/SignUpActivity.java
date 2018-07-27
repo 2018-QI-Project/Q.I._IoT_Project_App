@@ -12,8 +12,17 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.common.oob.SignUp;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -25,11 +34,21 @@ import static qualcomminstitute.iot.NetworkInterface.REST_API;
 import static qualcomminstitute.iot.NetworkInterface.SERVER_ADDRESS;
 
 public class SignUpActivity extends AppCompatActivity {
+    private final String TOAST_DUPLICATE_EMAIL = "Duplicate Email. Check Email.";
+
     private EditText viewEmail, viewPassword, viewRepeatPassword, viewFullName, viewAge;
     private RadioGroup viewGender;
     private Button viewSubmit;
     private TextView viewSignIn;
     private CheckBox viewRespiratory, viewCardiovascular;
+
+    private ProgressDialog progressDialog;
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        progressDialog.dismiss();
+    }
 
     @Override
     protected void onResume() {
@@ -42,6 +61,10 @@ public class SignUpActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+
+        progressDialog = new ProgressDialog(SignUpActivity.this, R.style.AppTheme_Dark_Dialog);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Creating Account...");
 
         // View 변수
         viewEmail = findViewById(R.id.txtSignUpEmail);
@@ -60,11 +83,9 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(validate()) {
-                    final RadioButton gender = findViewById(viewGender.getCheckedRadioButtonId());
+                    progressDialog.show();
 
-                    final ProgressDialog progressDialog = new ProgressDialog(SignUpActivity.this, R.style.AppTheme_Dark_Dialog);
-                    progressDialog.setIndeterminate(true);
-                    progressDialog.setMessage("Creating Account...");
+                    final RadioButton gender = findViewById(viewGender.getCheckedRadioButtonId());
 
                     new Thread() {
                         @Override
@@ -107,11 +128,37 @@ public class SignUpActivity extends AppCompatActivity {
                                 serverConnection.setDoOutput(true);
                                 serverConnection.getOutputStream().write(postDataBytes);
 
-                                // POST 메세지 전송용 로그
-                                Log.d("SignUpActivity", Integer.toString(serverConnection.getResponseCode()));
+                                // 요청 결과
+                                InputStream is = serverConnection.getInputStream();
+                                BufferedReader br = new BufferedReader(new InputStreamReader(is));
+                                String readLine;
+                                StringBuilder response = new StringBuilder();
+                                while ((readLine = br.readLine()) != null) {
+                                    response.append(readLine);
+                                }
+                                br.close();
+
+                                // 응답 메세지 JSON 파싱
+                                JSONObject rootObject = new JSONObject(response.toString());
+
+                                if(rootObject.has(NetworkInterface.SIGN_UP_MESSAGE.get("TYPE"))) {
+                                    switch(rootObject.getString(NetworkInterface.SIGN_UP_MESSAGE.get("TYPE"))){
+                                        case "already existed":
+                                            progressDialog.dismiss();
+                                            Toast.makeText(SignUpActivity.this, TOAST_DUPLICATE_EMAIL, Toast.LENGTH_SHORT).show();
+                                            break;
+                                    }
+                                }
+                                else {
+                                    progressDialog.dismiss();
+                                    finish();
+                                }
                             }
                             catch(MalformedURLException e) {
                                 Log.e(this.getClass().getName(), "URL ERROR!");
+                            }
+                            catch(JSONException e) {
+                                Log.e(this.getClass().getName(), "JSON ERROR!");
                             }
                             catch(IOException e) {
                                 Log.e(this.getClass().getName(), "IO ERROR!");
@@ -123,15 +170,6 @@ public class SignUpActivity extends AppCompatActivity {
                             }
                         }
                     }.start();
-
-                    progressDialog.show();
-                    new android.os.Handler().postDelayed(
-                            new Runnable() {
-                                public void run() {
-                                    progressDialog.dismiss();
-                                    finish();
-                                }
-                            }, 3000);
                 }
             }
         });
