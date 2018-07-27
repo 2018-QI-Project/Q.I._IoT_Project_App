@@ -127,8 +127,6 @@ public class SignUpActivity extends AppCompatActivity {
                     new android.os.Handler().postDelayed(
                             new Runnable() {
                                 public void run() {
-                                    // On complete call either onSignupSuccess or onSignupFailed
-                                    // depending on success
                                     progressDialog.dismiss();
                                     finish();
                                 }
@@ -153,7 +151,7 @@ public class SignUpActivity extends AppCompatActivity {
         String name = viewFullName.getText().toString();
         String age = viewAge.getText().toString();
 
-        if (email.matches(InputFormCondition.EMAIL_CONDITION)) {
+        if (!email.matches(InputFormCondition.EMAIL_CONDITION)) {
             viewEmail.setError(InputFormCondition.ERROR_EMAIL);
             viewEmail.requestFocus();
             return false;
@@ -161,7 +159,7 @@ public class SignUpActivity extends AppCompatActivity {
             viewEmail.setError(null);
         }
 
-        if (password.matches(InputFormCondition.PASSWORD_CONDITION)) {
+        if (!password.matches(InputFormCondition.PASSWORD_CONDITION)) {
             viewPassword.setError(InputFormCondition.ERROR_PASSWORD);
             viewPassword.requestFocus();
             return false;

@@ -7,7 +7,7 @@ public interface NetworkInterface {
     String SERVER_ADDRESS = "teamd-iot.calit2.net/";
     Map<String, String> REST_API = new LinkedHashMap<String, String>(){
         {
-            put("SIGN_IN","accounts/signin");
+            put("SIGN_IN","accounts/authenticate");
             put("SIGN_UP","accounts/signup");
         }
     };

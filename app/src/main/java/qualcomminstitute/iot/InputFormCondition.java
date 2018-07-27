@@ -2,7 +2,7 @@ package qualcomminstitute.iot;
 
 public interface InputFormCondition {
     String EMAIL_CONDITION = "^[a-zA-Z0-9]+@[[a-zA-Z0-9]*\\.]+[a-zA-Z0-9]+$";
-    String PASSWORD_CONDITION = "^([a-zA-Z0-9]{4,10})$";
+    String PASSWORD_CONDITION = "^[a-zA-Z0-9]{4,10}$";
     String FULL_NAME_CONDITION = "^[[a-zA-Z]*\\s?]*[a-zA-Z]+$";
     String AGE_CONDITION = "^[0-9]+$";
 
