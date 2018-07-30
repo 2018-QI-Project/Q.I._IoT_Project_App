@@ -1,16 +1,12 @@
 package qualcomminstitute.iot;
 
-import android.app.Fragment;
 import android.app.ProgressDialog;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -28,70 +24,56 @@ import java.net.URLEncoder;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static android.content.Context.MODE_PRIVATE;
 import static qualcomminstitute.iot.NetworkInterface.REST_API;
 import static qualcomminstitute.iot.NetworkInterface.SERVER_ADDRESS;
 import static qualcomminstitute.iot.NetworkInterface.TOAST_CHANGED_PASSWORD;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_CLIENT_FAILED;
+import static qualcomminstitute.iot.NetworkInterface.TOAST_CHECK_MAIL;
 import static qualcomminstitute.iot.NetworkInterface.TOAST_DEFAULT_FAILED;
 import static qualcomminstitute.iot.NetworkInterface.TOAST_EXCEPTION;
 import static qualcomminstitute.iot.NetworkInterface.TOAST_PASSWORD_FAILED;
+import static qualcomminstitute.iot.NetworkInterface.TOAST_REGISTER;
 import static qualcomminstitute.iot.NetworkInterface.TOAST_TOKEN_FAILED;
 
-public class ChangePasswordFragment extends Fragment {
-    private EditText viewCurrentPassword, viewNewPassword, viewRepeatNewPassword;
+public class ResetPasswordActivity extends AppCompatActivity {
+    private EditText viewEmail;
     private Button viewSubmit;
 
     // Toast 메세지를 위한 Handler
     private Handler handler;
     private ProgressDialog progressDialog;
 
-    // Token 변수
-    private String strToken;
-
-    public ChangePasswordFragment() {
-    }
-
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_change_password, container, false);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_reset_password);
 
         handler = new Handler();
 
-        // Token 얻어오기
-        SharedPreferences preferences = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
-        strToken = preferences.getString(PreferenceName.preferenceToken, "");
-
-        // Progress Dialog 초기화
-        progressDialog = new ProgressDialog(getActivity(), R.style.AppTheme_Dark_Dialog);
+        // ProgressDialog 초기화
+        progressDialog = new ProgressDialog(ResetPasswordActivity.this, R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("Changing...");
+        progressDialog.setMessage("Checking...");
 
-        // View 가져오기
-        viewCurrentPassword = view.findViewById(R.id.txtChangePasswordCurrentPassword);
-        viewNewPassword = view.findViewById(R.id.txtChangePasswordNewPassword);
-        viewRepeatNewPassword = view.findViewById(R.id.txtChangePasswordNewPasswordRepeat);
-        viewSubmit = view.findViewById(R.id.btnChangePasswordSubmit);
+        viewEmail = findViewById(R.id.txtResetPasswordEmail);
+        viewSubmit = findViewById(R.id.btnResetPasswordSubmit);
         viewSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(Utility.validateInputForm(getActivity(), viewCurrentPassword, viewNewPassword) && Utility.validatePassword(viewNewPassword, viewRepeatNewPassword)) {
-
-                    // ProgressDialog 생성
+                if(Utility.validateInputForm(ResetPasswordActivity.this, viewEmail)) {
                     progressDialog.show();
 
                     new Thread() {
                         @Override
                         public void run() {
                             HttpURLConnection serverConnection = null;
-                            String serverURL = "http://" + SERVER_ADDRESS + REST_API.get("CHANGE_PASSWORD");
+                            String serverURL = "http://" + SERVER_ADDRESS + REST_API.get("RESET_PASSWORD");
+
                             try {
                                 URL url = new URL(serverURL);
-                                // POST 데이터 전송을 위한 자료구조
+
+                                // POST 데이터 만들기
                                 Map<String,Object> params = new LinkedHashMap<>();
-                                params.put(NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("PASSWORD"), viewCurrentPassword.getText().toString());
-                                params.put(NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("NEW_PASSWORD"), viewNewPassword.getText().toString());
+                                params.put(NetworkInterface.RESET_PASSWORD_MESSAGE.get("EMAIL"), viewEmail.getText().toString());
 
                                 // POST 데이터들을 UTF-8로 인코딩
                                 StringBuilder postData = new StringBuilder();
@@ -103,15 +85,15 @@ public class ChangePasswordFragment extends Fragment {
                                 }
                                 byte[] postDataBytes = postData.toString().getBytes(NetworkInterface.ENCODE);
 
+                                Log.d("POST", postData.toString());
+
                                 // URL을 통한 서버와의 연결 설정
                                 serverConnection = (HttpURLConnection)url.openConnection();
                                 serverConnection.setRequestMethod("PUT");
                                 serverConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                                serverConnection.setRequestProperty(NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("CLIENT_KEY"), NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("CLIENT_VALUE"));
-                                serverConnection.setRequestProperty(NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("TOKEN"), strToken);
                                 serverConnection.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
 
-                                // POST 데이터를 설정
+                                // 서버의 입력 설정 및 데이터 추가
                                 serverConnection.setDoOutput(true);
                                 serverConnection.getOutputStream().write(postDataBytes);
 
@@ -125,49 +107,38 @@ public class ChangePasswordFragment extends Fragment {
                                 }
                                 br.close();
 
-                                if(response.toString().equals(NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("SUCCESS"))) {
-                                    Utility.displayToastMessage(handler, getActivity(), TOAST_CHANGED_PASSWORD);
-                                    handler.post(new Thread(){
-                                        @Override
-                                        public void run() {
-                                            viewCurrentPassword.setText("");
-                                            viewNewPassword.setText("");
-                                            viewRepeatNewPassword.setText("");
-                                        }
-                                    });
-                                }
-                                else {
+                                if(response.substring(0, 1).equals("{")) {
                                     // 응답 메세지 JSON 파싱
                                     JSONObject rootObject = new JSONObject(response.toString());
 
-                                    switch(rootObject.getString(NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("MESSAGE"))) {
-                                        case "invalid client type":
-                                            Utility.displayToastMessage(handler, getActivity(), TOAST_CLIENT_FAILED);
-                                            break;
-                                        case "wrong password":
-                                            Utility.displayToastMessage(handler, getActivity(), TOAST_PASSWORD_FAILED);
-                                            break;
-                                        case "invalid tokenApp":
-                                            Utility.displayToastMessage(handler, getActivity(), TOAST_TOKEN_FAILED);
-                                            getActivity().finish();
-                                            break;
-                                        default:
-                                            Utility.displayToastMessage(handler, getActivity(), TOAST_DEFAULT_FAILED);
-                                            break;
+                                    if (rootObject.getString(NetworkInterface.RESET_PASSWORD_MESSAGE.get("TYPE")).equals(NetworkInterface.RESET_PASSWORD_MESSAGE.get("FAILED"))) {
+                                        switch (rootObject.getString(NetworkInterface.RESET_PASSWORD_MESSAGE.get("MESSAGE"))) {
+                                            case "Unregistered User":
+                                                Utility.displayToastMessage(handler, ResetPasswordActivity.this, TOAST_REGISTER);
+                                                finish();
+                                                break;
+                                            default:
+                                                Utility.displayToastMessage(handler, ResetPasswordActivity.this, TOAST_DEFAULT_FAILED);
+                                                break;
+                                        }
                                     }
+                                }
+                                else {
+                                    Utility.displayToastMessage(handler, ResetPasswordActivity.this, TOAST_CHECK_MAIL);
+                                    finish();
                                 }
                             }
                             catch(MalformedURLException e) {
                                 Log.e(this.getClass().getName(), "URL ERROR!");
-                                Utility.displayToastMessage(handler, getActivity(), TOAST_EXCEPTION);
+                                Utility.displayToastMessage(handler, ResetPasswordActivity.this, TOAST_EXCEPTION);
                             }
                             catch(JSONException e) {
                                 Log.e(this.getClass().getName(), "JSON ERROR!");
-                                Utility.displayToastMessage(handler, getActivity(), TOAST_EXCEPTION);
+                                Utility.displayToastMessage(handler, ResetPasswordActivity.this, TOAST_EXCEPTION);
                             }
                             catch(IOException e) {
                                 Log.e(this.getClass().getName(), "IO ERROR!");
-                                Utility.displayToastMessage(handler, getActivity(), TOAST_EXCEPTION);
+                                Utility.displayToastMessage(handler, ResetPasswordActivity.this, TOAST_EXCEPTION);
                             }
                             finally {
                                 progressDialog.dismiss();
@@ -180,7 +151,5 @@ public class ChangePasswordFragment extends Fragment {
                 }
             }
         });
-
-        return view;
     }
 }

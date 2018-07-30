@@ -6,79 +6,84 @@
     android:layout_height="match_parent">
 
     <android.support.design.widget.TextInputLayout
-        android:id="@+id/layChangePasswordCurrentPassword"
+        android:id="@+id/layIDCancellationPassword"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/layChangePasswordNewPassword"
+        app:layout_constraintBottom_toTopOf="@+id/layIDCancellationPasswordRepeat"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <EditText
-            android:id="@+id/txtChangePasswordCurrentPassword"
+            android:id="@+id/txtIDCancellationPassword"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/current_password"
-            android:textColor="@color/white" />
+            android:layout_height="match_parent"
+            android:hint="@string/password"
+            android:inputType="textPassword"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
-        android:id="@+id/layChangePasswordNewPassword"
+        android:id="@+id/layIDCancellationPasswordRepeat"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/layChangePasswordNewPasswordRepeat"
+        app:layout_constraintBottom_toTopOf="@+id/ckbIDCancellationAgree"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layChangePasswordCurrentPassword">
+        app:layout_constraintTop_toBottomOf="@+id/layIDCancellationPassword">
 
         <EditText
-            android:id="@+id/txtChangePasswordNewPassword"
+            android:id="@+id/txtIDCancellationPasswordRepeat"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/new_password"
-            android:textColor="@color/white" />
+            android:layout_height="match_parent"
+            android:hint="@string/repeat_password"
+            android:inputType="textPassword"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+
     </android.support.design.widget.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/layChangePasswordNewPasswordRepeat"
-        android:layout_width="0dp"
+    <CheckBox
+        android:id="@+id/ckbIDCancellationAgree"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/btnChangePasswordSubmit"
+        android:text="@string/id_cancellation_agree"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/btnIDCancellationSubmit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layChangePasswordNewPassword">
-
-        <EditText
-            android:id="@+id/txtChangePasswordNewPasswordRepeat"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/new_password_repeat"
-            android:textColor="@color/white" />
-    </android.support.design.widget.TextInputLayout>
+        app:layout_constraintTop_toBottomOf="@+id/layIDCancellationPasswordRepeat" />
 
     <Button
-        android:id="@+id/btnChangePasswordSubmit"
+        android:id="@+id/btnIDCancellationSubmit"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginStart="32dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:layout_weight="1"
         android:text="@string/submit"
+        android:textColor="@color/black"
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layChangePasswordNewPasswordRepeat" />
+        app:layout_constraintTop_toBottomOf="@+id/ckbIDCancellationAgree" />
+
 </android.support.constraint.ConstraintLayout>

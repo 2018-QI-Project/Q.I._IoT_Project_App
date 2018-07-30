@@ -29,19 +29,20 @@ import java.util.Map;
 
 import static qualcomminstitute.iot.NetworkInterface.REST_API;
 import static qualcomminstitute.iot.NetworkInterface.SERVER_ADDRESS;
+import static qualcomminstitute.iot.NetworkInterface.TOAST_CLIENT_FAILED;
 import static qualcomminstitute.iot.NetworkInterface.TOAST_DEFAULT_FAILED;
 import static qualcomminstitute.iot.NetworkInterface.TOAST_EXCEPTION;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_SIGN_IN_PASSWORD_FAILED;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_SIGN_IN_REGISTER;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_SIGN_IN_VERIFY;
+import static qualcomminstitute.iot.NetworkInterface.TOAST_PASSWORD_FAILED;
+import static qualcomminstitute.iot.NetworkInterface.TOAST_REGISTER;
+import static qualcomminstitute.iot.NetworkInterface.TOAST_VERIFY;
 
 public class SignInActivity extends AppCompatActivity {
     private EditText viewEmail, viewPassword;
     private Button viewSignIn, viewSignUp;
     private TextView viewForgotPassword;
 
+    // Toast 메세지를 위한 Handler
     private Handler handler;
-
     private ProgressDialog progressDialog;
 
     @Override
@@ -51,16 +52,17 @@ public class SignInActivity extends AppCompatActivity {
 
         handler = new Handler();
 
+        // Progress Dialog 초기화
         progressDialog = new ProgressDialog(SignInActivity.this, R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Sign In...");
 
+        // View 가져오기
         viewEmail = findViewById(R.id.txtSignInEmail);
         viewPassword = findViewById(R.id.txtSignInPassword);
         viewSignIn = findViewById(R.id.btnSignIn);
         viewSignUp = findViewById(R.id.btnSignUp);
         viewForgotPassword = findViewById(R.id.txtSignInForgotPassword);
-
         viewSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -118,8 +120,6 @@ public class SignInActivity extends AppCompatActivity {
                                     SharedPreferences token = getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
                                     SharedPreferences.Editor tokenEditor = token.edit();
 
-                                    Utility.displayToastMessage(handler, SignInActivity.this, "Success !");
-
                                     tokenEditor.putString(PreferenceName.preferenceToken, rootObject.getString(NetworkInterface.SIGN_IN_MESSAGE.get("SUCCESS")));
                                     tokenEditor.apply();
 
@@ -128,14 +128,17 @@ public class SignInActivity extends AppCompatActivity {
                                 }
                                 else {
                                     switch(rootObject.getString(NetworkInterface.SIGN_IN_MESSAGE.get("MESSAGE"))) {
-                                        case "Unauthorized User":
-                                            Utility.displayToastMessage(handler, SignInActivity.this, TOAST_SIGN_IN_VERIFY);
+                                        case "not valid client, choose app or web":
+                                            Utility.displayToastMessage(handler, SignInActivity.this, TOAST_CLIENT_FAILED);
                                             break;
-                                        case "Wrong Password " :
-                                            Utility.displayToastMessage(handler, SignInActivity.this, TOAST_SIGN_IN_PASSWORD_FAILED);
+                                        case "Unauthorized User":
+                                            Utility.displayToastMessage(handler, SignInActivity.this, TOAST_VERIFY);
+                                            break;
+                                        case "Wrong password" :
+                                            Utility.displayToastMessage(handler, SignInActivity.this, TOAST_PASSWORD_FAILED);
                                             break;
                                         case "Unregistered User":
-                                            Utility.displayToastMessage(handler, SignInActivity.this, TOAST_SIGN_IN_REGISTER);
+                                            Utility.displayToastMessage(handler, SignInActivity.this, TOAST_REGISTER);
                                             break;
                                         default:
                                             Utility.displayToastMessage(handler, SignInActivity.this, TOAST_DEFAULT_FAILED);
@@ -166,7 +169,6 @@ public class SignInActivity extends AppCompatActivity {
                 }
             }
         });
-
         viewSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -175,11 +177,10 @@ public class SignInActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
-
         viewForgotPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(SignInActivity.this, ForgotPasswordActivity.class);
+                Intent intent = new Intent(SignInActivity.this, ResetPasswordActivity.class);
                 startActivity(intent);
             }
         });

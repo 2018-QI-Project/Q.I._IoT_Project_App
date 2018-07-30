@@ -30,18 +30,20 @@ import java.util.Map;
 
 import static qualcomminstitute.iot.NetworkInterface.REST_API;
 import static qualcomminstitute.iot.NetworkInterface.SERVER_ADDRESS;
+import static qualcomminstitute.iot.NetworkInterface.TOAST_CHECK_MAIL;
+import static qualcomminstitute.iot.NetworkInterface.TOAST_DEFAULT_FAILED;
+import static qualcomminstitute.iot.NetworkInterface.TOAST_DUPLICATE_EMAIL;
+import static qualcomminstitute.iot.NetworkInterface.TOAST_EXCEPTION;
 
 public class SignUpActivity extends AppCompatActivity {
-    private final String TOAST_DUPLICATE_EMAIL = "Duplicate Email. Check Email.";
-
     private EditText viewEmail, viewPassword, viewRepeatPassword, viewFullName, viewAge;
     private RadioGroup viewGender;
     private Button viewSubmit;
     private TextView viewSignIn;
     private CheckBox viewRespiratory, viewCardiovascular;
 
+    // Toast 메세지를 위한 Handler
     private Handler handler;
-
     private ProgressDialog progressDialog;
 
     @Override
@@ -64,6 +66,7 @@ public class SignUpActivity extends AppCompatActivity {
 
         handler = new Handler();
 
+        // ProgressDialog 초기화
         progressDialog = new ProgressDialog(SignUpActivity.this, R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Creating Account...");
@@ -79,8 +82,6 @@ public class SignUpActivity extends AppCompatActivity {
         viewCardiovascular = findViewById(R.id.ckbCardiovascularDisease);
         viewSubmit = findViewById(R.id.btnSingUpSubmit);
         viewSignIn = findViewById(R.id.txtSignUpSignIn);
-
-        // Submit 버튼에 대한 클릭 이벤트
         viewSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -140,28 +141,37 @@ public class SignUpActivity extends AppCompatActivity {
                                 }
                                 br.close();
 
-                                // 응답 메세지 JSON 파싱
-                                JSONObject rootObject = new JSONObject(response.toString());
+                                if(response.substring(0, 1).equals("{")) {
+                                    // 응답 메세지 JSON 파싱
+                                    JSONObject rootObject = new JSONObject(response.toString());
 
-                                if(rootObject.getString(NetworkInterface.SIGN_UP_MESSAGE.get("TYPE")).equals(NetworkInterface.SIGN_UP_MESSAGE.get("FAILED"))) {
-                                    switch(rootObject.getString(NetworkInterface.SIGN_UP_MESSAGE.get("MESSAGE"))){
-                                        case "already existed":
-                                            Utility.displayToastMessage(handler, SignUpActivity.this, TOAST_DUPLICATE_EMAIL);
-                                            break;
+                                    if (rootObject.getString(NetworkInterface.SIGN_UP_MESSAGE.get("TYPE")).equals(NetworkInterface.SIGN_UP_MESSAGE.get("FAILED"))) {
+                                        switch (rootObject.getString(NetworkInterface.SIGN_UP_MESSAGE.get("MESSAGE"))) {
+                                            case "already existed":
+                                                Utility.displayToastMessage(handler, SignUpActivity.this, TOAST_DUPLICATE_EMAIL);
+                                                break;
+                                            default:
+                                                Utility.displayToastMessage(handler, SignUpActivity.this, TOAST_DEFAULT_FAILED);
+                                                break;
+                                        }
                                     }
                                 }
                                 else {
+                                    Utility.displayToastMessage(handler, SignUpActivity.this, TOAST_CHECK_MAIL);
                                     finish();
                                 }
                             }
                             catch(MalformedURLException e) {
                                 Log.e(this.getClass().getName(), "URL ERROR!");
+                                Utility.displayToastMessage(handler, SignUpActivity.this, TOAST_EXCEPTION);
                             }
                             catch(JSONException e) {
                                 Log.e(this.getClass().getName(), "JSON ERROR!");
+                                Utility.displayToastMessage(handler, SignUpActivity.this, TOAST_EXCEPTION);
                             }
                             catch(IOException e) {
                                 Log.e(this.getClass().getName(), "IO ERROR!");
+                                Utility.displayToastMessage(handler, SignUpActivity.this, TOAST_EXCEPTION);
                             }
                             finally {
                                 progressDialog.dismiss();
@@ -174,7 +184,6 @@ public class SignUpActivity extends AppCompatActivity {
                 }
             }
         });
-
         viewSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

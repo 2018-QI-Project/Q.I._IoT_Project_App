@@ -11,4 +11,5 @@ public interface InputFormCondition {
     String ERROR_REPEAT_PASSWORD = "Password isn't match";
     String ERROR_FULL_NAME = "Name is incorrect";
     String ERROR_AGE = "Age is incorrect";
+    String ERROR_AGREE = "If you erase information, Please Check it";
 }
