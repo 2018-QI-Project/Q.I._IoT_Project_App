@@ -5,7 +5,8 @@ public enum FragmentName {
     SENSOR_INFORMATION("Sensor Information"),
     PREVIOUS_DATA("Previous Sensor Data"),
     CHANGE_PASSWORD("Change Password"),
-    ID_CANCEL("ID Cancel");
+    ID_CANCEL("ID Cancel"),
+    SIGN_OUT("Sign Out");
 
     final String name;
 

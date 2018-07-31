@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">IoT</string>
 
     <!-- Static String -->
@@ -12,9 +12,9 @@
 
     <!-- Sensor String -->
     <string name="co">CO</string>
-    <string name="so2">SO<sub><small>2</small></sub></string>
-    <string name="no2">NO<sub><small>2</small></sub></string>
-    <string name="o3">O<sub><small>3</small></sub></string>
+    <string name="so2">SO<small><sub>2</sub></small></string>
+    <string name="no2">NO<sub>2</sub></string>
+    <string name="o3">O<sub>3</sub></string>
     <string name="temperature">Temperature</string>
 
     <!-- Sign In Activity -->
@@ -37,6 +37,7 @@
     <string name="menu_previous_data">Previous Data</string>
     <string name="menu_change_password">Change Password</string>
     <string name="menu_id_cancel">ID Cancel</string>
+    <string name="menu_sign_out">Sign Out</string>
 
     <!-- Main Activity -->
     <string name="drawer_open">Drawer Open</string>
@@ -48,11 +49,14 @@
     <!-- Previous Data Fragment -->
     <string name="previous_data_main">Previous Data</string>
 
-    <!-- Bluetooth Fragment -->
+    <!-- Bluetooth Dialog -->
     <string name="bluetooth_main">Bluetooth Connect</string>
     <string name="bluetooth_pair">Paired Device</string>
     <string name="bluetooth_not_pair">Other Devices</string>
     <string name="bluetooth_search">Search Devices</string>
+    <string name="bluetooth_connecting">Connecting...</string>
+    <string name="bluetooth_connected_to">Connected to <xliff:g id="device_name">%1$s</xliff:g></string>
+    <string name="bluetooth_not_connected">Not Connected</string>
 
     <!-- Change Password Fragment -->
     <string name="current_password">Current Password</string>
@@ -61,4 +65,22 @@
 
     <!-- ID Cancellation Fragment -->
     <string name="id_cancellation_agree">I want to erase my account</string>
+
+    <!-- Sensor Information Fragment -->
+    <string name="sensor_type">Type : </string>
+    <string name="sensor_address">Address : </string>
+    <string name="sensor_status">Status : </string>
+    <string name="sensor_register">Register</string>
+    <string name="sensor_deassociation">Deassociation</string>
+    <string name="sensor_air">Air Pollution Sensor</string>
+    <string name="sensor_heart">Heart Sensor</string>
+
+    <!-- DeviceListActivity -->
+    <string name="scanning">scanning for devices...</string>
+    <string name="select_device">select a device to connect</string>
+    <string name="none_paired">No devices have been paired</string>
+    <string name="none_found">No devices found</string>
+    <string name="title_paired_devices">Paired Devices</string>
+    <string name="title_other_devices">Other Available Devices</string>
+    <string name="button_scan">Scan for devices</string>
 </resources>

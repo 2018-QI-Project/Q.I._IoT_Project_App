@@ -30,6 +30,7 @@ public interface NetworkInterface {
             put("RESET_PASSWORD", "accounts/resetpassword");
             put("CHANGE_PASSWORD", "accounts/changepassword");
             put("ID_CANCELLATION", "accounts/IDcancellation");
+            put("SIGN_OUT", "accounts/signout");
         }
     };
     Map<String, String> SIGN_IN_MESSAGE = new LinkedHashMap<String, String>(){
@@ -84,6 +85,15 @@ public interface NetworkInterface {
             put("SUCCESS", "ID Cancellation!");
             put("PASSWORD","password");
             put("FAILED", "error");
+            put("MESSAGE", "value");
+        }
+    };
+    Map<String, String> SIGN_OUT_MESSAGE = new LinkedHashMap<String, String>(){
+        {
+            put("CLIENT_KEY", "client");
+            put("CLIENT_VALUE", "app");
+            put("TOKEN", "tokenApp");
+            put("SUCCESS", "type");
             put("MESSAGE", "value");
         }
     };

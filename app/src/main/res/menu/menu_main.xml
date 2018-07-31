@@ -28,4 +28,9 @@
         android:id="@+id/menuIDCancel"
         android:icon="@android:drawable/ic_menu_gallery"
         android:title="@string/menu_id_cancel" />
+
+    <item
+        android:id="@+id/menuSignOut"
+        android:icon="@android:drawable/ic_menu_gallery"
+        android:title="@string/menu_sign_out" />
 </menu>

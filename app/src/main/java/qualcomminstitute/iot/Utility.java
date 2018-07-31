@@ -1,6 +1,8 @@
 package qualcomminstitute.iot;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Handler;
 import android.support.design.widget.TextInputLayout;
 import android.widget.TextView;
@@ -89,5 +91,14 @@ public class Utility {
             viewRepeat.setError(null);
         }
         return true;
+    }
+
+    public static void showYesNoDialog(Context context, String strTitle, String strContext, DialogInterface.OnClickListener listenerYes, DialogInterface.OnClickListener listenerNo) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.AlertDialogStyle);
+        builder.setTitle(strTitle);
+        builder.setMessage(strContext);
+        builder.setPositiveButton("Yes", listenerYes);
+        builder.setNegativeButton("No", listenerNo);
+        builder.show();
     }
 }

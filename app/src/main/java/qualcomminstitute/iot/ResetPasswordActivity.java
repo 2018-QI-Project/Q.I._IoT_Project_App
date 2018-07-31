@@ -26,13 +26,10 @@ import java.util.Map;
 
 import static qualcomminstitute.iot.NetworkInterface.REST_API;
 import static qualcomminstitute.iot.NetworkInterface.SERVER_ADDRESS;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_CHANGED_PASSWORD;
 import static qualcomminstitute.iot.NetworkInterface.TOAST_CHECK_MAIL;
 import static qualcomminstitute.iot.NetworkInterface.TOAST_DEFAULT_FAILED;
 import static qualcomminstitute.iot.NetworkInterface.TOAST_EXCEPTION;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_PASSWORD_FAILED;
 import static qualcomminstitute.iot.NetworkInterface.TOAST_REGISTER;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_TOKEN_FAILED;
 
 public class ResetPasswordActivity extends AppCompatActivity {
     private EditText viewEmail;

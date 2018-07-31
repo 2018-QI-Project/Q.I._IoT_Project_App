@@ -1,6 +1,7 @@
 package qualcomminstitute.iot;
 
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,7 +12,26 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import static qualcomminstitute.iot.NetworkInterface.REST_API;
+import static qualcomminstitute.iot.NetworkInterface.SERVER_ADDRESS;
+import static qualcomminstitute.iot.NetworkInterface.TOAST_CLIENT_FAILED;
+import static qualcomminstitute.iot.NetworkInterface.TOAST_DEFAULT_FAILED;
+import static qualcomminstitute.iot.NetworkInterface.TOAST_EXCEPTION;
+import static qualcomminstitute.iot.NetworkInterface.TOAST_TOKEN_FAILED;
 
 public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
@@ -80,6 +100,81 @@ public class MainActivity extends AppCompatActivity {
                             displayView(FragmentName.ID_CANCEL.ordinal());
                         }
                         break;
+                    case R.id.menuSignOut :
+                        Utility.showYesNoDialog(MainActivity.this, "Sign Out", "Do you want to Sign Out?",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        new Thread() {
+                                            @Override
+                                            public void run() {
+                                                HttpURLConnection serverConnection = null;
+                                                String serverURL = "http://" + SERVER_ADDRESS + REST_API.get("SIGN_OUT");
+                                                try {
+                                                    URL url = new URL(serverURL);
+
+                                                    // URL을 통한 서버와의 연결 설정
+                                                    serverConnection = (HttpURLConnection)url.openConnection();
+                                                    serverConnection.setRequestMethod("POST");
+                                                    serverConnection.setRequestProperty(NetworkInterface.SIGN_OUT_MESSAGE.get("CLIENT_KEY"), NetworkInterface.SIGN_OUT_MESSAGE.get("CLIENT_VALUE"));
+
+                                                    // 요청 결과
+                                                    InputStream is = serverConnection.getInputStream();
+                                                    BufferedReader br = new BufferedReader(new InputStreamReader(is));
+                                                    String readLine;
+                                                    StringBuilder response = new StringBuilder();
+                                                    while ((readLine = br.readLine()) != null) {
+                                                        response.append(readLine);
+                                                    }
+                                                    br.close();
+
+                                                    // 응답 메세지 JSON 파싱
+                                                    JSONObject rootObject = new JSONObject(response.toString());
+
+                                                    if(rootObject.has(NetworkInterface.SIGN_OUT_MESSAGE.get("SUCCESS"))) {
+                                                        MainActivity.this.finish();
+                                                    }
+                                                    else {
+                                                        switch(rootObject.getString(NetworkInterface.SIGN_OUT_MESSAGE.get("MESSAGE"))) {
+                                                            case "invalid client type":
+                                                                Utility.displayToastMessage(handler, MainActivity.this, TOAST_CLIENT_FAILED);
+                                                                break;
+                                                            case "invalid tokenApp":
+                                                                Utility.displayToastMessage(handler, MainActivity.this, TOAST_TOKEN_FAILED);
+                                                                break;
+                                                            default:
+                                                                Utility.displayToastMessage(handler, MainActivity.this, TOAST_DEFAULT_FAILED);
+                                                                break;
+                                                        }
+                                                    }
+                                                }
+                                                catch(MalformedURLException e) {
+                                                    Log.e(this.getClass().getName(), "URL ERROR!");
+                                                    Utility.displayToastMessage(handler, MainActivity.this, TOAST_EXCEPTION);
+                                                }
+                                                catch(JSONException e) {
+                                                    Log.e(this.getClass().getName(), "JSON ERROR!");
+                                                    Utility.displayToastMessage(handler, MainActivity.this, TOAST_EXCEPTION);
+                                                }
+                                                catch(IOException e) {
+                                                    Log.e(this.getClass().getName(), "IO ERROR!");
+                                                    Utility.displayToastMessage(handler, MainActivity.this, TOAST_EXCEPTION);
+                                                }
+                                                finally {
+                                                    if(serverConnection != null) {
+                                                        serverConnection.disconnect();
+                                                    }
+                                                }
+                                            }
+                                        }.start();
+                                    }
+                                },
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                    }
+                                });
+                        break;
                 }
 
                 drawerLayout.closeDrawer(GravityCompat.START);
@@ -129,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
                 fragment = new MapFragment();
                 break;
             case 1:
-                fragment = new BluetoothFragment();
+                fragment = new SensorInformationFragment();
                 break;
             case 2:
                 fragment = new PreviousDataFragment();

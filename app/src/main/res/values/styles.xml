@@ -18,6 +18,15 @@
         <item name="android:colorButtonNormal">@color/colorPrimaryDarker</item>
     </style>
 
+    <!-- Alert Dialog Theme -->
+    <style name="AlertDialogStyle" parent="Theme.AppCompat.Dialog">
+        <item name="colorAccent">@color/white</item>
+        <item name="android:textColorPrimary">@color/iron</item>
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:windowMinWidthMajor">80%</item>
+        <item name="android:windowMinWidthMinor">50%</item>
+    </style>
+
     <!-- Progress Dialog Theme -->
     <style name="AppTheme.Dark.Dialog" parent="Theme.AppCompat.Dialog">
         <item name="colorAccent">@color/white</item>
