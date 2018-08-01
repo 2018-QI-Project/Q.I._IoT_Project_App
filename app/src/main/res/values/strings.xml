@@ -55,6 +55,7 @@
     <string name="bluetooth_not_pair">Other Devices</string>
     <string name="bluetooth_search">Search Devices</string>
     <string name="bluetooth_connecting">Connecting...</string>
+    <string name="bluetooth_not_enabled_leaving">Bluetooth was not enabled. Leaving Bluetooth Chat.</string>
     <string name="bluetooth_connected_to">Connected to <xliff:g id="device_name">%1$s</xliff:g></string>
     <string name="bluetooth_not_connected">Not Connected</string>
 
