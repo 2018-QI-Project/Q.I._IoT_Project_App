@@ -53,6 +53,10 @@
         <activity android:name=".MainActivity">
 
         </activity>
+
+        <activity android:name=".BluetoothConnectActivity">
+
+        </activity>
     </application>
 
 </manifest>

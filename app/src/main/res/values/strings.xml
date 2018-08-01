@@ -49,15 +49,21 @@
     <!-- Previous Data Fragment -->
     <string name="previous_data_main">Previous Data</string>
 
-    <!-- Bluetooth Dialog -->
-    <string name="bluetooth_main">Bluetooth Connect</string>
-    <string name="bluetooth_pair">Paired Device</string>
-    <string name="bluetooth_not_pair">Other Devices</string>
-    <string name="bluetooth_search">Search Devices</string>
-    <string name="bluetooth_connecting">Connecting...</string>
+    <!-- Bluetooth -->
+    <string name="bluetooth_not_connected">You are not connected to a device</string>
     <string name="bluetooth_not_enabled_leaving">Bluetooth was not enabled. Leaving Bluetooth Chat.</string>
-    <string name="bluetooth_connected_to">Connected to <xliff:g id="device_name">%1$s</xliff:g></string>
-    <string name="bluetooth_not_connected">Not Connected</string>
+    <string name="bluetooth_title_connecting">connecting...</string>
+    <string name="bluetooth_title_connected_to">connected to <xliff:g id="device_name">%1$s</xliff:g></string>
+    <string name="bluetooth_title_not_connected">not connected</string>
+
+    <!-- Bluetooth Connect Activity -->
+    <string name="bluetooth_scanning">scanning for devices...</string>
+    <string name="bluetooth_select_device">select a device to connect</string>
+    <string name="bluetooth_none_paired">No devices have been paired</string>
+    <string name="bluetooth_none_found">No devices found</string>
+    <string name="bluetooth_title_paired_devices">Paired Devices</string>
+    <string name="bluetooth_title_other_devices">Other Available Devices</string>
+    <string name="bluetooth_button_scan">Scan for devices</string>
 
     <!-- Change Password Fragment -->
     <string name="current_password">Current Password</string>
