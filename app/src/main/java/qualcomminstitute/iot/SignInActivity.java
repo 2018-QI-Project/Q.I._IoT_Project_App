@@ -24,8 +24,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static qualcomminstitute.iot.NetworkInterface.REST_API;
 import static qualcomminstitute.iot.NetworkInterface.SERVER_ADDRESS;
@@ -77,26 +75,22 @@ public class SignInActivity extends AppCompatActivity {
                             String serverURL = "http://" + SERVER_ADDRESS + REST_API.get("SIGN_IN");
                             try {
                                 URL url = new URL(serverURL);
+
                                 // POST 데이터 전송을 위한 자료구조
-                                Map<String,Object> params = new LinkedHashMap<>();
-                                params.put(NetworkInterface.SIGN_IN_MESSAGE.get("EMAIL"), viewEmail.getText().toString());
-                                params.put(NetworkInterface.SIGN_IN_MESSAGE.get("PASSWORD"), viewPassword.getText().toString());
+                                JSONObject rootObject = new JSONObject();
+                                rootObject.put(NetworkInterface.SIGN_IN_MESSAGE.get("CLIENT_KEY"), NetworkInterface.SIGN_IN_MESSAGE.get("CLIENT_VALUE"));
+                                rootObject.put(NetworkInterface.SIGN_IN_MESSAGE.get("EMAIL"), viewEmail.getText().toString());
+                                rootObject.put(NetworkInterface.SIGN_IN_MESSAGE.get("PASSWORD"), viewPassword.getText().toString());
 
                                 // POST 데이터들을 UTF-8로 인코딩
                                 StringBuilder postData = new StringBuilder();
-                                for(Map.Entry<String,Object> param : params.entrySet()) {
-                                    if(postData.length() != 0) postData.append('&');
-                                    postData.append(URLEncoder.encode(param.getKey(), NetworkInterface.ENCODE));
-                                    postData.append('=');
-                                    postData.append(URLEncoder.encode(String.valueOf(param.getValue()), NetworkInterface.ENCODE));
-                                }
+                                postData.append(URLEncoder.encode(rootObject.toString(), NetworkInterface.ENCODE));
                                 byte[] postDataBytes = postData.toString().getBytes(NetworkInterface.ENCODE);
 
                                 // URL을 통한 서버와의 연결 설정
                                 serverConnection = (HttpURLConnection)url.openConnection();
                                 serverConnection.setRequestMethod("POST");
-                                serverConnection.setRequestProperty("Content-Type", NetworkInterface.POST_HEADER);
-                                serverConnection.setRequestProperty(NetworkInterface.SIGN_IN_MESSAGE.get("CLIENT_KEY"), NetworkInterface.SIGN_IN_MESSAGE.get("CLIENT_VALUE"));
+                                serverConnection.setRequestProperty("Content-Type", NetworkInterface.JSON_HEADER);
                                 serverConnection.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
 
                                 // POST 데이터를 설정
@@ -114,20 +108,20 @@ public class SignInActivity extends AppCompatActivity {
                                 br.close();
 
                                 // 응답 메세지 JSON 파싱
-                                JSONObject rootObject = new JSONObject(response.toString());
+                                JSONObject returnObject = new JSONObject(response.toString());
 
-                                if(rootObject.has(NetworkInterface.SIGN_IN_MESSAGE.get("SUCCESS"))) {
+                                if(returnObject.has(NetworkInterface.SIGN_IN_MESSAGE.get("SUCCESS"))) {
                                     SharedPreferences token = getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
                                     SharedPreferences.Editor tokenEditor = token.edit();
 
-                                    tokenEditor.putString(PreferenceName.preferenceToken, rootObject.getString(NetworkInterface.SIGN_IN_MESSAGE.get("SUCCESS")));
+                                    tokenEditor.putString(PreferenceName.preferenceToken, returnObject.getString(NetworkInterface.SIGN_IN_MESSAGE.get("SUCCESS")));
                                     tokenEditor.apply();
 
                                     Intent intent = new Intent(SignInActivity.this, MainActivity.class);
                                     startActivity(intent);
                                 }
                                 else {
-                                    switch(rootObject.getString(NetworkInterface.SIGN_IN_MESSAGE.get("MESSAGE"))) {
+                                    switch(returnObject.getString(NetworkInterface.SIGN_IN_MESSAGE.get("MESSAGE"))) {
                                         case "not valid client, choose app or web":
                                             Utility.displayToastMessage(handler, SignInActivity.this, TOAST_CLIENT_FAILED);
                                             break;

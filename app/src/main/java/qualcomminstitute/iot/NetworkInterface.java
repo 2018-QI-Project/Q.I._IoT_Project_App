@@ -7,7 +7,7 @@ public interface NetworkInterface {
     // Network Connection
     String SERVER_ADDRESS = "teamd-iot.calit2.net/";
     String ENCODE = "UTF-8";
-    String POST_HEADER = "application/x-www-form-urlencoded";
+    String JSON_HEADER = "application/json";
 
     // Toast Message
     String TOAST_DEFAULT_FAILED = "Please Contact Server Manager";

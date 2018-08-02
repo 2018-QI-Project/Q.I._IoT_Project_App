@@ -25,8 +25,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
 import static qualcomminstitute.iot.NetworkInterface.REST_API;
@@ -77,7 +75,6 @@ public class ChangePasswordFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if(Utility.validateInputForm(getActivity(), viewCurrentPassword, viewNewPassword) && Utility.validatePassword(viewNewPassword, viewRepeatNewPassword)) {
-
                     // ProgressDialog 생성
                     progressDialog.show();
 
@@ -89,26 +86,21 @@ public class ChangePasswordFragment extends Fragment {
                             try {
                                 URL url = new URL(serverURL);
                                 // POST 데이터 전송을 위한 자료구조
-                                Map<String,Object> params = new LinkedHashMap<>();
-                                params.put(NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("PASSWORD"), viewCurrentPassword.getText().toString());
-                                params.put(NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("NEW_PASSWORD"), viewNewPassword.getText().toString());
+                                JSONObject rootObject = new JSONObject();
+                                rootObject.put(NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("PASSWORD"), viewCurrentPassword.getText().toString());
+                                rootObject.put(NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("NEW_PASSWORD"), viewNewPassword.getText().toString());
+                                rootObject.put(NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("CLIENT_KEY"), NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("CLIENT_VALUE"));
+                                rootObject.put(NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("TOKEN"), strToken);
 
                                 // POST 데이터들을 UTF-8로 인코딩
                                 StringBuilder postData = new StringBuilder();
-                                for(Map.Entry<String,Object> param : params.entrySet()) {
-                                    if(postData.length() != 0) postData.append('&');
-                                    postData.append(URLEncoder.encode(param.getKey(), NetworkInterface.ENCODE));
-                                    postData.append('=');
-                                    postData.append(URLEncoder.encode(String.valueOf(param.getValue()), NetworkInterface.ENCODE));
-                                }
+                                postData.append(URLEncoder.encode(rootObject.toString(), NetworkInterface.ENCODE));
                                 byte[] postDataBytes = postData.toString().getBytes(NetworkInterface.ENCODE);
 
                                 // URL을 통한 서버와의 연결 설정
                                 serverConnection = (HttpURLConnection)url.openConnection();
                                 serverConnection.setRequestMethod("PUT");
-                                serverConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                                serverConnection.setRequestProperty(NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("CLIENT_KEY"), NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("CLIENT_VALUE"));
-                                serverConnection.setRequestProperty(NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("TOKEN"), strToken);
+                                serverConnection.setRequestProperty("Content-Type", NetworkInterface.JSON_HEADER);
                                 serverConnection.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
 
                                 // POST 데이터를 설정
@@ -138,9 +130,9 @@ public class ChangePasswordFragment extends Fragment {
                                 }
                                 else {
                                     // 응답 메세지 JSON 파싱
-                                    JSONObject rootObject = new JSONObject(response.toString());
+                                    JSONObject returnObject = new JSONObject(response.toString());
 
-                                    switch(rootObject.getString(NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("MESSAGE"))) {
+                                    switch(returnObject.getString(NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("MESSAGE"))) {
                                         case "invalid client type":
                                             Utility.displayToastMessage(handler, getActivity(), TOAST_CLIENT_FAILED);
                                             break;

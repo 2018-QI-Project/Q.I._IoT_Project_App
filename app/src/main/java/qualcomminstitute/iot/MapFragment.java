@@ -91,7 +91,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     mMap.addCircle(new CircleOptions().center(myPlace).radius(100).strokeColor(Color.RED).fillColor(Color.BLUE));
                     // 2.0f is Most Zoom Out
                     // 21.0f is Most Zoom In
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myPlace, 21.0f));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myPlace, 19.0f));
                 }
             }
         }
@@ -107,7 +107,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 double latitude = location.getLatitude();
                 double longitude = location.getLongitude();
                 // TODO 위도, 경도로 하고 싶은 것
-
+                getMyLocation();
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {

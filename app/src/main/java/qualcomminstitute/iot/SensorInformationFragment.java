@@ -1,5 +1,6 @@
 package qualcomminstitute.iot;
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
@@ -43,7 +44,7 @@ public class SensorInformationFragment extends Fragment {
     /**
      * Member object for the chat services
      */
-    private Bluetooth mChatService = null;
+    private Bluetooth bluetooth = null;
 
     private Button viewAirRegister, viewAirDeassociation, viewHeartRegister, viewHeartDeassociation;
 
@@ -71,7 +72,7 @@ public class SensorInformationFragment extends Fragment {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
             // Otherwise, setup the chat session
-        } else if (mChatService == null) {
+        } else if (bluetooth == null) {
             setupChat();
         }
     }
@@ -79,8 +80,8 @@ public class SensorInformationFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mChatService != null) {
-            mChatService.stop();
+        if (bluetooth != null) {
+            bluetooth.stop();
         }
     }
 
@@ -91,11 +92,11 @@ public class SensorInformationFragment extends Fragment {
         // Performing this check in onResume() covers the case in which BT was
         // not enabled during onStart(), so we were paused to enable it...
         // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
-        if (mChatService != null) {
+        if (bluetooth != null) {
             // Only if the state is STATE_NONE, do we know that we haven't started already
-            if (mChatService.getState() == Bluetooth.STATE_NONE) {
+            if (bluetooth.getState() == Bluetooth.STATE_NONE) {
                 // Start the Bluetooth chat services
-                mChatService.start();
+                bluetooth.start();
             }
         }
     }
@@ -146,7 +147,7 @@ public class SensorInformationFragment extends Fragment {
      */
     private void setupChat() {
         // Initialize the Bluetooth to perform bluetooth connections
-        mChatService = new Bluetooth(getActivity(), mHandler);
+        bluetooth = new Bluetooth(getActivity(), mHandler);
 
         // Initialize the buffer for outgoing messages
         mOutStringBuffer = new StringBuffer("");
@@ -171,7 +172,7 @@ public class SensorInformationFragment extends Fragment {
      */
     private void sendMessage(String message) {
         // Check that we're actually connected before trying anything
-        if (mChatService.getState() != Bluetooth.STATE_CONNECTED) {
+        if (bluetooth.getState() != Bluetooth.STATE_CONNECTED) {
             Toast.makeText(getActivity(), R.string.bluetooth_not_connected, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -180,7 +181,7 @@ public class SensorInformationFragment extends Fragment {
         if (message.length() > 0) {
             // Get the message bytes and tell the Bluetooth to write
             byte[] send = message.getBytes();
-            mChatService.write(send);
+            bluetooth.write(send);
 
             // Reset out string buffer to zero and clear the edit text field
             mOutStringBuffer.setLength(0);
@@ -190,6 +191,7 @@ public class SensorInformationFragment extends Fragment {
     /**
      * The Handler that gets information back from the Bluetooth
      */
+    @SuppressLint("HandlerLeak")
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -267,6 +269,6 @@ public class SensorInformationFragment extends Fragment {
         // Get the BluetoothDevice object
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
         // Attempt to connect to the device
-        mChatService.connect(device, true);
+        bluetooth.connect(device, true);
     }
 }

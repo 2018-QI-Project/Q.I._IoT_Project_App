@@ -21,8 +21,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static qualcomminstitute.iot.NetworkInterface.REST_API;
 import static qualcomminstitute.iot.NetworkInterface.SERVER_ADDRESS;
@@ -69,25 +67,19 @@ public class ResetPasswordActivity extends AppCompatActivity {
                                 URL url = new URL(serverURL);
 
                                 // POST 데이터 만들기
-                                Map<String,Object> params = new LinkedHashMap<>();
-                                params.put(NetworkInterface.RESET_PASSWORD_MESSAGE.get("EMAIL"), viewEmail.getText().toString());
+                                JSONObject rootObject = new JSONObject();
+                                rootObject.put(NetworkInterface.RESET_PASSWORD_MESSAGE.get("EMAIL"), viewEmail.getText().toString());
 
                                 // POST 데이터들을 UTF-8로 인코딩
                                 StringBuilder postData = new StringBuilder();
-                                for(Map.Entry<String,Object> param : params.entrySet()) {
-                                    if(postData.length() != 0) postData.append('&');
-                                    postData.append(URLEncoder.encode(param.getKey(), NetworkInterface.ENCODE));
-                                    postData.append('=');
-                                    postData.append(URLEncoder.encode(String.valueOf(param.getValue()), NetworkInterface.ENCODE));
-                                }
+                                postData.append(URLEncoder.encode(rootObject.toString(), NetworkInterface.ENCODE));
                                 byte[] postDataBytes = postData.toString().getBytes(NetworkInterface.ENCODE);
-
                                 Log.d("POST", postData.toString());
 
                                 // URL을 통한 서버와의 연결 설정
                                 serverConnection = (HttpURLConnection)url.openConnection();
                                 serverConnection.setRequestMethod("PUT");
-                                serverConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                                serverConnection.setRequestProperty("Content-Type", NetworkInterface.JSON_HEADER);
                                 serverConnection.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
 
                                 // 서버의 입력 설정 및 데이터 추가
@@ -106,10 +98,10 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
                                 if(response.substring(0, 1).equals("{")) {
                                     // 응답 메세지 JSON 파싱
-                                    JSONObject rootObject = new JSONObject(response.toString());
+                                    JSONObject returnObject = new JSONObject(response.toString());
 
-                                    if (rootObject.getString(NetworkInterface.RESET_PASSWORD_MESSAGE.get("TYPE")).equals(NetworkInterface.RESET_PASSWORD_MESSAGE.get("FAILED"))) {
-                                        switch (rootObject.getString(NetworkInterface.RESET_PASSWORD_MESSAGE.get("MESSAGE"))) {
+                                    if (returnObject.getString(NetworkInterface.RESET_PASSWORD_MESSAGE.get("TYPE")).equals(NetworkInterface.RESET_PASSWORD_MESSAGE.get("FAILED"))) {
+                                        switch (returnObject.getString(NetworkInterface.RESET_PASSWORD_MESSAGE.get("MESSAGE"))) {
                                             case "Unregistered User":
                                                 Utility.displayToastMessage(handler, ResetPasswordActivity.this, TOAST_REGISTER);
                                                 finish();

@@ -25,10 +25,9 @@
         android:layout_height="wrap_content"
         android:background="#666"
         android:paddingLeft="5dp"
-        android:text="@string/title_paired_devices"
+        android:text="@string/bluetooth_title_paired_devices"
         android:textColor="#fff"
-        android:visibility="gone"
-        />
+        android:visibility="gone" />
 
     <ListView
         android:id="@+id/paired_devices"
@@ -44,10 +43,9 @@
         android:layout_height="wrap_content"
         android:background="#666"
         android:paddingLeft="5dp"
-        android:text="@string/title_other_devices"
+        android:text="@string/bluetooth_title_other_devices"
         android:textColor="#fff"
-        android:visibility="gone"
-        />
+        android:visibility="gone" />
 
     <ListView
         android:id="@+id/new_devices"
