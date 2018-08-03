@@ -67,19 +67,19 @@ public interface NetworkInterface {
     };
     Map<String, String> CHANGE_PASSWORD_MESSAGE = new LinkedHashMap<String, String>(){
         {
-            put("CLIENT_KEY", "Client");
+            put("CLIENT_KEY", "client");
             put("CLIENT_VALUE", "app");
             put("TOKEN", "tokenApp");
             put("PASSWORD","currentPassword");
             put("NEW_PASSWORD","newPassword");
-            put("SUCCESS", "Password changed!");
+            put("SUCCESS", "success");
             put("FAILED", "error");
             put("MESSAGE", "value");
         }
     };
     Map<String, String> ID_CANCELLATION_MESSAGE = new LinkedHashMap<String, String>(){
         {
-            put("CLIENT_KEY", "Client");
+            put("CLIENT_KEY", "client");
             put("CLIENT_VALUE", "app");
             put("TOKEN", "tokenApp");
             put("SUCCESS", "ID Cancellation!");
@@ -93,7 +93,7 @@ public interface NetworkInterface {
             put("CLIENT_KEY", "client");
             put("CLIENT_VALUE", "app");
             put("TOKEN", "tokenApp");
-            put("SUCCESS", "type");
+            put("SUCCESS", "success");
             put("MESSAGE", "value");
         }
     };

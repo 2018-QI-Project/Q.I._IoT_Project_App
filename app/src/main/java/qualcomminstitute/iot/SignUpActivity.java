@@ -104,16 +104,10 @@ public class SignUpActivity extends AppCompatActivity {
                                 rootObject.put(NetworkInterface.SIGN_UP_MESSAGE.get("FULL_NAME"), viewFullName.getText().toString());
                                 rootObject.put(NetworkInterface.SIGN_UP_MESSAGE.get("AGE"), Integer.parseInt(viewAge.getText().toString()));
                                 rootObject.put(NetworkInterface.SIGN_UP_MESSAGE.get("GENDER"), gender.getText().toString().equals("Male") ? "M" : "F");
-                                rootObject.put(NetworkInterface.SIGN_UP_MESSAGE.get("BREATHE"), viewRespiratory.isChecked());
-                                rootObject.put(NetworkInterface.SIGN_UP_MESSAGE.get("HEART"), viewCardiovascular.isChecked());
+                                rootObject.put(NetworkInterface.SIGN_UP_MESSAGE.get("BREATHE"), viewRespiratory.isChecked() ? 1 : 0);
+                                rootObject.put(NetworkInterface.SIGN_UP_MESSAGE.get("HEART"), viewCardiovascular.isChecked() ? 1 : 0);
 
-                                // POST 데이터들을 UTF-8로 인코딩
-                                StringBuilder postData = new StringBuilder();
-                                postData.append(URLEncoder.encode(rootObject.toString(), NetworkInterface.ENCODE));
-                                // byte[] postDataBytes = postData.toString().getBytes(NetworkInterface.ENCODE);
                                 byte[] postDataBytes = rootObject.toString().getBytes(NetworkInterface.ENCODE);
-
-                                Log.d("POST", rootObject.toString());
 
                                 // URL을 통한 서버와의 연결 설정
                                 serverConnection = (HttpURLConnection)url.openConnection();
@@ -135,19 +129,17 @@ public class SignUpActivity extends AppCompatActivity {
                                 }
                                 br.close();
 
-                                if(response.substring(0, 1).equals("{")) {
-                                    // 응답 메세지 JSON 파싱
-                                    JSONObject returnObject = new JSONObject(response.toString());
+                                // 응답 메세지 JSON 파싱
+                                JSONObject returnObject = new JSONObject(response.toString());
 
-                                    if (returnObject.getString(NetworkInterface.SIGN_UP_MESSAGE.get("TYPE")).equals(NetworkInterface.SIGN_UP_MESSAGE.get("FAILED"))) {
-                                        switch (returnObject.getString(NetworkInterface.SIGN_UP_MESSAGE.get("MESSAGE"))) {
-                                            case "already existed":
-                                                Utility.displayToastMessage(handler, SignUpActivity.this, TOAST_DUPLICATE_EMAIL);
-                                                break;
-                                            default:
-                                                Utility.displayToastMessage(handler, SignUpActivity.this, TOAST_DEFAULT_FAILED);
-                                                break;
-                                        }
+                                if (returnObject.getString(NetworkInterface.SIGN_UP_MESSAGE.get("TYPE")).equals(NetworkInterface.SIGN_UP_MESSAGE.get("FAILED"))) {
+                                    switch (returnObject.getString(NetworkInterface.SIGN_UP_MESSAGE.get("MESSAGE"))) {
+                                        case "already existed":
+                                            Utility.displayToastMessage(handler, SignUpActivity.this, TOAST_DUPLICATE_EMAIL);
+                                            break;
+                                        default:
+                                            Utility.displayToastMessage(handler, SignUpActivity.this, TOAST_DEFAULT_FAILED);
+                                            break;
                                     }
                                 }
                                 else {

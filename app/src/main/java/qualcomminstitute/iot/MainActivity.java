@@ -2,6 +2,7 @@ package qualcomminstitute.iot;
 
 import android.app.Fragment;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
@@ -40,10 +41,16 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private Handler handler;
 
+    private String strToken;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Token 얻어오기
+        SharedPreferences preferences = MainActivity.this.getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
+        strToken = preferences.getString(PreferenceName.preferenceToken, "");
 
         handler = new Handler();
 
@@ -113,10 +120,21 @@ public class MainActivity extends AppCompatActivity {
                                                 try {
                                                     URL url = new URL(serverURL);
 
+                                                    JSONObject rootObject = new JSONObject();
+                                                    rootObject.put(NetworkInterface.SIGN_OUT_MESSAGE.get("TOKEN"), strToken);
+                                                    rootObject.put(NetworkInterface.SIGN_OUT_MESSAGE.get("CLIENT_KEY"), NetworkInterface.SIGN_OUT_MESSAGE.get("CLIENT_VALUE"));
+
+                                                    byte[] postDataBytes = rootObject.toString().getBytes(NetworkInterface.ENCODE);
+
                                                     // URL을 통한 서버와의 연결 설정
                                                     serverConnection = (HttpURLConnection)url.openConnection();
                                                     serverConnection.setRequestMethod("POST");
-                                                    serverConnection.setRequestProperty(NetworkInterface.SIGN_OUT_MESSAGE.get("CLIENT_KEY"), NetworkInterface.SIGN_OUT_MESSAGE.get("CLIENT_VALUE"));
+                                                    serverConnection.setRequestProperty("Content-Type", NetworkInterface.JSON_HEADER);
+                                                    serverConnection.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
+
+                                                    // 서버의 입력 설정 및 데이터 추가
+                                                    serverConnection.setDoOutput(true);
+                                                    serverConnection.getOutputStream().write(postDataBytes);
 
                                                     // 요청 결과
                                                     InputStream is = serverConnection.getInputStream();
@@ -128,14 +146,16 @@ public class MainActivity extends AppCompatActivity {
                                                     }
                                                     br.close();
 
-                                                    // 응답 메세지 JSON 파싱
-                                                    JSONObject rootObject = new JSONObject(response.toString());
+                                                    Log.d("RES", response.toString());
 
-                                                    if(rootObject.has(NetworkInterface.SIGN_OUT_MESSAGE.get("SUCCESS"))) {
+                                                    // 응답 메세지 JSON 파싱
+                                                    JSONObject returnObject = new JSONObject(response.toString());
+
+                                                    if(returnObject.getString("type").equals(NetworkInterface.SIGN_OUT_MESSAGE.get("SUCCESS"))) {
                                                         MainActivity.this.finish();
                                                     }
                                                     else {
-                                                        switch(rootObject.getString(NetworkInterface.SIGN_OUT_MESSAGE.get("MESSAGE"))) {
+                                                        switch(returnObject.getString(NetworkInterface.SIGN_OUT_MESSAGE.get("MESSAGE"))) {
                                                             case "invalid client type":
                                                                 Utility.displayToastMessage(handler, MainActivity.this, TOAST_CLIENT_FAILED);
                                                                 break;

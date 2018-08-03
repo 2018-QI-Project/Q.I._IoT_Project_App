@@ -70,11 +70,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
                                 JSONObject rootObject = new JSONObject();
                                 rootObject.put(NetworkInterface.RESET_PASSWORD_MESSAGE.get("EMAIL"), viewEmail.getText().toString());
 
-                                // POST 데이터들을 UTF-8로 인코딩
-                                StringBuilder postData = new StringBuilder();
-                                postData.append(URLEncoder.encode(rootObject.toString(), NetworkInterface.ENCODE));
-                                byte[] postDataBytes = postData.toString().getBytes(NetworkInterface.ENCODE);
-                                Log.d("POST", postData.toString());
+                                byte[] postDataBytes = rootObject.toString().getBytes(NetworkInterface.ENCODE);
 
                                 // URL을 통한 서버와의 연결 설정
                                 serverConnection = (HttpURLConnection)url.openConnection();

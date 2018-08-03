@@ -92,10 +92,9 @@ public class ChangePasswordFragment extends Fragment {
                                 rootObject.put(NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("CLIENT_KEY"), NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("CLIENT_VALUE"));
                                 rootObject.put(NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("TOKEN"), strToken);
 
-                                // POST 데이터들을 UTF-8로 인코딩
-                                StringBuilder postData = new StringBuilder();
-                                postData.append(URLEncoder.encode(rootObject.toString(), NetworkInterface.ENCODE));
-                                byte[] postDataBytes = postData.toString().getBytes(NetworkInterface.ENCODE);
+                                byte[] postDataBytes = rootObject.toString().getBytes(NetworkInterface.ENCODE);
+
+                                Log.d("POST", rootObject.toString());
 
                                 // URL을 통한 서버와의 연결 설정
                                 serverConnection = (HttpURLConnection)url.openConnection();
@@ -103,7 +102,7 @@ public class ChangePasswordFragment extends Fragment {
                                 serverConnection.setRequestProperty("Content-Type", NetworkInterface.JSON_HEADER);
                                 serverConnection.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
 
-                                // POST 데이터를 설정
+                                // 서버의 입력 설정 및 데이터 추가
                                 serverConnection.setDoOutput(true);
                                 serverConnection.getOutputStream().write(postDataBytes);
 
@@ -117,7 +116,10 @@ public class ChangePasswordFragment extends Fragment {
                                 }
                                 br.close();
 
-                                if(response.toString().equals(NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("SUCCESS"))) {
+                                // 응답 메세지 JSON 파싱
+                                JSONObject returnObject = new JSONObject(response.toString());
+
+                                if(returnObject.getString("type").equals(NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("SUCCESS"))) {
                                     Utility.displayToastMessage(handler, getActivity(), TOAST_CHANGED_PASSWORD);
                                     handler.post(new Thread(){
                                         @Override
@@ -129,9 +131,6 @@ public class ChangePasswordFragment extends Fragment {
                                     });
                                 }
                                 else {
-                                    // 응답 메세지 JSON 파싱
-                                    JSONObject returnObject = new JSONObject(response.toString());
-
                                     switch(returnObject.getString(NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("MESSAGE"))) {
                                         case "invalid client type":
                                             Utility.displayToastMessage(handler, getActivity(), TOAST_CLIENT_FAILED);

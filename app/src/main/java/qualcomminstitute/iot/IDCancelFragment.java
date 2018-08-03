@@ -93,18 +93,15 @@ public class IDCancelFragment extends Fragment {
                                         rootObject.put(NetworkInterface.ID_CANCELLATION_MESSAGE.get("CLIENT_KEY"), NetworkInterface.ID_CANCELLATION_MESSAGE.get("CLIENT_VALUE"));
                                         rootObject.put(NetworkInterface.ID_CANCELLATION_MESSAGE.get("TOKEN"), strToken);
 
-                                        // POST 데이터들을 UTF-8로 인코딩
-                                        StringBuilder postData = new StringBuilder();
-                                        postData.append(URLEncoder.encode(rootObject.toString(), NetworkInterface.ENCODE));
-                                        byte[] postDataBytes = postData.toString().getBytes(NetworkInterface.ENCODE);
+                                        byte[] postDataBytes = rootObject.toString().getBytes(NetworkInterface.ENCODE);
 
                                         // URL을 통한 서버와의 연결 설정
-                                        serverConnection = (HttpURLConnection) url.openConnection();
+                                        serverConnection = (HttpURLConnection)url.openConnection();
                                         serverConnection.setRequestMethod("DELETE");
                                         serverConnection.setRequestProperty("Content-Type", NetworkInterface.JSON_HEADER);
                                         serverConnection.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
 
-                                        // POST 데이터를 설정
+                                        // 서버의 입력 설정 및 데이터 추가
                                         serverConnection.setDoOutput(true);
                                         serverConnection.getOutputStream().write(postDataBytes);
 
