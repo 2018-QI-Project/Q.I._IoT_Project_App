@@ -1,11 +1,14 @@
 package qualcomminstitute.iot;
 
+import android.annotation.SuppressLint;
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,16 +22,6 @@ import android.view.MenuItem;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import static qualcomminstitute.iot.NetworkInterface.REST_API;
-import static qualcomminstitute.iot.NetworkInterface.SERVER_ADDRESS;
 import static qualcomminstitute.iot.NetworkInterface.TOAST_CLIENT_FAILED;
 import static qualcomminstitute.iot.NetworkInterface.TOAST_DEFAULT_FAILED;
 import static qualcomminstitute.iot.NetworkInterface.TOAST_EXCEPTION;
@@ -39,20 +32,72 @@ public class MainActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private ActionBarDrawerToggle drawerToggle;
     private Toolbar toolbar;
-    private Handler handler;
 
     private String strToken;
+    private ProgressDialog progressDialog;
+    @SuppressLint("HandlerLeak")
+    private final Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message message) {
+            switch (message.what) {
+                case NetworkInterface.REQUEST_FAIL :
+                    Utility.displayToastMessage(handler, MainActivity.this, NetworkInterface.TOAST_EXCEPTION);
+                    break;
+                case NetworkInterface.REQUEST_SUCCESS :
+                    try {
+                        // 응답 메세지 JSON 파싱
+                        JSONObject returnObject = new JSONObject(message.getData().getString(NetworkInterface.RESPONSE_DATA));
+                        SharedPreferences token = getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
+                        SharedPreferences.Editor tokenEditor = token.edit();
+                        switch(returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {
+                            case NetworkInterface.MESSAGE_SUCCESS :
+                                tokenEditor.clear();
+                                tokenEditor.apply();
+                                MainActivity.this.finish();
+                                break;
+                            case NetworkInterface.MESSAGE_FAIL :
+                                switch (returnObject.getString(NetworkInterface.MESSAGE_VALUE)) {
+                                    case "invalid client type":
+                                        Utility.displayToastMessage(handler, MainActivity.this, TOAST_CLIENT_FAILED);
+                                        break;
+                                    case "invalid tokenApp":
+                                        Utility.displayToastMessage(handler, MainActivity.this, TOAST_TOKEN_FAILED);
+                                        tokenEditor.clear();
+                                        tokenEditor.apply();
+                                        MainActivity.this.finish();
+                                        break;
+                                    default:
+                                        Utility.displayToastMessage(handler, MainActivity.this, TOAST_DEFAULT_FAILED);
+                                        break;
+                                }
+                                break;
+                        }
+                    }
+                    catch(JSONException e) {
+                        e.printStackTrace();
+                        Log.e(this.getClass().getName(), "JSON ERROR!");
+                        Utility.displayToastMessage(handler, MainActivity.this, TOAST_EXCEPTION);
+                    }
+                    finally {
+                        progressDialog.dismiss();
+                    }
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Progress Dialog 초기화
+        progressDialog = new ProgressDialog(MainActivity.this, R.style.AppTheme_Dark_Dialog);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Sign Out...");
+
         // Token 얻어오기
         SharedPreferences preferences = MainActivity.this.getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
         strToken = preferences.getString(PreferenceName.preferenceToken, "");
-
-        handler = new Handler();
 
         drawerLayout = findViewById(R.id.layDrawerLayout);
         navigationView = findViewById(R.id.navView);
@@ -112,81 +157,20 @@ public class MainActivity extends AppCompatActivity {
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
-                                        new Thread() {
-                                            @Override
-                                            public void run() {
-                                                HttpURLConnection serverConnection = null;
-                                                String serverURL = "http://" + SERVER_ADDRESS + REST_API.get("SIGN_OUT");
-                                                try {
-                                                    URL url = new URL(serverURL);
+                                        // ProgressDialog 생성
+                                        progressDialog.show();
 
-                                                    JSONObject rootObject = new JSONObject();
-                                                    rootObject.put(NetworkInterface.SIGN_OUT_MESSAGE.get("TOKEN"), strToken);
-                                                    rootObject.put(NetworkInterface.SIGN_OUT_MESSAGE.get("CLIENT_KEY"), NetworkInterface.SIGN_OUT_MESSAGE.get("CLIENT_VALUE"));
+                                        try {
+                                            // POST 데이터 전송을 위한 자료구조
+                                            JSONObject rootObject = new JSONObject();
+                                            rootObject.put(NetworkInterface.REQUEST_TOKEN, strToken);
+                                            rootObject.put(NetworkInterface.REQUEST_CLIENT_TYPE, NetworkInterface.REQUEST_CLIENT);
 
-                                                    byte[] postDataBytes = rootObject.toString().getBytes(NetworkInterface.ENCODE);
-
-                                                    // URL을 통한 서버와의 연결 설정
-                                                    serverConnection = (HttpURLConnection)url.openConnection();
-                                                    serverConnection.setRequestMethod("POST");
-                                                    serverConnection.setRequestProperty("Content-Type", NetworkInterface.JSON_HEADER);
-                                                    serverConnection.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
-
-                                                    // 서버의 입력 설정 및 데이터 추가
-                                                    serverConnection.setDoOutput(true);
-                                                    serverConnection.getOutputStream().write(postDataBytes);
-
-                                                    // 요청 결과
-                                                    InputStream is = serverConnection.getInputStream();
-                                                    BufferedReader br = new BufferedReader(new InputStreamReader(is));
-                                                    String readLine;
-                                                    StringBuilder response = new StringBuilder();
-                                                    while ((readLine = br.readLine()) != null) {
-                                                        response.append(readLine);
-                                                    }
-                                                    br.close();
-
-                                                    Log.d("RES", response.toString());
-
-                                                    // 응답 메세지 JSON 파싱
-                                                    JSONObject returnObject = new JSONObject(response.toString());
-
-                                                    if(returnObject.getString("type").equals(NetworkInterface.SIGN_OUT_MESSAGE.get("SUCCESS"))) {
-                                                        MainActivity.this.finish();
-                                                    }
-                                                    else {
-                                                        switch(returnObject.getString(NetworkInterface.SIGN_OUT_MESSAGE.get("MESSAGE"))) {
-                                                            case "invalid client type":
-                                                                Utility.displayToastMessage(handler, MainActivity.this, TOAST_CLIENT_FAILED);
-                                                                break;
-                                                            case "invalid tokenApp":
-                                                                Utility.displayToastMessage(handler, MainActivity.this, TOAST_TOKEN_FAILED);
-                                                                break;
-                                                            default:
-                                                                Utility.displayToastMessage(handler, MainActivity.this, TOAST_DEFAULT_FAILED);
-                                                                break;
-                                                        }
-                                                    }
-                                                }
-                                                catch(MalformedURLException e) {
-                                                    Log.e(this.getClass().getName(), "URL ERROR!");
-                                                    Utility.displayToastMessage(handler, MainActivity.this, TOAST_EXCEPTION);
-                                                }
-                                                catch(JSONException e) {
-                                                    Log.e(this.getClass().getName(), "JSON ERROR!");
-                                                    Utility.displayToastMessage(handler, MainActivity.this, TOAST_EXCEPTION);
-                                                }
-                                                catch(IOException e) {
-                                                    Log.e(this.getClass().getName(), "IO ERROR!");
-                                                    Utility.displayToastMessage(handler, MainActivity.this, TOAST_EXCEPTION);
-                                                }
-                                                finally {
-                                                    if(serverConnection != null) {
-                                                        serverConnection.disconnect();
-                                                    }
-                                                }
-                                            }
-                                        }.start();
+                                            new RequestMessage(NetworkInterface.REST_SIGN_OUT, "POST", rootObject, handler).start();
+                                        } catch (JSONException e) {
+                                            Log.e(this.getClass().getName(), "JSON ERROR!");
+                                            Utility.displayToastMessage(handler, MainActivity.this, TOAST_EXCEPTION);
+                                        }
                                     }
                                 },
                                 new DialogInterface.OnClickListener() {

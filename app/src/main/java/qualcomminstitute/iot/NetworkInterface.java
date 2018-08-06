@@ -22,79 +22,37 @@ public interface NetworkInterface {
     String TOAST_CHANGED_PASSWORD = "Password is Changed!";
     String TOAST_ID_CANCELLATION = "ID Cancellation is complete. Thank you";
 
-    // For REST API
-    Map<String, String> REST_API = new LinkedHashMap<String, String>(){
-        {
-            put("SIGN_IN","accounts/authenticate");
-            put("SIGN_UP","accounts/signup");
-            put("RESET_PASSWORD", "accounts/resetpassword");
-            put("CHANGE_PASSWORD", "accounts/changepassword");
-            put("ID_CANCELLATION", "accounts/IDcancellation");
-            put("SIGN_OUT", "accounts/signout");
-        }
-    };
-    Map<String, String> SIGN_IN_MESSAGE = new LinkedHashMap<String, String>(){
-        {
-            put("CLIENT_KEY", "client");
-            put("CLIENT_VALUE", "app");
-            put("EMAIL","email");
-            put("PASSWORD","password");
-            put("SUCCESS", "token_app");
-            put("MESSAGE", "value");
-        }
-    };
-    Map<String, String> SIGN_UP_MESSAGE = new LinkedHashMap<String, String>(){
-        {
-            put("EMAIL","email");
-            put("PASSWORD","password");
-            put("FULL_NAME","name");
-            put("AGE","age");
-            put("GENDER","gender");
-            put("BREATHE","respiratoryDisease");
-            put("HEART","cardiovascularDisease");
-            put("TYPE", "type");
-            put("FAILED", "error");
-            put("MESSAGE", "value");
-        }
-    };
-    Map<String, String> RESET_PASSWORD_MESSAGE = new LinkedHashMap<String, String>(){
-        {
-            put("EMAIL","email");
-            put("TYPE", "type");
-            put("FAILED", "error");
-            put("MESSAGE", "value");
-        }
-    };
-    Map<String, String> CHANGE_PASSWORD_MESSAGE = new LinkedHashMap<String, String>(){
-        {
-            put("CLIENT_KEY", "client");
-            put("CLIENT_VALUE", "app");
-            put("TOKEN", "tokenApp");
-            put("PASSWORD","currentPassword");
-            put("NEW_PASSWORD","newPassword");
-            put("SUCCESS", "success");
-            put("FAILED", "error");
-            put("MESSAGE", "value");
-        }
-    };
-    Map<String, String> ID_CANCELLATION_MESSAGE = new LinkedHashMap<String, String>(){
-        {
-            put("CLIENT_KEY", "client");
-            put("CLIENT_VALUE", "app");
-            put("TOKEN", "tokenApp");
-            put("SUCCESS", "ID Cancellation!");
-            put("PASSWORD","password");
-            put("FAILED", "error");
-            put("MESSAGE", "value");
-        }
-    };
-    Map<String, String> SIGN_OUT_MESSAGE = new LinkedHashMap<String, String>(){
-        {
-            put("CLIENT_KEY", "client");
-            put("CLIENT_VALUE", "app");
-            put("TOKEN", "tokenApp");
-            put("SUCCESS", "success");
-            put("MESSAGE", "value");
-        }
-    };
+    // Network Request
+    String REQUEST_CLIENT_TYPE = "client";
+    String REQUEST_CLIENT = "app";
+    String REQUEST_TOKEN = "tokenApp";
+    String REQUEST_EMAIL = "email";
+    String REQUEST_PASSWORD = "password";
+    String REQUEST_FULL_NAME = "name";
+    String REQUEST_AGE = "age";
+    String REQUEST_GENDER = "gender";
+    String REQUEST_BREATHE = "respiratoryDisease";
+    String REQUEST_HEART = "cardiovascularDisease";
+    String REQUEST_CURRENT_PASSWORD = "currentPassword";
+    String REQUEST_NEW_PASSWORD = "newPassword";
+
+    // Network Response
+    String MESSAGE_TYPE = "type";
+    String MESSAGE_SUCCESS = "success";
+    String MESSAGE_FAIL = "error";
+    String MESSAGE_VALUE = "value";
+    String MESSAGE_TOKEN = "token_app";
+
+    // Handler Message
+    int REQUEST_FAIL = 0;
+    int REQUEST_SUCCESS = 1;
+    String RESPONSE_DATA = "Response";
+
+    // REST API
+    String REST_SIGN_IN = "accounts/authenticate";
+    String REST_SIGN_UP = "accounts/signup";
+    String REST_RESET_PASSWORD = "accounts/resetpassword";
+    String REST_CHANGE_PASSWORD = "accounts/changepassword";
+    String REST_ID_CANCELLATION = "accounts/IDcancellation";
+    String REST_SIGN_OUT = "accounts/signout";
 }

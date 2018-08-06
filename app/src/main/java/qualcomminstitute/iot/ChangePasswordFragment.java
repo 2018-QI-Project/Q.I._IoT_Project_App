@@ -1,10 +1,12 @@
 package qualcomminstitute.iot;
 
+import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -17,18 +19,7 @@ import android.widget.EditText;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-
 import static android.content.Context.MODE_PRIVATE;
-import static qualcomminstitute.iot.NetworkInterface.REST_API;
-import static qualcomminstitute.iot.NetworkInterface.SERVER_ADDRESS;
 import static qualcomminstitute.iot.NetworkInterface.TOAST_CHANGED_PASSWORD;
 import static qualcomminstitute.iot.NetworkInterface.TOAST_CLIENT_FAILED;
 import static qualcomminstitute.iot.NetworkInterface.TOAST_DEFAULT_FAILED;
@@ -40,8 +31,65 @@ public class ChangePasswordFragment extends Fragment {
     private EditText viewCurrentPassword, viewNewPassword, viewRepeatNewPassword;
     private Button viewSubmit;
 
-    // Toast 메세지를 위한 Handler
-    private Handler handler;
+    @SuppressLint("HandlerLeak")
+    private final Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message message) {
+            switch (message.what) {
+                case NetworkInterface.REQUEST_FAIL :
+                    Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
+                    break;
+                case NetworkInterface.REQUEST_SUCCESS :
+                    try {
+                        // 응답 메세지 JSON 파싱
+                        JSONObject returnObject = new JSONObject(message.getData().getString(NetworkInterface.RESPONSE_DATA));
+
+                        switch(returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {
+                            case NetworkInterface.MESSAGE_SUCCESS :
+                                Utility.displayToastMessage(handler, getActivity(), TOAST_CHANGED_PASSWORD);
+                                handler.post(new Thread(){
+                                    @Override
+                                    public void run() {
+                                        viewCurrentPassword.setText("");
+                                        viewNewPassword.setText("");
+                                        viewRepeatNewPassword.setText("");
+                                    }
+                                });
+                                break;
+                            case NetworkInterface.MESSAGE_FAIL :
+                                switch (returnObject.getString(NetworkInterface.MESSAGE_VALUE)) {
+                                    case "invalid client type":
+                                        Utility.displayToastMessage(handler, getActivity(), TOAST_CLIENT_FAILED);
+                                        break;
+                                    case "wrong password":
+                                        Utility.displayToastMessage(handler, getActivity(), TOAST_PASSWORD_FAILED);
+                                        break;
+                                    case "invalid tokenApp":
+                                        Utility.displayToastMessage(handler, getActivity(), TOAST_TOKEN_FAILED);
+                                        SharedPreferences token = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
+                                        SharedPreferences.Editor tokenEditor = token.edit();
+                                        tokenEditor.clear();
+                                        tokenEditor.apply();
+                                        getActivity().finish();
+                                        break;
+                                    default:
+                                        Utility.displayToastMessage(handler, getActivity(), TOAST_DEFAULT_FAILED);
+                                        break;
+                                }
+                                break;
+                        }
+                    }
+                    catch(JSONException e) {
+                        e.printStackTrace();
+                        Log.e(this.getClass().getName(), "JSON ERROR!");
+                        Utility.displayToastMessage(handler, getActivity(), TOAST_EXCEPTION);
+                    }
+                    finally {
+                        progressDialog.dismiss();
+                    }
+            }
+        }
+    };
     private ProgressDialog progressDialog;
 
     // Token 변수
@@ -54,8 +102,6 @@ public class ChangePasswordFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_change_password, container, false);
-
-        handler = new Handler();
 
         // Token 얻어오기
         SharedPreferences preferences = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
@@ -78,96 +124,19 @@ public class ChangePasswordFragment extends Fragment {
                     // ProgressDialog 생성
                     progressDialog.show();
 
-                    new Thread() {
-                        @Override
-                        public void run() {
-                            HttpURLConnection serverConnection = null;
-                            String serverURL = "http://" + SERVER_ADDRESS + REST_API.get("CHANGE_PASSWORD");
-                            try {
-                                URL url = new URL(serverURL);
-                                // POST 데이터 전송을 위한 자료구조
-                                JSONObject rootObject = new JSONObject();
-                                rootObject.put(NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("PASSWORD"), viewCurrentPassword.getText().toString());
-                                rootObject.put(NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("NEW_PASSWORD"), viewNewPassword.getText().toString());
-                                rootObject.put(NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("CLIENT_KEY"), NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("CLIENT_VALUE"));
-                                rootObject.put(NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("TOKEN"), strToken);
+                    try {
+                        // POST 데이터 전송을 위한 자료구조
+                        JSONObject rootObject = new JSONObject();
+                        rootObject.put(NetworkInterface.REQUEST_CURRENT_PASSWORD, viewCurrentPassword.getText().toString());
+                        rootObject.put(NetworkInterface.REQUEST_NEW_PASSWORD, viewNewPassword.getText().toString());
+                        rootObject.put(NetworkInterface.REQUEST_CLIENT_TYPE, NetworkInterface.REQUEST_CLIENT);
+                        rootObject.put(NetworkInterface.REQUEST_TOKEN, strToken);
 
-                                byte[] postDataBytes = rootObject.toString().getBytes(NetworkInterface.ENCODE);
-
-                                Log.d("POST", rootObject.toString());
-
-                                // URL을 통한 서버와의 연결 설정
-                                serverConnection = (HttpURLConnection)url.openConnection();
-                                serverConnection.setRequestMethod("PUT");
-                                serverConnection.setRequestProperty("Content-Type", NetworkInterface.JSON_HEADER);
-                                serverConnection.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
-
-                                // 서버의 입력 설정 및 데이터 추가
-                                serverConnection.setDoOutput(true);
-                                serverConnection.getOutputStream().write(postDataBytes);
-
-                                // 요청 결과
-                                InputStream is = serverConnection.getInputStream();
-                                BufferedReader br = new BufferedReader(new InputStreamReader(is));
-                                String readLine;
-                                StringBuilder response = new StringBuilder();
-                                while ((readLine = br.readLine()) != null) {
-                                    response.append(readLine);
-                                }
-                                br.close();
-
-                                // 응답 메세지 JSON 파싱
-                                JSONObject returnObject = new JSONObject(response.toString());
-
-                                if(returnObject.getString("type").equals(NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("SUCCESS"))) {
-                                    Utility.displayToastMessage(handler, getActivity(), TOAST_CHANGED_PASSWORD);
-                                    handler.post(new Thread(){
-                                        @Override
-                                        public void run() {
-                                            viewCurrentPassword.setText("");
-                                            viewNewPassword.setText("");
-                                            viewRepeatNewPassword.setText("");
-                                        }
-                                    });
-                                }
-                                else {
-                                    switch(returnObject.getString(NetworkInterface.CHANGE_PASSWORD_MESSAGE.get("MESSAGE"))) {
-                                        case "invalid client type":
-                                            Utility.displayToastMessage(handler, getActivity(), TOAST_CLIENT_FAILED);
-                                            break;
-                                        case "wrong password":
-                                            Utility.displayToastMessage(handler, getActivity(), TOAST_PASSWORD_FAILED);
-                                            break;
-                                        case "invalid tokenApp":
-                                            Utility.displayToastMessage(handler, getActivity(), TOAST_TOKEN_FAILED);
-                                            getActivity().finish();
-                                            break;
-                                        default:
-                                            Utility.displayToastMessage(handler, getActivity(), TOAST_DEFAULT_FAILED);
-                                            break;
-                                    }
-                                }
-                            }
-                            catch(MalformedURLException e) {
-                                Log.e(this.getClass().getName(), "URL ERROR!");
-                                Utility.displayToastMessage(handler, getActivity(), TOAST_EXCEPTION);
-                            }
-                            catch(JSONException e) {
-                                Log.e(this.getClass().getName(), "JSON ERROR!");
-                                Utility.displayToastMessage(handler, getActivity(), TOAST_EXCEPTION);
-                            }
-                            catch(IOException e) {
-                                Log.e(this.getClass().getName(), "IO ERROR!");
-                                Utility.displayToastMessage(handler, getActivity(), TOAST_EXCEPTION);
-                            }
-                            finally {
-                                progressDialog.dismiss();
-                                if(serverConnection != null) {
-                                    serverConnection.disconnect();
-                                }
-                            }
-                        }
-                    }.start();
+                        new RequestMessage(NetworkInterface.REST_CHANGE_PASSWORD, "PUT", rootObject, handler).start();
+                    } catch (JSONException e) {
+                        Log.e(this.getClass().getName(), "JSON ERROR!");
+                        Utility.displayToastMessage(handler, getActivity(), TOAST_EXCEPTION);
+                    }
                 }
             }
         });
