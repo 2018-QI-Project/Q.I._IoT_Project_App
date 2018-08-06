@@ -1,8 +1,5 @@
 package qualcomminstitute.iot;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 public interface NetworkInterface {
     // Network Connection
     String SERVER_ADDRESS = "teamd-iot.calit2.net/";
@@ -22,7 +19,9 @@ public interface NetworkInterface {
     String TOAST_CHANGED_PASSWORD = "Password is Changed!";
     String TOAST_ID_CANCELLATION = "ID Cancellation is complete. Thank you";
     String TOAST_USED_SENSOR = "Already Registered Sensor";
-    String TOAST_SENSOR_EXIST = "Already Have Sensor.";
+    String TOAST_SENSOR_EXIST = "Already Have Sensor";
+    String TOAST_SENSOR_NOTHING = "Please Registration Sensor First";
+    String TOAST_UNUSED_SENSOR = "This Sensor Isn't Registered";
 
     // Network Request
     String REQUEST_CLIENT_TYPE = "client";
@@ -46,6 +45,8 @@ public interface NetworkInterface {
     String MESSAGE_FAIL = "error";
     String MESSAGE_VALUE = "value";
     String MESSAGE_TOKEN = "token_app";
+    String MESSAGE_AIR_ADDRESS = "airAddress";
+    String MESSAGE_HEART_ADDRESS = "heartAddress";
 
     // Handler Message
     int REQUEST_FAIL = 0;
@@ -60,4 +61,6 @@ public interface NetworkInterface {
     String REST_ID_CANCELLATION = "accounts/IDcancellation";
     String REST_SIGN_OUT = "accounts/signout";
     String REST_SENSOR_REGISTRATION = "sensor/register";
+    String REST_SENSOR_LIST = "sensor/sensorlist";
+    String REST_SENSOR_DEREGISTRATION = "sensor/deregister";
 }

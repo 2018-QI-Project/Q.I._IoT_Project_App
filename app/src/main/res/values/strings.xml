@@ -55,6 +55,8 @@
     <string name="bluetooth_title_connecting">connecting...</string>
     <string name="bluetooth_title_connected_to">connected to <xliff:g id="device_name">%1$s</xliff:g></string>
     <string name="bluetooth_title_not_connected">not connected</string>
+    <string name="bluetooth_online">On-Line</string>
+    <string name="bluetooth_offline">Off-Line</string>
 
     <!-- Bluetooth Connect Activity -->
     <string name="bluetooth_scanning">scanning for devices...</string>
