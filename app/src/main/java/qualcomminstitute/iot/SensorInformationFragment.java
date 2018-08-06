@@ -557,6 +557,14 @@ public class SensorInformationFragment extends Fragment {
             JSONObject rootObject = new JSONObject();
             rootObject.put(NetworkInterface.REQUEST_CLIENT_TYPE, NetworkInterface.REQUEST_CLIENT);
             rootObject.put(NetworkInterface.REQUEST_TOKEN, strToken);
+            switch(strType) {
+                case "air":
+                    rootObject.put(NetworkInterface.REQUEST_ADDRESS, viewAirAddress.getText());
+                    break;
+                case "heart":
+                    rootObject.put(NetworkInterface.REQUEST_ADDRESS, viewHeartAddress.getText());
+                    break;
+            }
 
             new RequestMessage(NetworkInterface.REST_SENSOR_DEREGISTRATION, "PUT", rootObject, listHandler).start();
         } catch (JSONException e) {

@@ -134,6 +134,12 @@ public class MainActivity extends AppCompatActivity {
                             displayView(FragmentName.SENSOR_INFORMATION.ordinal());
                         }
                         break;
+                    case R.id.menuMap:
+                        if(getSupportActionBar() != null) {
+                            getSupportActionBar().setTitle(FragmentName.MAP.getName());
+                            displayView(FragmentName.MAP.ordinal());
+                        }
+                        break;
                     case R.id.menuPreviousData:
                         if(getSupportActionBar() != null) {
                             getSupportActionBar().setTitle(FragmentName.PREVIOUS_DATA.getName());
@@ -231,12 +237,15 @@ public class MainActivity extends AppCompatActivity {
                 fragment = new SensorInformationFragment();
                 break;
             case 2:
-                fragment = new PreviousDataFragment();
+                fragment = new MapFragment();
                 break;
             case 3:
-                fragment = new ChangePasswordFragment();
+                fragment = new PreviousDataFragment();
                 break;
             case 4:
+                fragment = new ChangePasswordFragment();
+                break;
+            case 5:
                 fragment = new IDCancelFragment();
                 break;
             default:

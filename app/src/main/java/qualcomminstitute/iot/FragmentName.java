@@ -3,6 +3,7 @@ package qualcomminstitute.iot;
 public enum FragmentName {
     REAL_DATA("Real Time Data"),
     SENSOR_INFORMATION("Sensor Information"),
+    MAP("Map"),
     PREVIOUS_DATA("Previous Sensor Data"),
     CHANGE_PASSWORD("Change Password"),
     ID_CANCEL("ID Cancel"),

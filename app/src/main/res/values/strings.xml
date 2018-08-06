@@ -34,6 +34,7 @@
     <!-- Menu String -->
     <string name="menu_real_time_data">RealTime Data</string>
     <string name="menu_sensor_information">Sensor Information</string>
+    <string name="menu_map">Map</string>
     <string name="menu_previous_data">Previous Data</string>
     <string name="menu_change_password">Change Password</string>
     <string name="menu_id_cancel">ID Cancel</string>
