@@ -21,6 +21,8 @@ public interface NetworkInterface {
     String TOAST_REGISTER = "Please Doing Registration First";
     String TOAST_CHANGED_PASSWORD = "Password is Changed!";
     String TOAST_ID_CANCELLATION = "ID Cancellation is complete. Thank you";
+    String TOAST_USED_SENSOR = "Already Registered Sensor";
+    String TOAST_SENSOR_EXIST = "Already Have Sensor.";
 
     // Network Request
     String REQUEST_CLIENT_TYPE = "client";
@@ -35,6 +37,8 @@ public interface NetworkInterface {
     String REQUEST_HEART = "cardiovascularDisease";
     String REQUEST_CURRENT_PASSWORD = "currentPassword";
     String REQUEST_NEW_PASSWORD = "newPassword";
+    String REQUEST_ADDRESS = "address";
+    String REQUEST_TYPE = "type";
 
     // Network Response
     String MESSAGE_TYPE = "type";
@@ -55,4 +59,5 @@ public interface NetworkInterface {
     String REST_CHANGE_PASSWORD = "accounts/changepassword";
     String REST_ID_CANCELLATION = "accounts/IDcancellation";
     String REST_SIGN_OUT = "accounts/signout";
+    String REST_SENSOR_REGISTRATION = "sensor/register";
 }
