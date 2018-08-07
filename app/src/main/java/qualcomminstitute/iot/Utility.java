@@ -111,4 +111,12 @@ public class Utility {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault());
         return dateFormat.format(date);
     }
+
+    public static String[] parseCSVFile(String fileData) {
+        return fileData.split("\n");
+    }
+
+    public static String[] parseCSVString(String strData) {
+        return strData.split(",");
+    }
 }

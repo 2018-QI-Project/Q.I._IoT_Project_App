@@ -1,17 +1,24 @@
 package qualcomminstitute.iot;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +41,7 @@ public class SensorInformationFragment extends Fragment {
     private static final int REQUEST_AIR_CONNECT_DEVICE = 1;
     private static final int REQUEST_HEART_CONNECT_DEVICE = 2;
     private static final int REQUEST_ENABLE_BT = 0;
+    private final int LOCATION_PERMISSION = 0;
 
     /**
      * Name of the connected device
@@ -246,6 +254,98 @@ public class SensorInformationFragment extends Fragment {
                     String readMessage = new String(readBuf, 0, msg.arg1);
                     Log.d("Android", readMessage);
                     // TODO : 블루투스 수신메세지
+                    @SuppressLint("HandlerLeak")
+                    Handler airHandler = new Handler() {
+                        @Override
+                        public void handleMessage(Message message) {
+                            switch (message.what) {
+                                case NetworkInterface.REQUEST_FAIL :
+                                    Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
+                                    break;
+                                case NetworkInterface.REQUEST_SUCCESS :
+                                    try {
+                                        // 응답 메세지 JSON 파싱
+                                        JSONObject returnObject = new JSONObject(message.getData().getString(NetworkInterface.RESPONSE_DATA));
+
+                                        SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
+                                        SharedPreferences.Editor dataEditor = data.edit();
+
+                                        switch(returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {
+                                            case NetworkInterface.MESSAGE_SUCCESS :
+                                                break;
+                                            case NetworkInterface.MESSAGE_FAIL :
+                                                switch (returnObject.getString(NetworkInterface.MESSAGE_VALUE)) {
+                                                    case "invalid client type":
+                                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_CLIENT_FAILED);
+                                                        break;
+                                                    case "already registered sensor":
+                                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_USED_SENSOR);
+                                                        break;
+                                                    case "not valid token":
+                                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_TOKEN_FAILED);
+                                                        dataEditor.remove(PreferenceName.preferenceToken);
+                                                        dataEditor.apply();
+                                                        getActivity().finish();
+                                                        break;
+                                                    case "you already have sensor":
+                                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_SENSOR_EXIST);
+                                                        break;
+                                                    default:
+                                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_DEFAULT_FAILED);
+                                                        break;
+                                                }
+                                                break;
+                                        }
+                                    }
+                                    catch(JSONException e) {
+                                        e.printStackTrace();
+                                        Log.e(this.getClass().getName(), "JSON ERROR!");
+                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
+                                    }
+                            }
+                        }
+                    };
+
+                    try {
+                        SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
+
+                        String[] sensorData = Utility.parseCSVFile(readMessage);
+
+                        for(String csvString : sensorData) {
+                            String[] sensor = Utility.parseCSVString(csvString);
+
+                            // POST 데이터 전송을 위한 자료구조
+                            JSONObject rootObject = new JSONObject();
+                            rootObject.put(NetworkInterface.REQUEST_CLIENT_TYPE, NetworkInterface.REQUEST_CLIENT);
+                            rootObject.put(NetworkInterface.REQUEST_TOKEN, strToken);
+                            rootObject.put(NetworkInterface.REQUEST_ADDRESS, data.getString(PreferenceName.preferenceBluetoothAir, ""));
+
+                            for(int i = 0; i < NetworkInterface.CSV_DATA.length; ++i) {
+                                rootObject.put(NetworkInterface.CSV_DATA[i], sensor[i]);
+                            }
+
+                            LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+                            if(getActivity() != null) {
+                                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                    // 사용자 권한 요청
+                                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION);
+                                } else {
+                                    // 수동으로 위치 구하기
+                                    String locationProvider = LocationManager.GPS_PROVIDER;
+                                    Location currentLocation = locationManager.getLastKnownLocation(locationProvider);
+                                    if (currentLocation != null) {
+                                        rootObject.put(NetworkInterface.REQUEST_LAT, currentLocation.getLatitude());
+                                        rootObject.put(NetworkInterface.REQUEST_LON, currentLocation.getLongitude());
+                                    }
+                                }
+                            }
+
+                            new RequestMessage(NetworkInterface.REST_AIR_QUALITY_INSERT, "POST", rootObject, airHandler).start();
+                        }
+                    } catch (JSONException e) {
+                        Log.e(this.getClass().getName(), "JSON ERROR!");
+                        Utility.displayToastMessage(handler, getActivity(), TOAST_EXCEPTION);
+                    }
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
                     // save the connected device's name
@@ -256,8 +356,7 @@ public class SensorInformationFragment extends Fragment {
                     break;
                 case Constants.MESSAGE_TOAST:
                     if (null != getActivity()) {
-                        Toast.makeText(getActivity(), msg.getData().getString(Constants.TOAST),
-                                Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), msg.getData().getString(Constants.TOAST), Toast.LENGTH_SHORT).show();
                     }
                     break;
             }
@@ -359,9 +458,6 @@ public class SensorInformationFragment extends Fragment {
                             Log.e(this.getClass().getName(), "JSON ERROR!");
                             Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
                         }
-                        finally {
-                            progressDialog.dismiss();
-                        }
                 }
             }
         };
@@ -413,7 +509,6 @@ public class SensorInformationFragment extends Fragment {
 
                             switch(returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {
                                 case NetworkInterface.MESSAGE_SUCCESS :
-                                    Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_CHANGED_PASSWORD);
                                     handler.post(new Thread(){
                                         @Override
                                         public void run() {
@@ -469,9 +564,6 @@ public class SensorInformationFragment extends Fragment {
                             Log.e(this.getClass().getName(), "JSON ERROR!");
                             Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
                         }
-                        finally {
-                            progressDialog.dismiss();
-                        }
                 }
             }
         };
@@ -506,7 +598,6 @@ public class SensorInformationFragment extends Fragment {
 
                             switch(returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {
                                 case NetworkInterface.MESSAGE_SUCCESS :
-                                    Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_CHANGED_PASSWORD);
                                     handler.post(new Thread(){
                                         @Override
                                         public void run() {
@@ -552,9 +643,6 @@ public class SensorInformationFragment extends Fragment {
                             e.printStackTrace();
                             Log.e(this.getClass().getName(), "JSON ERROR!");
                             Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
-                        }
-                        finally {
-                            progressDialog.dismiss();
                         }
                 }
             }

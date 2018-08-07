@@ -39,6 +39,8 @@ public interface NetworkInterface {
     String REQUEST_ADDRESS = "address";
     String REQUEST_TYPE = "type";
     String REQUEST_USER = "allUser";
+    String REQUEST_LAT = "latitude";
+    String REQUEST_LON = "longitude";
 
     // Network Response
     String MESSAGE_TYPE = "type";
@@ -62,6 +64,9 @@ public interface NetworkInterface {
     String MESSAGE_LON = "longitude";
     String MESSAGE_HEART_RATE = "heartRate";
     String MESSAGE_RR_INTERVAL = "rrInterval";
+
+    // CSV Data Order
+    String[] CSV_DATA = {"co", "so2", "no2", "o3", "pm25"};
 
     // Handler Message
     int REQUEST_FAIL = 0;
