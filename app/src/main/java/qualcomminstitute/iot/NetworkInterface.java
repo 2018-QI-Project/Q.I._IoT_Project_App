@@ -38,6 +38,7 @@ public interface NetworkInterface {
     String REQUEST_NEW_PASSWORD = "newPassword";
     String REQUEST_ADDRESS = "address";
     String REQUEST_TYPE = "type";
+    String REQUEST_USER = "allUser";
 
     // Network Response
     String MESSAGE_TYPE = "type";
@@ -47,6 +48,20 @@ public interface NetworkInterface {
     String MESSAGE_TOKEN = "token_app";
     String MESSAGE_AIR_ADDRESS = "airAddress";
     String MESSAGE_HEART_ADDRESS = "heartAddress";
+    String MESSAGE_AIR_DATA = "airData";
+    String MESSAGE_HEART_DATA = "heartData";
+
+    // Sensor Data
+    String MESSAGE_CO = "co";
+    String MESSAGE_SO2 = "so2";
+    String MESSAGE_NO2 = "no2";
+    String MESSAGE_O3 = "o3";
+    String MESSAGE_PM25 = "pm25";
+    String MESSAGE_DATE = "date";
+    String MESSAGE_LAT = "latitude";
+    String MESSAGE_LON = "longitude";
+    String MESSAGE_HEART_RATE = "heartRate";
+    String MESSAGE_RR_INTERVAL = "rrInterval";
 
     // Handler Message
     int REQUEST_FAIL = 0;
@@ -63,4 +78,10 @@ public interface NetworkInterface {
     String REST_SENSOR_REGISTRATION = "sensor/register";
     String REST_SENSOR_LIST = "sensor/sensorlist";
     String REST_SENSOR_DEREGISTRATION = "sensor/deregister";
+    String REST_AIR_QUALITY_INSERT = "data/AQInsert";
+    String REST_HEART_INSERT = "data/HRInsert";
+    String REST_AIR_QUALITY_REAL_TIME = "data/getRealtimeAQ";
+    String REST_HEART_REAL_TIME = "data/getRealtimeHR";
+    String REST_AIR_QUALITY_HISTORICAL = "data/getHistoricalAQ";
+    String REST_HEART_HISTORICAL = "data/getHistoricalHR";
 }

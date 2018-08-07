@@ -296,7 +296,7 @@ public class SensorInformationFragment extends Fragment {
      *
      * @param data   An {@link Intent} with {@link BluetoothConnectActivity#EXTRA_DEVICE_ADDRESS} extra.
      */
-    private void connectDevice(Intent data, String strType) {
+    private void connectDevice(Intent data, final String strType) {
         // Get the device MAC address
         strAddress = data.getExtras().getString(BluetoothConnectActivity.EXTRA_DEVICE_ADDRESS);
         // Get the BluetoothDevice object
@@ -320,9 +320,14 @@ public class SensorInformationFragment extends Fragment {
                             // 응답 메세지 JSON 파싱
                             JSONObject returnObject = new JSONObject(message.getData().getString(NetworkInterface.RESPONSE_DATA));
 
+                            SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
+                            SharedPreferences.Editor dataEditor = data.edit();
+                            
                             switch(returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {
                                 case NetworkInterface.MESSAGE_SUCCESS :
-                                    Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_CHANGED_PASSWORD);
+                                    dataEditor.putString(strType.equals(PreferenceName.preferenceBluetoothAir) ? PreferenceName.preferenceBluetoothAir : PreferenceName.preferenceBluetoothHeart, strAddress);
+                                    dataEditor.apply();
+                                    
                                     getSensorList();
                                     break;
                                 case NetworkInterface.MESSAGE_FAIL :
@@ -335,10 +340,8 @@ public class SensorInformationFragment extends Fragment {
                                             break;
                                         case "not valid token":
                                             Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_TOKEN_FAILED);
-                                            SharedPreferences token = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
-                                            SharedPreferences.Editor tokenEditor = token.edit();
-                                            tokenEditor.clear();
-                                            tokenEditor.apply();
+                                            dataEditor.remove(PreferenceName.preferenceToken);
+                                            dataEditor.apply();
                                             getActivity().finish();
                                             break;
                                         case "you already have sensor":
@@ -446,10 +449,10 @@ public class SensorInformationFragment extends Fragment {
                                             break;
                                         case "invalid tokenApp":
                                             Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_TOKEN_FAILED);
-                                            SharedPreferences token = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
-                                            SharedPreferences.Editor tokenEditor = token.edit();
-                                            tokenEditor.clear();
-                                            tokenEditor.apply();
+                                            SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
+                                            SharedPreferences.Editor dataEditor = data.edit();
+                                            dataEditor.clear();
+                                            dataEditor.apply();
                                             getActivity().finish();
                                             break;
                                         case "There are not sensors registered now":
@@ -498,6 +501,8 @@ public class SensorInformationFragment extends Fragment {
                         try {
                             // 응답 메세지 JSON 파싱
                             final JSONObject returnObject = new JSONObject(message.getData().getString(NetworkInterface.RESPONSE_DATA));
+                            SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
+                            final SharedPreferences.Editor dataEditor = data.edit();
 
                             switch(returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {
                                 case NetworkInterface.MESSAGE_SUCCESS :
@@ -509,10 +514,14 @@ public class SensorInformationFragment extends Fragment {
                                                 case "air" :
                                                     viewAirAddress.setText(null);
                                                     viewAirStatus.setText(getResources().getString(R.string.bluetooth_offline));
+                                                    dataEditor.remove(PreferenceName.preferenceBluetoothAir);
+                                                    dataEditor.apply();
                                                     break;
                                                 case "heart" :
                                                     viewHeartAddress.setText(null);
                                                     viewHeartStatus.setText(getResources().getString(R.string.bluetooth_offline));
+                                                    dataEditor.remove(PreferenceName.preferenceBluetoothHeart);
+                                                    dataEditor.apply();
                                                     break;
                                             }
                                         }
@@ -528,10 +537,8 @@ public class SensorInformationFragment extends Fragment {
                                             break;
                                         case "not valid token":
                                             Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_TOKEN_FAILED);
-                                            SharedPreferences token = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
-                                            SharedPreferences.Editor tokenEditor = token.edit();
-                                            tokenEditor.clear();
-                                            tokenEditor.apply();
+                                            dataEditor.remove(PreferenceName.preferenceToken);
+                                            dataEditor.apply();
                                             getActivity().finish();
                                             break;
                                         default:

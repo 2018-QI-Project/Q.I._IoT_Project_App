@@ -66,10 +66,10 @@ public class ChangePasswordFragment extends Fragment {
                                         break;
                                     case "invalid tokenApp":
                                         Utility.displayToastMessage(handler, getActivity(), TOAST_TOKEN_FAILED);
-                                        SharedPreferences token = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
-                                        SharedPreferences.Editor tokenEditor = token.edit();
-                                        tokenEditor.clear();
-                                        tokenEditor.apply();
+                                        SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
+                                        SharedPreferences.Editor dataEditor = data.edit();
+                                        dataEditor.remove(PreferenceName.preferenceToken);
+                                        dataEditor.apply();
                                         getActivity().finish();
                                         break;
                                     default:
@@ -125,17 +125,17 @@ public class ChangePasswordFragment extends Fragment {
                     progressDialog.show();
 
                     try {
-                        // POST 데이터 전송을 위한 자료구조
-                        JSONObject rootObject = new JSONObject();
-                        rootObject.put(NetworkInterface.REQUEST_CURRENT_PASSWORD, viewCurrentPassword.getText().toString());
-                        rootObject.put(NetworkInterface.REQUEST_NEW_PASSWORD, viewNewPassword.getText().toString());
-                        rootObject.put(NetworkInterface.REQUEST_CLIENT_TYPE, NetworkInterface.REQUEST_CLIENT);
-                        rootObject.put(NetworkInterface.REQUEST_TOKEN, strToken);
+                            // POST 데이터 전송을 위한 자료구조
+                            JSONObject rootObject = new JSONObject();
+                            rootObject.put(NetworkInterface.REQUEST_CURRENT_PASSWORD, viewCurrentPassword.getText().toString());
+                            rootObject.put(NetworkInterface.REQUEST_NEW_PASSWORD, viewNewPassword.getText().toString());
+                            rootObject.put(NetworkInterface.REQUEST_CLIENT_TYPE, NetworkInterface.REQUEST_CLIENT);
+                            rootObject.put(NetworkInterface.REQUEST_TOKEN, strToken);
 
-                        new RequestMessage(NetworkInterface.REST_CHANGE_PASSWORD, "PUT", rootObject, handler).start();
-                    } catch (JSONException e) {
-                        Log.e(this.getClass().getName(), "JSON ERROR!");
-                        Utility.displayToastMessage(handler, getActivity(), TOAST_EXCEPTION);
+                            new RequestMessage(NetworkInterface.REST_CHANGE_PASSWORD, "PUT", rootObject, handler).start();
+                        } catch (JSONException e) {
+                            Log.e(this.getClass().getName(), "JSON ERROR!");
+                            Utility.displayToastMessage(handler, getActivity(), TOAST_EXCEPTION);
                     }
                 }
             }

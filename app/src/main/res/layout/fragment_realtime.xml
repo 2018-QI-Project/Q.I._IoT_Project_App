@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/laRealTimeCO"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:paddingBottom="4dp"
+        android:text="@string/co"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/laRealTimeNO2"
+        app:layout_constraintEnd_toStartOf="@+id/txtRealTimeCO"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtRealTimeCO"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/txtRealTimeNO2"
+        app:layout_constraintEnd_toStartOf="@+id/laRealTimeSO2"
+        app:layout_constraintStart_toEndOf="@+id/laRealTimeCO"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/laRealTimeSO2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:paddingBottom="4dp"
+        android:text="@string/so2"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/laRealTimeO3"
+        app:layout_constraintEnd_toStartOf="@+id/txtRealTimeSO2"
+        app:layout_constraintStart_toEndOf="@+id/txtRealTimeCO"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtRealTimeSO2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/txtRealTimeO3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/laRealTimeSO2"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/laRealTimeNO2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="8dp"
+        android:paddingBottom="4dp"
+        android:text="@string/no2"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/laRealTimePM25"
+        app:layout_constraintEnd_toStartOf="@+id/txtRealTimeNO2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/laRealTimeCO" />
+
+    <TextView
+        android:id="@+id/txtRealTimeNO2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/txtReaTimePM25"
+        app:layout_constraintEnd_toStartOf="@+id/laRealTimeO3"
+        app:layout_constraintStart_toEndOf="@+id/laRealTimeNO2"
+        app:layout_constraintTop_toBottomOf="@+id/txtRealTimeCO" />
+
+    <TextView
+        android:id="@+id/laRealTimeO3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:paddingBottom="4dp"
+        android:text="@string/o3"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toStartOf="@+id/txtRealTimeO3"
+        app:layout_constraintStart_toEndOf="@+id/txtRealTimeNO2"
+        app:layout_constraintTop_toBottomOf="@+id/laRealTimeSO2" />
+
+    <TextView
+        android:id="@+id/txtRealTimeO3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/laRealTimeO3"
+        app:layout_constraintTop_toBottomOf="@+id/txtRealTimeSO2" />
+
+    <TextView
+        android:id="@+id/laRealTimePM25"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="8dp"
+        android:paddingBottom="4dp"
+        android:text="@string/pm25"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/laRealTimeHeartRate"
+        app:layout_constraintEnd_toStartOf="@+id/txtReaTimePM25"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/laRealTimeNO2" />
+
+    <TextView
+        android:id="@+id/txtReaTimePM25"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="183dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/txtRealTimeHeartRate"
+        app:layout_constraintEnd_toStartOf="@+id/laRealTimeRRInterval"
+        app:layout_constraintStart_toEndOf="@+id/laRealTimePM25"
+        app:layout_constraintTop_toBottomOf="@+id/txtRealTimeNO2" />
+
+    <TextView
+        android:id="@+id/laRealTimeHeartRate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="Heart Rate"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/txtRealTimeHeartRate"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/txtRealTimeHeartRate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_editor_absoluteX="111dp" />
+
+    <TextView
+        android:id="@+id/laRealTimeRRInterval"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="140dp"
+        android:layout_marginTop="8dp"
+        android:text="RR Interval"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/laRealTimePM25"
+        app:layout_constraintTop_toBottomOf="@+id/laRealTimeO3" />
+
+    <TextView
+        android:id="@+id/txtRealTimeRRInterval"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/laRealTimeRRInterval"
+        app:layout_constraintTop_toBottomOf="@+id/txtRealTimeO3" />
+
+    <TextView
+        android:id="@+id/laRealTimeAirDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="228dp"
+        android:layout_marginTop="8dp"
+        android:text="Air Date"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtRealTimeAirDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.819"
+        app:layout_constraintStart_toEndOf="@+id/laRealTimeAirDate"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/laRealTimeHeartDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="Heart Date"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/txtRealTimeHeartDate"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/txtRealTimeHeartDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

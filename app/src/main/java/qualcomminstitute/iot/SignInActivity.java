@@ -45,11 +45,11 @@ public class SignInActivity extends AppCompatActivity {
 
                         switch(returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {
                             case NetworkInterface.MESSAGE_SUCCESS :
-                                SharedPreferences token = getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
-                                SharedPreferences.Editor tokenEditor = token.edit();
+                                SharedPreferences data = getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
+                                SharedPreferences.Editor dataEditor = data.edit();
 
-                                tokenEditor.putString(PreferenceName.preferenceToken, returnObject.getString(NetworkInterface.MESSAGE_TOKEN));
-                                tokenEditor.apply();
+                                dataEditor.putString(PreferenceName.preferenceToken, returnObject.getString(NetworkInterface.MESSAGE_TOKEN));
+                                dataEditor.apply();
 
                                 Intent intent = new Intent(SignInActivity.this, MainActivity.class);
                                 startActivity(intent);

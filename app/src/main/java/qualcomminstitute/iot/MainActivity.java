@@ -47,12 +47,12 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         // 응답 메세지 JSON 파싱
                         JSONObject returnObject = new JSONObject(message.getData().getString(NetworkInterface.RESPONSE_DATA));
-                        SharedPreferences token = getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
-                        SharedPreferences.Editor tokenEditor = token.edit();
+                        SharedPreferences data = getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
+                        SharedPreferences.Editor dataEditor = data.edit();
                         switch(returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {
                             case NetworkInterface.MESSAGE_SUCCESS :
-                                tokenEditor.clear();
-                                tokenEditor.apply();
+                                dataEditor.remove(PreferenceName.preferenceToken);
+                                dataEditor.apply();
                                 MainActivity.this.finish();
                                 break;
                             case NetworkInterface.MESSAGE_FAIL :
@@ -62,8 +62,8 @@ public class MainActivity extends AppCompatActivity {
                                         break;
                                     case "invalid tokenApp":
                                         Utility.displayToastMessage(handler, MainActivity.this, TOAST_TOKEN_FAILED);
-                                        tokenEditor.clear();
-                                        tokenEditor.apply();
+                                        dataEditor.remove(PreferenceName.preferenceToken);
+                                        dataEditor.apply();
                                         MainActivity.this.finish();
                                         break;
                                     default:
@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
         Fragment fragment = null;
         switch (position) {
             case 0:
-                fragment = new MapFragment();
+                fragment = new RealTimeFragment();
                 break;
             case 1:
                 fragment = new SensorInformationFragment();

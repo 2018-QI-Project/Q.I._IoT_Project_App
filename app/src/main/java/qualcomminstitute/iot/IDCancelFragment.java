@@ -44,13 +44,13 @@ public class IDCancelFragment extends Fragment {
                     try {
                         // 응답 메세지 JSON 파싱
                         JSONObject returnObject = new JSONObject(message.getData().getString(NetworkInterface.RESPONSE_DATA));
-                        SharedPreferences token = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
-                        SharedPreferences.Editor tokenEditor = token.edit();
+                        SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
+                        SharedPreferences.Editor dataEditor = data.edit();
                         switch(returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {
                             case NetworkInterface.MESSAGE_SUCCESS :
                                 Utility.displayToastMessage(handler, getActivity(), TOAST_ID_CANCELLATION);
-                                tokenEditor.clear();
-                                tokenEditor.apply();
+                                dataEditor.clear();
+                                dataEditor.apply();
                                 getActivity().finish();
                                 break;
                             case NetworkInterface.MESSAGE_FAIL :
@@ -63,8 +63,8 @@ public class IDCancelFragment extends Fragment {
                                         break;
                                     case "invalid token":
                                         Utility.displayToastMessage(handler, getActivity(), TOAST_TOKEN_FAILED);
-                                        tokenEditor.clear();
-                                        tokenEditor.apply();
+                                        dataEditor.remove(PreferenceName.preferenceToken);
+                                        dataEditor.apply();
                                         getActivity().finish();
                                         break;
                                     default:

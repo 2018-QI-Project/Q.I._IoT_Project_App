@@ -8,6 +8,10 @@ import android.support.design.widget.TextInputLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class Utility {
     public static void initView(TextView...views) {
         for(TextView view : views) {
@@ -100,5 +104,11 @@ public class Utility {
         builder.setPositiveButton("Yes", listenerYes);
         builder.setNegativeButton("No", listenerNo);
         builder.show();
+    }
+
+    public static String convertUnixTime(long timestamp) {
+        Date date = new Date(timestamp);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault());
+        return dateFormat.format(date);
     }
 }

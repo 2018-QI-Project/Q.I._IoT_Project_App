@@ -15,7 +15,8 @@
     <string name="so2">SO<small><sub>2</sub></small></string>
     <string name="no2">NO<sub>2</sub></string>
     <string name="o3">O<sub>3</sub></string>
-    <string name="temperature">Temperature</string>
+    <string name="pm25">PM2.5</string>
+    <string name="temperature">Temp</string>
 
     <!-- Sign In Activity -->
     <string name="sign_in">Sign In</string>

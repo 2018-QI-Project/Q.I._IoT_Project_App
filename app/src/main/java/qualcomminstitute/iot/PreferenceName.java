@@ -1,6 +1,8 @@
 package qualcomminstitute.iot;
 
 public interface PreferenceName {
-    String preferenceName = "Token";
-    String preferenceToken = "app";
+    String preferenceName = "Data";
+    String preferenceToken = "token";
+    String preferenceBluetoothAir = "air";
+    String preferenceBluetoothHeart = "heart";
 }
