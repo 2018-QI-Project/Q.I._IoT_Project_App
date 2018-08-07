@@ -49,11 +49,6 @@ public class SensorInformationFragment extends Fragment {
     private String mConnectedDeviceName = null;
 
     /**
-     * String buffer for outgoing messages
-     */
-    private StringBuffer mOutStringBuffer;
-
-    /**
      * Local Bluetooth adapter
      */
     private BluetoothAdapter mBluetoothAdapter = null;
@@ -61,7 +56,8 @@ public class SensorInformationFragment extends Fragment {
     /**
      * Member object for the chat services
      */
-    private Bluetooth bluetooth = null;
+    private Bluetooth airBluetooth = null;
+    private Bluetooth heartBluetooth = null;
 
     private Button viewAirRegister, viewAirDeassociation, viewHeartRegister, viewHeartDeassociation;
     private TextView viewAirAddress, viewAirStatus, viewHeartAddress, viewHeartStatus;
@@ -94,16 +90,21 @@ public class SensorInformationFragment extends Fragment {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
             // Otherwise, setup the chat session
-        } else if (bluetooth == null) {
-            setupChat();
+        } else if (airBluetooth == null) {
+            setupAirBluetooth();
+        } else if (heartBluetooth == null) {
+            setupHeartBluetooth();
         }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (bluetooth != null) {
-            bluetooth.stop();
+        if (airBluetooth != null) {
+            airBluetooth.stop();
+        }
+        if (heartBluetooth != null) {
+            heartBluetooth.stop();
         }
     }
 
@@ -114,11 +115,18 @@ public class SensorInformationFragment extends Fragment {
         // Performing this check in onResume() covers the case in which BT was
         // not enabled during onStart(), so we were paused to enable it...
         // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
-        if (bluetooth != null) {
+        if (airBluetooth != null) {
             // Only if the state is STATE_NONE, do we know that we haven't started already
-            if (bluetooth.getState() == Bluetooth.STATE_NONE) {
+            if (airBluetooth.getState() == Bluetooth.STATE_NONE) {
                 // Start the Bluetooth chat services
-                bluetooth.start();
+                airBluetooth.start();
+            }
+        }
+        if (heartBluetooth != null) {
+            // Only if the state is STATE_NONE, do we know that we haven't started already
+            if (heartBluetooth.getState() == Bluetooth.STATE_NONE) {
+                // Start the Bluetooth chat services
+                heartBluetooth.start();
             }
         }
     }
@@ -154,7 +162,9 @@ public class SensorInformationFragment extends Fragment {
         viewAirDeassociation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setSensorDeassociation("air");
+                if(viewAirAddress.getText() != null) {
+                    setSensorDeassociation("air");
+                }
             }
         });
         viewHeartRegister = view.findViewById(R.id.btnHeartSensorRegister);
@@ -168,7 +178,9 @@ public class SensorInformationFragment extends Fragment {
         viewHeartDeassociation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setSensorDeassociation("heart");
+                if(viewHeartAddress.getText() != null) {
+                    setSensorDeassociation("heart");
+                }
             }
         });
 
@@ -180,12 +192,14 @@ public class SensorInformationFragment extends Fragment {
     /**
      * Set up the UI and background operations for chat.
      */
-    private void setupChat() {
+    private void setupAirBluetooth() {
         // Initialize the Bluetooth to perform bluetooth connections
-        bluetooth = new Bluetooth(getActivity(), mHandler);
+        airBluetooth = new Bluetooth(getActivity(), airSensorHandler);
+    }
 
-        // Initialize the buffer for outgoing messages
-        mOutStringBuffer = new StringBuffer("");
+    private void setupHeartBluetooth() {
+        // Initialize the Bluetooth to perform bluetooth connections
+        heartBluetooth = new Bluetooth(getActivity(), heartSensorHandler);
     }
 
     /**
@@ -201,33 +215,10 @@ public class SensorInformationFragment extends Fragment {
     }
 
     /**
-     * Sends a message.
-     *
-     * @param message A string of text to send.
-     */
-    private void sendMessage(String message) {
-        // Check that we're actually connected before trying anything
-        if (bluetooth.getState() != Bluetooth.STATE_CONNECTED) {
-            Toast.makeText(getActivity(), R.string.bluetooth_not_connected, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Check that there's actually something to send
-        if (message.length() > 0) {
-            // Get the message bytes and tell the Bluetooth to write
-            byte[] send = message.getBytes();
-            bluetooth.write(send);
-
-            // Reset out string buffer to zero and clear the edit text field
-            mOutStringBuffer.setLength(0);
-        }
-    }
-
-    /**
      * The Handler that gets information back from the Bluetooth
      */
     @SuppressLint("HandlerLeak")
-    private final Handler mHandler = new Handler() {
+    private final Handler airSensorHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
@@ -363,6 +354,102 @@ public class SensorInformationFragment extends Fragment {
         }
     };
 
+    @SuppressLint("HandlerLeak")
+    private final Handler heartSensorHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case Constants.MESSAGE_STATE_CHANGE:
+                    switch (msg.arg1) {
+                        case Bluetooth.STATE_CONNECTED:
+                            break;
+                        case Bluetooth.STATE_CONNECTING:
+                            break;
+                        case Bluetooth.STATE_LISTEN:
+                        case Bluetooth.STATE_NONE:
+                            break;
+                    }
+                    break;
+                case Constants.MESSAGE_WRITE:
+                    byte[] writeBuf = (byte[]) msg.obj;
+                    // construct a string from the buffer
+                    String writeMessage = new String(writeBuf);
+                    // TODO : 블루투스 송신메세지
+                    break;
+                case Constants.MESSAGE_READ:
+                    byte[] readBuf = (byte[]) msg.obj;
+                    // construct a string from the valid bytes in the buffer
+                    String readMessage = new String(readBuf, 0, msg.arg1);
+                    Log.d("Android", readMessage);
+                    // TODO : 블루투스 수신메세지
+                    @SuppressLint("HandlerLeak")
+                    Handler heartHandler = new Handler() {
+                        @Override
+                        public void handleMessage(Message message) {
+                            switch (message.what) {
+                                case NetworkInterface.REQUEST_FAIL :
+                                    Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
+                                    break;
+                                case NetworkInterface.REQUEST_SUCCESS :
+                                    try {
+                                        // 응답 메세지 JSON 파싱
+                                        JSONObject returnObject = new JSONObject(message.getData().getString(NetworkInterface.RESPONSE_DATA));
+
+                                        SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
+                                        SharedPreferences.Editor dataEditor = data.edit();
+
+                                        switch(returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {
+                                            case NetworkInterface.MESSAGE_SUCCESS :
+                                                break;
+                                            case NetworkInterface.MESSAGE_FAIL :
+                                                switch (returnObject.getString(NetworkInterface.MESSAGE_VALUE)) {
+                                                    case "invalid client type":
+                                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_CLIENT_FAILED);
+                                                        break;
+                                                    case "already registered sensor":
+                                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_USED_SENSOR);
+                                                        break;
+                                                    case "not valid token":
+                                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_TOKEN_FAILED);
+                                                        dataEditor.remove(PreferenceName.preferenceToken);
+                                                        dataEditor.apply();
+                                                        getActivity().finish();
+                                                        break;
+                                                    case "you already have sensor":
+                                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_SENSOR_EXIST);
+                                                        break;
+                                                    default:
+                                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_DEFAULT_FAILED);
+                                                        break;
+                                                }
+                                                break;
+                                        }
+                                    }
+                                    catch(JSONException e) {
+                                        e.printStackTrace();
+                                        Log.e(this.getClass().getName(), "JSON ERROR!");
+                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
+                                    }
+                            }
+                        }
+                    };
+                    break;
+                case Constants.MESSAGE_DEVICE_NAME:
+                    // save the connected device's name
+                    mConnectedDeviceName = msg.getData().getString(Constants.DEVICE_NAME);
+                    if (null != getActivity()) {
+                        Toast.makeText(getActivity(), "Connected to " + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                case Constants.MESSAGE_TOAST:
+                    if (null != getActivity()) {
+                        Toast.makeText(getActivity(), msg.getData().getString(Constants.TOAST), Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+            }
+        }
+    };
+
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUEST_AIR_CONNECT_DEVICE:
@@ -381,7 +468,12 @@ public class SensorInformationFragment extends Fragment {
                 // When the request to enable Bluetooth returns
                 if (resultCode == Activity.RESULT_OK) {
                     // Bluetooth is now enabled, so set up a chat session
-                    setupChat();
+                    if(airBluetooth == null) {
+                        setupAirBluetooth();
+                    }
+                    if(heartBluetooth == null) {
+                        setupHeartBluetooth();
+                    }
                 } else {
                     // User did not enable Bluetooth or an error occurred
                     Toast.makeText(getActivity(), R.string.bluetooth_not_enabled_leaving, Toast.LENGTH_SHORT).show();
@@ -400,8 +492,6 @@ public class SensorInformationFragment extends Fragment {
         strAddress = data.getExtras().getString(BluetoothConnectActivity.EXTRA_DEVICE_ADDRESS);
         // Get the BluetoothDevice object
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(strAddress);
-        // Attempt to connect to the device
-        bluetooth.connect(device, true);
 
         // ProgressDialog 생성
         progressDialog.show();
@@ -421,12 +511,12 @@ public class SensorInformationFragment extends Fragment {
 
                             SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
                             SharedPreferences.Editor dataEditor = data.edit();
-                            
+
                             switch(returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {
                                 case NetworkInterface.MESSAGE_SUCCESS :
                                     dataEditor.putString(strType.equals(PreferenceName.preferenceBluetoothAir) ? PreferenceName.preferenceBluetoothAir : PreferenceName.preferenceBluetoothHeart, strAddress);
                                     dataEditor.apply();
-                                    
+
                                     getSensorList();
                                     break;
                                 case NetworkInterface.MESSAGE_FAIL :
@@ -475,6 +565,17 @@ public class SensorInformationFragment extends Fragment {
             Log.e(this.getClass().getName(), "JSON ERROR!");
             Utility.displayToastMessage(handler, getActivity(), TOAST_EXCEPTION);
         }
+
+        switch(strType) {
+            case "air" :
+                // Attempt to connect to the device
+                airBluetooth.connect(device, true);
+                break;
+            case "heart" :
+                // Attempt to connect to the device
+                heartBluetooth.connect(device, true);
+                break;
+        }
     }
 
     private void registerSensor(String strType) {
@@ -488,7 +589,7 @@ public class SensorInformationFragment extends Fragment {
             case "heart" :
                 // Launch the DeviceListActivity to see devices and do scan
                 serverIntent = new Intent(getActivity(), BluetoothConnectActivity.class);
-                startActivityForResult(serverIntent, REQUEST_AIR_CONNECT_DEVICE);
+                startActivityForResult(serverIntent, REQUEST_HEART_CONNECT_DEVICE);
                 break;
         }
     }
