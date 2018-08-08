@@ -21,21 +21,19 @@ import java.util.UUID;
  * incoming connections, a thread for connecting with a device, and a
  * thread for performing data transmissions when connected.
  */
-public class Bluetooth {
+public class Bluetooth{
     // Debugging
-    private static final String TAG = "BluetoothChatService";
+    private static final String TAG = "Bluetooth";
 
     // Name for the SDP record when creating server socket
-    private static final String NAME_SECURE = "BluetoothChatSecure";
-    private static final String NAME_INSECURE = "BluetoothChatInsecure";
+    private static final String NAME_SECURE = "BluetoothSecure";
+    private static final String NAME_INSECURE = "BluetoothInsecure";
 
     // Unique UUID for this application
     private static final UUID MY_UUID_SECURE =
-            UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
-    // UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
+            UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb");
     private static final UUID MY_UUID_INSECURE =
-            UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
-    // UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
+            UUID.fromString("572f4ed8-c0ce-4f03-af85-2c44fccc3480");
 
     // Member fields
     private final BluetoothAdapter mAdapter;
@@ -296,7 +294,7 @@ public class Bluetooth {
             // Create a new listening server socket
             try {
                 if (secure) {
-                    tmp = mAdapter.listenUsingRfcommWithServiceRecord(NAME_SECURE,
+                    tmp = mAdapter.listenUsingInsecureRfcommWithServiceRecord(NAME_SECURE,
                             MY_UUID_SECURE);
                 } else {
                     tmp = mAdapter.listenUsingInsecureRfcommWithServiceRecord(
@@ -384,7 +382,7 @@ public class Bluetooth {
             // given BluetoothDevice
             try {
                 if (secure) {
-                    tmp = device.createRfcommSocketToServiceRecord(
+                    tmp = device.createInsecureRfcommSocketToServiceRecord(
                             MY_UUID_SECURE);
                 } else {
                     tmp = device.createInsecureRfcommSocketToServiceRecord(

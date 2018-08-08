@@ -38,6 +38,7 @@ public class ChangePasswordFragment extends Fragment {
             switch (message.what) {
                 case NetworkInterface.REQUEST_FAIL :
                     Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
+                    progressDialog.dismiss();
                     break;
                 case NetworkInterface.REQUEST_SUCCESS :
                     try {

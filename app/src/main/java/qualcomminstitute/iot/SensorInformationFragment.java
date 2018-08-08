@@ -163,7 +163,7 @@ public class SensorInformationFragment extends Fragment {
         viewAirDeassociation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(viewAirAddress.getText() != null) {
+                if(!viewAirAddress.getText().equals("")) {
                     setSensorDeassociation("air");
                 }
             }
@@ -179,7 +179,7 @@ public class SensorInformationFragment extends Fragment {
         viewHeartDeassociation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(viewHeartAddress.getText() != null) {
+                if(!viewHeartAddress.getText().equals("")) {
                     setSensorDeassociation("heart");
                 }
             }
@@ -322,8 +322,50 @@ public class SensorInformationFragment extends Fragment {
                                     // 사용자 권한 요청
                                     ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION);
                                 } else {
+                                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, new LocationListener() {
+                                        @Override
+                                        public void onLocationChanged(Location location) {
+
+                                        }
+
+                                        @Override
+                                        public void onStatusChanged(String s, int i, Bundle bundle) {
+
+                                        }
+
+                                        @Override
+                                        public void onProviderEnabled(String s) {
+
+                                        }
+
+                                        @Override
+                                        public void onProviderDisabled(String s) {
+
+                                        }
+                                    });
+                                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new LocationListener() {
+                                        @Override
+                                        public void onLocationChanged(Location location) {
+
+                                        }
+
+                                        @Override
+                                        public void onStatusChanged(String s, int i, Bundle bundle) {
+
+                                        }
+
+                                        @Override
+                                        public void onProviderEnabled(String s) {
+
+                                        }
+
+                                        @Override
+                                        public void onProviderDisabled(String s) {
+
+                                        }
+                                    });
                                     // 수동으로 위치 구하기
-                                    String locationProvider = LocationManager.GPS_PROVIDER;
+                                    String locationProvider = LocationManager.NETWORK_PROVIDER;
                                     Location currentLocation = locationManager.getLastKnownLocation(locationProvider);
                                     if (currentLocation != null) {
                                         rootObject.put(NetworkInterface.REQUEST_LAT, currentLocation.getLatitude());
@@ -388,10 +430,10 @@ public class SensorInformationFragment extends Fragment {
                         @Override
                         public void handleMessage(Message message) {
                             switch (message.what) {
-                                case NetworkInterface.REQUEST_FAIL :
+                                case NetworkInterface.REQUEST_FAIL:
                                     Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
                                     break;
-                                case NetworkInterface.REQUEST_SUCCESS :
+                                case NetworkInterface.REQUEST_SUCCESS:
                                     try {
                                         // 응답 메세지 JSON 파싱
                                         JSONObject returnObject = new JSONObject(message.getData().getString(NetworkInterface.RESPONSE_DATA));
@@ -399,10 +441,10 @@ public class SensorInformationFragment extends Fragment {
                                         SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
                                         SharedPreferences.Editor dataEditor = data.edit();
 
-                                        switch(returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {
-                                            case NetworkInterface.MESSAGE_SUCCESS :
+                                        switch (returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {
+                                            case NetworkInterface.MESSAGE_SUCCESS:
                                                 break;
-                                            case NetworkInterface.MESSAGE_FAIL :
+                                            case NetworkInterface.MESSAGE_FAIL:
                                                 switch (returnObject.getString(NetworkInterface.MESSAGE_VALUE)) {
                                                     case "invalid client type":
                                                         Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_CLIENT_FAILED);
@@ -425,12 +467,14 @@ public class SensorInformationFragment extends Fragment {
                                                 }
                                                 break;
                                         }
-                                    }
-                                    catch(JSONException e) {
+                                    } catch (JSONException e) {
                                         e.printStackTrace();
                                         Log.e(this.getClass().getName(), "JSON ERROR!");
                                         Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
+                                    } finally {
+                                        progressDialog.dismiss();
                                     }
+                                    break;
                             }
                         }
                     };
@@ -570,7 +614,7 @@ public class SensorInformationFragment extends Fragment {
         switch(strType) {
             case "air" :
                 // Attempt to connect to the device
-                airBluetooth.connect(device, true);
+                airBluetooth.connect(device, false);
                 break;
             case "heart" :
                 // Attempt to connect to the device
@@ -635,20 +679,20 @@ public class SensorInformationFragment extends Fragment {
                                         @Override
                                         public void run() {
                                             try {
-                                                if (returnObject.get(NetworkInterface.MESSAGE_AIR_ADDRESS) != null) {
+                                                if (returnObject.getString(NetworkInterface.MESSAGE_AIR_ADDRESS) != null) {
                                                     viewAirAddress.setText(returnObject.getString(NetworkInterface.MESSAGE_AIR_ADDRESS));
                                                     viewAirStatus.setText(getResources().getString(R.string.bluetooth_online));
                                                 }
                                                 else {
-                                                    viewAirAddress.setText(null);
+                                                    viewAirAddress.setText("");
                                                     viewAirStatus.setText(getResources().getString(R.string.bluetooth_offline));
                                                 }
-                                                if (returnObject.get(NetworkInterface.MESSAGE_HEART_ADDRESS) != null) {
+                                                if (!returnObject.getString(NetworkInterface.MESSAGE_HEART_ADDRESS).equals("null")) {
                                                     viewHeartAddress.setText(returnObject.getString(NetworkInterface.MESSAGE_HEART_ADDRESS));
                                                     viewHeartStatus.setText(getResources().getString(R.string.bluetooth_online));
                                                 }
                                                 else {
-                                                    viewHeartAddress.setText(null);
+                                                    viewHeartAddress.setText("");
                                                     viewHeartStatus.setText(getResources().getString(R.string.bluetooth_offline));
                                                 }
                                             }
@@ -725,13 +769,13 @@ public class SensorInformationFragment extends Fragment {
                                         public void run() {
                                             switch(strType) {
                                                 case "air" :
-                                                    viewAirAddress.setText(null);
+                                                    viewAirAddress.setText("");
                                                     viewAirStatus.setText(getResources().getString(R.string.bluetooth_offline));
                                                     dataEditor.remove(PreferenceName.preferenceBluetoothAir);
                                                     dataEditor.apply();
                                                     break;
                                                 case "heart" :
-                                                    viewHeartAddress.setText(null);
+                                                    viewHeartAddress.setText("");
                                                     viewHeartStatus.setText(getResources().getString(R.string.bluetooth_offline));
                                                     dataEditor.remove(PreferenceName.preferenceBluetoothHeart);
                                                     dataEditor.apply();

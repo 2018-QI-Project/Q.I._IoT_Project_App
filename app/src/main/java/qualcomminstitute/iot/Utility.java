@@ -107,7 +107,7 @@ public class Utility {
     }
 
     public static String convertUnixTime(long timestamp) {
-        Date date = new Date(timestamp);
+        Date date = new Date(timestamp * 1000);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault());
         return dateFormat.format(date);
     }

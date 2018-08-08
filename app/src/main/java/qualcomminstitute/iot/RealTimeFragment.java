@@ -88,6 +88,7 @@ public class RealTimeFragment extends Fragment {
                                         Utility.displayToastMessage(handler, getActivity(), TOAST_UNUSED_SENSOR);
                                         break;
                                     default:
+                                        Log.d("TEST", returnObject.getString(NetworkInterface.MESSAGE_VALUE));
                                         Utility.displayToastMessage(handler, getActivity(), TOAST_DEFAULT_FAILED);
                                         break;
                                 }
@@ -196,6 +197,7 @@ public class RealTimeFragment extends Fragment {
                 rootObject.put(NetworkInterface.REQUEST_CLIENT_TYPE, NetworkInterface.REQUEST_CLIENT);
                 rootObject.put(NetworkInterface.REQUEST_TOKEN, strToken);
                 rootObject.put(NetworkInterface.REQUEST_ADDRESS, strAddress);
+                rootObject.put(NetworkInterface.REQUEST_USER, false);
 
                 new RequestMessage(NetworkInterface.REST_AIR_QUALITY_REAL_TIME, "POST", rootObject, airHandler).start();
             } catch (JSONException e) {

@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
             switch (message.what) {
                 case NetworkInterface.REQUEST_FAIL :
                     Utility.displayToastMessage(handler, MainActivity.this, NetworkInterface.TOAST_EXCEPTION);
+                    progressDialog.dismiss();
                     break;
                 case NetworkInterface.REQUEST_SUCCESS :
                     try {
