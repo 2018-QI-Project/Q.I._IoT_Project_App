@@ -128,6 +128,7 @@ public class Utility {
     public static String convertUnixTime(long timestamp) {
         Date date = new Date(timestamp * 1000);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("America/Los_Angeles"));
         return dateFormat.format(date);
     }
 
