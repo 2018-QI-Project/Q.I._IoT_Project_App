@@ -18,13 +18,6 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static qualcomminstitute.iot.NetworkInterface.TOAST_CLIENT_FAILED;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_DEFAULT_FAILED;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_EXCEPTION;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_PASSWORD_FAILED;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_REGISTER;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_VERIFY;
-
 public class SignInActivity extends AppCompatActivity {
     private EditText viewEmail, viewPassword;
     private Button viewSignIn, viewSignUp;
@@ -58,19 +51,19 @@ public class SignInActivity extends AppCompatActivity {
                             case NetworkInterface.MESSAGE_FAIL :
                                 switch (returnObject.getString(NetworkInterface.MESSAGE_VALUE)) {
                                     case "not valid client, choose app or web":
-                                        Utility.displayToastMessage(handler, SignInActivity.this, TOAST_CLIENT_FAILED);
+                                        Utility.displayToastMessage(handler, SignInActivity.this, NetworkInterface.TOAST_CLIENT_FAILED);
                                         break;
                                     case "Unauthorized User":
-                                        Utility.displayToastMessage(handler, SignInActivity.this, TOAST_VERIFY);
+                                        Utility.displayToastMessage(handler, SignInActivity.this, NetworkInterface.TOAST_VERIFY);
                                         break;
                                     case "Wrong password":
-                                        Utility.displayToastMessage(handler, SignInActivity.this, TOAST_PASSWORD_FAILED);
+                                        Utility.displayToastMessage(handler, SignInActivity.this, NetworkInterface.TOAST_PASSWORD_FAILED);
                                         break;
                                     case "Unregistered User":
-                                        Utility.displayToastMessage(handler, SignInActivity.this, TOAST_REGISTER);
+                                        Utility.displayToastMessage(handler, SignInActivity.this, NetworkInterface.TOAST_REGISTER);
                                         break;
                                     default:
-                                        Utility.displayToastMessage(handler, SignInActivity.this, TOAST_DEFAULT_FAILED);
+                                        Utility.displayToastMessage(handler, SignInActivity.this, NetworkInterface.TOAST_DEFAULT_FAILED);
                                         break;
                                 }
                                 break;
@@ -79,7 +72,7 @@ public class SignInActivity extends AppCompatActivity {
                     catch(JSONException e) {
                         e.printStackTrace();
                         Log.e(this.getClass().getName(), "JSON ERROR!");
-                        Utility.displayToastMessage(handler, SignInActivity.this, TOAST_EXCEPTION);
+                        Utility.displayToastMessage(handler, SignInActivity.this, NetworkInterface.TOAST_EXCEPTION);
                     }
                     finally {
                         progressDialog.dismiss();
@@ -122,7 +115,7 @@ public class SignInActivity extends AppCompatActivity {
                     }
                     catch(JSONException e) {
                         Log.e(this.getClass().getName(), "JSON ERROR!");
-                        Utility.displayToastMessage(handler, SignInActivity.this, TOAST_EXCEPTION);
+                        Utility.displayToastMessage(handler, SignInActivity.this, NetworkInterface.TOAST_EXCEPTION);
                     }
                 }
             }

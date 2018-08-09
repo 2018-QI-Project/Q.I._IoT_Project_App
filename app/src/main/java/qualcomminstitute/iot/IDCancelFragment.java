@@ -20,12 +20,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import static android.content.Context.MODE_PRIVATE;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_CLIENT_FAILED;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_DEFAULT_FAILED;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_EXCEPTION;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_ID_CANCELLATION;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_PASSWORD_FAILED;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_TOKEN_FAILED;
 
 public class IDCancelFragment extends Fragment {
     private EditText viewPassword, viewPasswordRepeat;
@@ -49,7 +43,7 @@ public class IDCancelFragment extends Fragment {
                         SharedPreferences.Editor dataEditor = data.edit();
                         switch(returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {
                             case NetworkInterface.MESSAGE_SUCCESS :
-                                Utility.displayToastMessage(handler, getActivity(), TOAST_ID_CANCELLATION);
+                                Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_ID_CANCELLATION);
                                 dataEditor.clear();
                                 dataEditor.apply();
                                 getActivity().finish();
@@ -57,19 +51,19 @@ public class IDCancelFragment extends Fragment {
                             case NetworkInterface.MESSAGE_FAIL :
                                 switch (returnObject.getString(NetworkInterface.MESSAGE_VALUE)) {
                                     case "invalid client type":
-                                        Utility.displayToastMessage(handler, getActivity(), TOAST_CLIENT_FAILED);
+                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_CLIENT_FAILED);
                                         break;
                                     case "wrong password":
-                                        Utility.displayToastMessage(handler, getActivity(), TOAST_PASSWORD_FAILED);
+                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_PASSWORD_FAILED);
                                         break;
                                     case "invalid token":
-                                        Utility.displayToastMessage(handler, getActivity(), TOAST_TOKEN_FAILED);
+                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_TOKEN_FAILED);
                                         dataEditor.remove(PreferenceName.preferenceToken);
                                         dataEditor.apply();
                                         getActivity().finish();
                                         break;
                                     default:
-                                        Utility.displayToastMessage(handler, getActivity(), TOAST_DEFAULT_FAILED);
+                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_DEFAULT_FAILED);
                                         break;
                                 }
                                 break;
@@ -78,7 +72,7 @@ public class IDCancelFragment extends Fragment {
                     catch(JSONException e) {
                         e.printStackTrace();
                         Log.e(this.getClass().getName(), "JSON ERROR!");
-                        Utility.displayToastMessage(handler, getActivity(), TOAST_EXCEPTION);
+                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
                     }
                     finally {
                         progressDialog.dismiss();
@@ -131,7 +125,7 @@ public class IDCancelFragment extends Fragment {
                                 new RequestMessage(NetworkInterface.REST_ID_CANCELLATION, "DELETE", rootObject, handler).start();
                             } catch (JSONException e) {
                                 Log.e(this.getClass().getName(), "JSON ERROR!");
-                                Utility.displayToastMessage(handler, getActivity(), TOAST_EXCEPTION);
+                                Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
                             }
                         }
                         else {

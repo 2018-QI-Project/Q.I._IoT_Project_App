@@ -1,25 +1,17 @@
 package qualcomminstitute.iot;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,33 +24,23 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import static android.content.Context.MODE_PRIVATE;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_EXCEPTION;
 
 /**
  * This fragment controls Bluetooth to communicate with other devices.
  */
 public class SensorInformationFragment extends Fragment {
     // Intent request codes
-    private static final int REQUEST_AIR_CONNECT_DEVICE = 1;
-    private static final int REQUEST_HEART_CONNECT_DEVICE = 2;
+    private static final int REQUEST_HEART_CONNECT_DEVICE = 1;
+    private static final int REQUEST_AIR_CONNECT_DEVICE = 2;
     private static final int REQUEST_ENABLE_BT = 0;
-    private final int LOCATION_PERMISSION = 0;
-
-    /**
-     * Name of the connected device
-     */
-    private String mConnectedDeviceName = null;
-
     /**
      * Local Bluetooth adapter
      */
     private BluetoothAdapter mBluetoothAdapter = null;
-
     /**
      * Member object for the chat services
      */
     private Bluetooth airBluetooth = null;
-    private Bluetooth heartBluetooth = null;
 
     private Button viewAirRegister, viewAirDeassociation, viewHeartRegister, viewHeartDeassociation;
     private TextView viewAirAddress, viewAirStatus, viewHeartAddress, viewHeartStatus;
@@ -66,6 +48,8 @@ public class SensorInformationFragment extends Fragment {
 
     private Handler handler;
     private ProgressDialog progressDialog;
+
+    private Thread bluetoothCheck;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -81,7 +65,6 @@ public class SensorInformationFragment extends Fragment {
         }
     }
 
-
     @Override
     public void onStart() {
         super.onStart();
@@ -93,8 +76,6 @@ public class SensorInformationFragment extends Fragment {
             // Otherwise, setup the chat session
         } else if (airBluetooth == null) {
             setupAirBluetooth();
-        } else if (heartBluetooth == null) {
-            setupHeartBluetooth();
         }
     }
 
@@ -103,9 +84,6 @@ public class SensorInformationFragment extends Fragment {
         super.onDestroy();
         if (airBluetooth != null) {
             airBluetooth.stop();
-        }
-        if (heartBluetooth != null) {
-            heartBluetooth.stop();
         }
     }
 
@@ -123,22 +101,32 @@ public class SensorInformationFragment extends Fragment {
                 airBluetooth.start();
             }
         }
-        if (heartBluetooth != null) {
-            // Only if the state is STATE_NONE, do we know that we haven't started already
-            if (heartBluetooth.getState() == Bluetooth.STATE_NONE) {
-                // Start the Bluetooth chat services
-                heartBluetooth.start();
-            }
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sensor_information, container, false);
 
+        // Bluetooth 연결 검사
+        bluetoothCheck = new Thread() {
+            @Override
+            public void run() {
+                while(true) {
+                    if(airBluetooth.getState() != Bluetooth.STATE_CONNECTED) {
+                        handler.post(new Thread() {
+                            @Override
+                            public void run() {
+                                viewHeartStatus.setText(getResources().getString(R.string.bluetooth_offline));
+                            }
+                        });
+                    }
+                }
+            }
+        };
+
         // Token 얻어오기
         SharedPreferences preferences = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
-        strToken = preferences.getString(PreferenceName.preferenceToken, "");
+        strToken = preferences.getString(PreferenceName.preferenceToken, null);
 
         // Handler 생성
         handler = new Handler();
@@ -164,7 +152,7 @@ public class SensorInformationFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if(!viewAirAddress.getText().equals("")) {
-                    setSensorDeassociation("air");
+                    setSensorDeassociation(viewAirAddress.getText().toString());
                 }
             }
         });
@@ -180,13 +168,12 @@ public class SensorInformationFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if(!viewHeartAddress.getText().equals("")) {
-                    setSensorDeassociation("heart");
+                    setSensorDeassociation(viewHeartAddress.getText().toString());
                 }
             }
         });
 
         getSensorList();
-
         return view;
     }
 
@@ -195,12 +182,7 @@ public class SensorInformationFragment extends Fragment {
      */
     private void setupAirBluetooth() {
         // Initialize the Bluetooth to perform bluetooth connections
-        airBluetooth = new Bluetooth(getActivity(), airSensorHandler);
-    }
-
-    private void setupHeartBluetooth() {
-        // Initialize the Bluetooth to perform bluetooth connections
-        heartBluetooth = new Bluetooth(getActivity(), heartSensorHandler);
+        airBluetooth = new Bluetooth(getActivity(), Utility.getBluetoothHandler(getActivity(), new Handler()));
     }
 
     /**
@@ -215,55 +197,39 @@ public class SensorInformationFragment extends Fragment {
         }
     }
 
-    /**
-     * The Handler that gets information back from the Bluetooth
-     */
-    @SuppressLint("HandlerLeak")
-    private final Handler airSensorHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case Constants.MESSAGE_STATE_CHANGE:
-                    switch (msg.arg1) {
-                        case Bluetooth.STATE_CONNECTED:
-                            break;
-                        case Bluetooth.STATE_CONNECTING:
-                            break;
-                        case Bluetooth.STATE_LISTEN:
-                        case Bluetooth.STATE_NONE:
-                            break;
-                    }
-                    break;
-                case Constants.MESSAGE_WRITE:
-                    byte[] writeBuf = (byte[]) msg.obj;
-                    // construct a string from the buffer
-                    String writeMessage = new String(writeBuf);
-                    // TODO : 블루투스 송신메세지
-                    break;
-                case Constants.MESSAGE_READ:
-                    byte[] readBuf = (byte[]) msg.obj;
-                    // construct a string from the valid bytes in the buffer
-                    String readMessage = new String(readBuf, 0, msg.arg1);
-                    Log.d("Android", readMessage);
-                    // TODO : 블루투스 수신메세지
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_AIR_CONNECT_DEVICE:
+                // When DeviceListActivity returns with a device to connect
+                if (resultCode == Activity.RESULT_OK) {
+                    connectDevice(data);
+                }
+                break;
+            case REQUEST_HEART_CONNECT_DEVICE:
+                // When DeviceListActivity returns with a device to connect
+                if (resultCode == Activity.RESULT_OK) {
+                    final String heartAddress = data.getExtras().getString(BluetoothConnectActivity.EXTRA_DEVICE_ADDRESS);
                     @SuppressLint("HandlerLeak")
-                    Handler airHandler = new Handler() {
+                    Handler heartHandler = new Handler(){
                         @Override
-                        public void handleMessage(Message message) {
-                            switch (message.what) {
+                        public void handleMessage(Message msg) {
+                            switch (msg.what) {
                                 case NetworkInterface.REQUEST_FAIL :
                                     Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
                                     break;
                                 case NetworkInterface.REQUEST_SUCCESS :
                                     try {
                                         // 응답 메세지 JSON 파싱
-                                        JSONObject returnObject = new JSONObject(message.getData().getString(NetworkInterface.RESPONSE_DATA));
+                                        JSONObject returnObject = new JSONObject(msg.getData().getString(NetworkInterface.RESPONSE_DATA));
 
                                         SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
                                         SharedPreferences.Editor dataEditor = data.edit();
 
                                         switch(returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {
                                             case NetworkInterface.MESSAGE_SUCCESS :
+                                                dataEditor.putString(PreferenceName.preferenceBluetoothHeart, heartAddress);
+                                                dataEditor.apply();
+                                                getSensorList();
                                                 break;
                                             case NetworkInterface.MESSAGE_FAIL :
                                                 switch (returnObject.getString(NetworkInterface.MESSAGE_VALUE)) {
@@ -276,6 +242,11 @@ public class SensorInformationFragment extends Fragment {
                                                     case "not valid token":
                                                         Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_TOKEN_FAILED);
                                                         dataEditor.remove(PreferenceName.preferenceToken);
+                                                        for(int i = 0; i < NetworkInterface.CSV_DATA.length; ++i) {
+                                                            dataEditor.remove(NetworkInterface.CSV_DATA[i]);
+                                                        }
+                                                        dataEditor.remove(PreferenceName.preferenceRealHeart);
+                                                        dataEditor.remove(PreferenceName.preferenceRealRR);
                                                         dataEditor.apply();
                                                         getActivity().finish();
                                                         break;
@@ -294,219 +265,25 @@ public class SensorInformationFragment extends Fragment {
                                         Log.e(this.getClass().getName(), "JSON ERROR!");
                                         Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
                                     }
-                            }
-                        }
-                    };
-
-                    try {
-                        SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
-
-                        String[] sensorData = Utility.parseCSVFile(readMessage);
-
-                        for(String csvString : sensorData) {
-                            String[] sensor = Utility.parseCSVString(csvString);
-
-                            // POST 데이터 전송을 위한 자료구조
-                            JSONObject rootObject = new JSONObject();
-                            rootObject.put(NetworkInterface.REQUEST_CLIENT_TYPE, NetworkInterface.REQUEST_CLIENT);
-                            rootObject.put(NetworkInterface.REQUEST_TOKEN, strToken);
-                            rootObject.put(NetworkInterface.REQUEST_ADDRESS, data.getString(PreferenceName.preferenceBluetoothAir, ""));
-
-                            for(int i = 0; i < NetworkInterface.CSV_DATA.length; ++i) {
-                                rootObject.put(NetworkInterface.CSV_DATA[i], sensor[i]);
-                            }
-
-                            LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-                            if(getActivity() != null) {
-                                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                                    // 사용자 권한 요청
-                                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION);
-                                } else {
-                                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, new LocationListener() {
-                                        @Override
-                                        public void onLocationChanged(Location location) {
-
-                                        }
-
-                                        @Override
-                                        public void onStatusChanged(String s, int i, Bundle bundle) {
-
-                                        }
-
-                                        @Override
-                                        public void onProviderEnabled(String s) {
-
-                                        }
-
-                                        @Override
-                                        public void onProviderDisabled(String s) {
-
-                                        }
-                                    });
-                                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new LocationListener() {
-                                        @Override
-                                        public void onLocationChanged(Location location) {
-
-                                        }
-
-                                        @Override
-                                        public void onStatusChanged(String s, int i, Bundle bundle) {
-
-                                        }
-
-                                        @Override
-                                        public void onProviderEnabled(String s) {
-
-                                        }
-
-                                        @Override
-                                        public void onProviderDisabled(String s) {
-
-                                        }
-                                    });
-                                    // 수동으로 위치 구하기
-                                    String locationProvider = LocationManager.NETWORK_PROVIDER;
-                                    Location currentLocation = locationManager.getLastKnownLocation(locationProvider);
-                                    if (currentLocation != null) {
-                                        rootObject.put(NetworkInterface.REQUEST_LAT, currentLocation.getLatitude());
-                                        rootObject.put(NetworkInterface.REQUEST_LON, currentLocation.getLongitude());
-                                    }
-                                }
-                            }
-
-                            new RequestMessage(NetworkInterface.REST_AIR_QUALITY_INSERT, "POST", rootObject, airHandler).start();
-                        }
-                    } catch (JSONException e) {
-                        Log.e(this.getClass().getName(), "JSON ERROR!");
-                        Utility.displayToastMessage(handler, getActivity(), TOAST_EXCEPTION);
-                    }
-                    break;
-                case Constants.MESSAGE_DEVICE_NAME:
-                    // save the connected device's name
-                    mConnectedDeviceName = msg.getData().getString(Constants.DEVICE_NAME);
-                    if (null != getActivity()) {
-                        Toast.makeText(getActivity(), "Connected to " + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
-                    }
-                    break;
-                case Constants.MESSAGE_TOAST:
-                    if (null != getActivity()) {
-                        Toast.makeText(getActivity(), msg.getData().getString(Constants.TOAST), Toast.LENGTH_SHORT).show();
-                    }
-                    break;
-            }
-        }
-    };
-
-    @SuppressLint("HandlerLeak")
-    private final Handler heartSensorHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case Constants.MESSAGE_STATE_CHANGE:
-                    switch (msg.arg1) {
-                        case Bluetooth.STATE_CONNECTED:
-                            break;
-                        case Bluetooth.STATE_CONNECTING:
-                            break;
-                        case Bluetooth.STATE_LISTEN:
-                        case Bluetooth.STATE_NONE:
-                            break;
-                    }
-                    break;
-                case Constants.MESSAGE_WRITE:
-                    byte[] writeBuf = (byte[]) msg.obj;
-                    // construct a string from the buffer
-                    String writeMessage = new String(writeBuf);
-                    // TODO : 블루투스 송신메세지
-                    break;
-                case Constants.MESSAGE_READ:
-                    byte[] readBuf = (byte[]) msg.obj;
-                    // construct a string from the valid bytes in the buffer
-                    String readMessage = new String(readBuf, 0, msg.arg1);
-                    Log.d("Android", readMessage);
-                    // TODO : 블루투스 수신메세지
-                    @SuppressLint("HandlerLeak")
-                    Handler heartHandler = new Handler() {
-                        @Override
-                        public void handleMessage(Message message) {
-                            switch (message.what) {
-                                case NetworkInterface.REQUEST_FAIL:
-                                    Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
-                                    break;
-                                case NetworkInterface.REQUEST_SUCCESS:
-                                    try {
-                                        // 응답 메세지 JSON 파싱
-                                        JSONObject returnObject = new JSONObject(message.getData().getString(NetworkInterface.RESPONSE_DATA));
-
-                                        SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
-                                        SharedPreferences.Editor dataEditor = data.edit();
-
-                                        switch (returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {
-                                            case NetworkInterface.MESSAGE_SUCCESS:
-                                                break;
-                                            case NetworkInterface.MESSAGE_FAIL:
-                                                switch (returnObject.getString(NetworkInterface.MESSAGE_VALUE)) {
-                                                    case "invalid client type":
-                                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_CLIENT_FAILED);
-                                                        break;
-                                                    case "already registered sensor":
-                                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_USED_SENSOR);
-                                                        break;
-                                                    case "not valid token":
-                                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_TOKEN_FAILED);
-                                                        dataEditor.remove(PreferenceName.preferenceToken);
-                                                        dataEditor.apply();
-                                                        getActivity().finish();
-                                                        break;
-                                                    case "you already have sensor":
-                                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_SENSOR_EXIST);
-                                                        break;
-                                                    default:
-                                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_DEFAULT_FAILED);
-                                                        break;
-                                                }
-                                                break;
-                                        }
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                        Log.e(this.getClass().getName(), "JSON ERROR!");
-                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
-                                    } finally {
+                                    finally {
                                         progressDialog.dismiss();
                                     }
-                                    break;
                             }
                         }
                     };
-                    break;
-                case Constants.MESSAGE_DEVICE_NAME:
-                    // save the connected device's name
-                    mConnectedDeviceName = msg.getData().getString(Constants.DEVICE_NAME);
-                    if (null != getActivity()) {
-                        Toast.makeText(getActivity(), "Connected to " + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
-                    }
-                    break;
-                case Constants.MESSAGE_TOAST:
-                    if (null != getActivity()) {
-                        Toast.makeText(getActivity(), msg.getData().getString(Constants.TOAST), Toast.LENGTH_SHORT).show();
-                    }
-                    break;
-            }
-        }
-    };
+                    try {
+                        // POST 데이터 전송을 위한 자료구조
+                        JSONObject rootObject = new JSONObject();
+                        rootObject.put(NetworkInterface.REQUEST_CLIENT_TYPE, NetworkInterface.REQUEST_CLIENT);
+                        rootObject.put(NetworkInterface.REQUEST_TOKEN, strToken);
+                        rootObject.put(NetworkInterface.REQUEST_ADDRESS, heartAddress);
+                        rootObject.put(NetworkInterface.REQUEST_TYPE, NetworkInterface.REQUEST_HEART_SENSOR);
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_AIR_CONNECT_DEVICE:
-                // When DeviceListActivity returns with a device to connect
-                if (resultCode == Activity.RESULT_OK) {
-                    connectDevice(data, "air");
-                }
-                break;
-            case REQUEST_HEART_CONNECT_DEVICE:
-                // When DeviceListActivity returns with a device to connect
-                if (resultCode == Activity.RESULT_OK) {
-                    connectDevice(data, "heart");
+                        new RequestMessage(NetworkInterface.REST_SENSOR_REGISTRATION, "POST", rootObject, heartHandler).start();
+                    } catch (JSONException e) {
+                        Log.e(this.getClass().getName(), "JSON ERROR!");
+                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
+                    }
                 }
                 break;
             case REQUEST_ENABLE_BT:
@@ -515,9 +292,6 @@ public class SensorInformationFragment extends Fragment {
                     // Bluetooth is now enabled, so set up a chat session
                     if(airBluetooth == null) {
                         setupAirBluetooth();
-                    }
-                    if(heartBluetooth == null) {
-                        setupHeartBluetooth();
                     }
                 } else {
                     // User did not enable Bluetooth or an error occurred
@@ -532,7 +306,7 @@ public class SensorInformationFragment extends Fragment {
      *
      * @param data   An {@link Intent} with {@link BluetoothConnectActivity#EXTRA_DEVICE_ADDRESS} extra.
      */
-    private void connectDevice(Intent data, final String strType) {
+    private void connectDevice(Intent data) {
         // Get the device MAC address
         strAddress = data.getExtras().getString(BluetoothConnectActivity.EXTRA_DEVICE_ADDRESS);
         // Get the BluetoothDevice object
@@ -559,9 +333,8 @@ public class SensorInformationFragment extends Fragment {
 
                             switch(returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {
                                 case NetworkInterface.MESSAGE_SUCCESS :
-                                    dataEditor.putString(strType.equals(PreferenceName.preferenceBluetoothAir) ? PreferenceName.preferenceBluetoothAir : PreferenceName.preferenceBluetoothHeart, strAddress);
+                                    dataEditor.putString(PreferenceName.preferenceBluetoothAir, strAddress);
                                     dataEditor.apply();
-
                                     getSensorList();
                                     break;
                                 case NetworkInterface.MESSAGE_FAIL :
@@ -575,6 +348,11 @@ public class SensorInformationFragment extends Fragment {
                                         case "not valid token":
                                             Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_TOKEN_FAILED);
                                             dataEditor.remove(PreferenceName.preferenceToken);
+                                            for(int i = 0; i < NetworkInterface.CSV_DATA.length; ++i) {
+                                                dataEditor.remove(NetworkInterface.CSV_DATA[i]);
+                                            }
+                                            dataEditor.remove(PreferenceName.preferenceRealHeart);
+                                            dataEditor.remove(PreferenceName.preferenceRealRR);
                                             dataEditor.apply();
                                             getActivity().finish();
                                             break;
@@ -593,6 +371,9 @@ public class SensorInformationFragment extends Fragment {
                             Log.e(this.getClass().getName(), "JSON ERROR!");
                             Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
                         }
+                        finally {
+                            progressDialog.dismiss();
+                        }
                 }
             }
         };
@@ -603,55 +384,25 @@ public class SensorInformationFragment extends Fragment {
             rootObject.put(NetworkInterface.REQUEST_CLIENT_TYPE, NetworkInterface.REQUEST_CLIENT);
             rootObject.put(NetworkInterface.REQUEST_TOKEN, strToken);
             rootObject.put(NetworkInterface.REQUEST_ADDRESS, strAddress);
-            rootObject.put(NetworkInterface.REQUEST_TYPE, strType);
+            rootObject.put(NetworkInterface.REQUEST_TYPE, NetworkInterface.REQUEST_AIR);
 
             new RequestMessage(NetworkInterface.REST_SENSOR_REGISTRATION, "POST", rootObject, registerHandler).start();
         } catch (JSONException e) {
             Log.e(this.getClass().getName(), "JSON ERROR!");
-            Utility.displayToastMessage(handler, getActivity(), TOAST_EXCEPTION);
+            Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
         }
-
-        switch(strType) {
-            case "air" :
-                // Attempt to connect to the device
-                airBluetooth.connect(device, false);
-                break;
-            case "heart" :
-                // Attempt to connect to the device
-                heartBluetooth.connect(device, true);
-                activatePolar();
-                break;
-        }
-    }
-
-    private final MyPolarBleReceiver mPolarBleUpdateReceiver = new MyPolarBleReceiver() {};
-
-    protected void activatePolar() {
-        Log.w(this.getClass().getName(), "activatePolar()");
-        getActivity().registerReceiver(mPolarBleUpdateReceiver, makePolarGattUpdateIntentFilter());
-    }
-
-    protected void deactivatePolar() {
-        getActivity().unregisterReceiver(mPolarBleUpdateReceiver);
-    }
-
-    private static IntentFilter makePolarGattUpdateIntentFilter() {
-        final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(MyPolarBleReceiver.ACTION_GATT_CONNECTED);
-        intentFilter.addAction(MyPolarBleReceiver.ACTION_GATT_DISCONNECTED);
-        intentFilter.addAction(MyPolarBleReceiver.ACTION_HR_DATA_AVAILABLE);
-        return intentFilter;
+        airBluetooth.connect(device, false);
     }
 
     private void registerSensor(String strType) {
         Intent serverIntent;
         switch(strType) {
-            case "air" :
+            case "air":
                 // Launch the DeviceListActivity to see devices and do scan
                 serverIntent = new Intent(getActivity(), BluetoothConnectActivity.class);
                 startActivityForResult(serverIntent, REQUEST_AIR_CONNECT_DEVICE);
                 break;
-            case "heart" :
+            case "heart":
                 // Launch the DeviceListActivity to see devices and do scan
                 serverIntent = new Intent(getActivity(), BluetoothConnectActivity.class);
                 startActivityForResult(serverIntent, REQUEST_HEART_CONNECT_DEVICE);
@@ -686,14 +437,6 @@ public class SensorInformationFragment extends Fragment {
                                                 else {
                                                     viewAirAddress.setText("");
                                                     viewAirStatus.setText(getResources().getString(R.string.bluetooth_offline));
-                                                }
-                                                if (!returnObject.getString(NetworkInterface.MESSAGE_HEART_ADDRESS).equals("null")) {
-                                                    viewHeartAddress.setText(returnObject.getString(NetworkInterface.MESSAGE_HEART_ADDRESS));
-                                                    viewHeartStatus.setText(getResources().getString(R.string.bluetooth_online));
-                                                }
-                                                else {
-                                                    viewHeartAddress.setText("");
-                                                    viewHeartStatus.setText(getResources().getString(R.string.bluetooth_offline));
                                                 }
                                             }
                                             catch(JSONException e){
@@ -742,11 +485,11 @@ public class SensorInformationFragment extends Fragment {
             new RequestMessage(NetworkInterface.REST_SENSOR_LIST, "POST", rootObject, listHandler).start();
         } catch (JSONException e) {
             Log.e(this.getClass().getName(), "JSON ERROR!");
-            Utility.displayToastMessage(listHandler, getActivity(), TOAST_EXCEPTION);
+            Utility.displayToastMessage(listHandler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
         }
     }
 
-    private void setSensorDeassociation(final String strType) {
+    private void setSensorDeassociation(String strAddress) {
         @SuppressLint("HandlerLeak")
         Handler listHandler = new Handler() {
             @Override
@@ -767,20 +510,10 @@ public class SensorInformationFragment extends Fragment {
                                     handler.post(new Thread(){
                                         @Override
                                         public void run() {
-                                            switch(strType) {
-                                                case "air" :
-                                                    viewAirAddress.setText("");
-                                                    viewAirStatus.setText(getResources().getString(R.string.bluetooth_offline));
-                                                    dataEditor.remove(PreferenceName.preferenceBluetoothAir);
-                                                    dataEditor.apply();
-                                                    break;
-                                                case "heart" :
-                                                    viewHeartAddress.setText("");
-                                                    viewHeartStatus.setText(getResources().getString(R.string.bluetooth_offline));
-                                                    dataEditor.remove(PreferenceName.preferenceBluetoothHeart);
-                                                    dataEditor.apply();
-                                                    break;
-                                            }
+                                            viewAirAddress.setText("");
+                                            viewAirStatus.setText(getResources().getString(R.string.bluetooth_offline));
+                                            dataEditor.remove(PreferenceName.preferenceBluetoothAir);
+                                            dataEditor.apply();
                                         }
                                     });
                                     break;
@@ -818,19 +551,12 @@ public class SensorInformationFragment extends Fragment {
             JSONObject rootObject = new JSONObject();
             rootObject.put(NetworkInterface.REQUEST_CLIENT_TYPE, NetworkInterface.REQUEST_CLIENT);
             rootObject.put(NetworkInterface.REQUEST_TOKEN, strToken);
-            switch(strType) {
-                case "air":
-                    rootObject.put(NetworkInterface.REQUEST_ADDRESS, viewAirAddress.getText());
-                    break;
-                case "heart":
-                    rootObject.put(NetworkInterface.REQUEST_ADDRESS, viewHeartAddress.getText());
-                    break;
-            }
+            rootObject.put(NetworkInterface.REQUEST_ADDRESS, strAddress);
 
             new RequestMessage(NetworkInterface.REST_SENSOR_DEREGISTRATION, "PUT", rootObject, listHandler).start();
         } catch (JSONException e) {
             Log.e(this.getClass().getName(), "JSON ERROR!");
-            Utility.displayToastMessage(listHandler, getActivity(), TOAST_EXCEPTION);
+            Utility.displayToastMessage(listHandler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
         }
     }
 }

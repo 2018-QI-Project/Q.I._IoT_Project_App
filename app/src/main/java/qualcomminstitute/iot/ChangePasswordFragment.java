@@ -20,12 +20,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import static android.content.Context.MODE_PRIVATE;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_CHANGED_PASSWORD;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_CLIENT_FAILED;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_DEFAULT_FAILED;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_EXCEPTION;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_PASSWORD_FAILED;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_TOKEN_FAILED;
 
 public class ChangePasswordFragment extends Fragment {
     private EditText viewCurrentPassword, viewNewPassword, viewRepeatNewPassword;
@@ -47,7 +41,7 @@ public class ChangePasswordFragment extends Fragment {
 
                         switch(returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {
                             case NetworkInterface.MESSAGE_SUCCESS :
-                                Utility.displayToastMessage(handler, getActivity(), TOAST_CHANGED_PASSWORD);
+                                Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_CHANGED_PASSWORD);
                                 handler.post(new Thread(){
                                     @Override
                                     public void run() {
@@ -60,21 +54,26 @@ public class ChangePasswordFragment extends Fragment {
                             case NetworkInterface.MESSAGE_FAIL :
                                 switch (returnObject.getString(NetworkInterface.MESSAGE_VALUE)) {
                                     case "invalid client type":
-                                        Utility.displayToastMessage(handler, getActivity(), TOAST_CLIENT_FAILED);
+                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_CLIENT_FAILED);
                                         break;
                                     case "wrong password":
-                                        Utility.displayToastMessage(handler, getActivity(), TOAST_PASSWORD_FAILED);
+                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_PASSWORD_FAILED);
                                         break;
                                     case "invalid tokenApp":
-                                        Utility.displayToastMessage(handler, getActivity(), TOAST_TOKEN_FAILED);
+                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_TOKEN_FAILED);
                                         SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
                                         SharedPreferences.Editor dataEditor = data.edit();
                                         dataEditor.remove(PreferenceName.preferenceToken);
+                                        for(int i = 0; i < NetworkInterface.CSV_DATA.length; ++i) {
+                                            dataEditor.remove(NetworkInterface.CSV_DATA[i]);
+                                        }
+                                        dataEditor.remove(PreferenceName.preferenceRealHeart);
+                                        dataEditor.remove(PreferenceName.preferenceRealRR);
                                         dataEditor.apply();
                                         getActivity().finish();
                                         break;
                                     default:
-                                        Utility.displayToastMessage(handler, getActivity(), TOAST_DEFAULT_FAILED);
+                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_DEFAULT_FAILED);
                                         break;
                                 }
                                 break;
@@ -83,7 +82,7 @@ public class ChangePasswordFragment extends Fragment {
                     catch(JSONException e) {
                         e.printStackTrace();
                         Log.e(this.getClass().getName(), "JSON ERROR!");
-                        Utility.displayToastMessage(handler, getActivity(), TOAST_EXCEPTION);
+                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
                     }
                     finally {
                         progressDialog.dismiss();
@@ -136,7 +135,7 @@ public class ChangePasswordFragment extends Fragment {
                         new RequestMessage(NetworkInterface.REST_CHANGE_PASSWORD, "PUT", rootObject, handler).start();
                     } catch (JSONException e) {
                         Log.e(this.getClass().getName(), "JSON ERROR!");
-                        Utility.displayToastMessage(handler, getActivity(), TOAST_EXCEPTION);
+                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
                     }
                 }
             }

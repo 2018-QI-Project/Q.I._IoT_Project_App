@@ -5,4 +5,6 @@ public interface PreferenceName {
     String preferenceToken = "token";
     String preferenceBluetoothAir = "air";
     String preferenceBluetoothHeart = "heart";
+    String preferenceRealHeart = "heartRate";
+    String preferenceRealRR = "rrInterval";
 }

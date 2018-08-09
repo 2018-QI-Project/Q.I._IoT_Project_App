@@ -38,9 +38,14 @@ public interface NetworkInterface {
     String REQUEST_NEW_PASSWORD = "newPassword";
     String REQUEST_ADDRESS = "address";
     String REQUEST_TYPE = "type";
-    String REQUEST_USER = "allUser";
+    String REQUEST_AIR = "air";
+    String REQUEST_HEART_SENSOR = "heart";
+    String REQUEST_USER_TYPE = "allUser";
+    String REQUEST_USER = "false";
     String REQUEST_LAT = "latitude";
     String REQUEST_LON = "longitude";
+    String REQUEST_HEART_RATE = "heartRate";
+    String REQUEST_RR_INTERVAL = "rrInterval";
 
     // Network Response
     String MESSAGE_TYPE = "type";
@@ -49,7 +54,6 @@ public interface NetworkInterface {
     String MESSAGE_VALUE = "value";
     String MESSAGE_TOKEN = "token_app";
     String MESSAGE_AIR_ADDRESS = "airAddress";
-    String MESSAGE_HEART_ADDRESS = "heartAddress";
     String MESSAGE_AIR_DATA = "airData";
     String MESSAGE_HEART_DATA = "heartData";
 

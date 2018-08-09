@@ -19,11 +19,6 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static qualcomminstitute.iot.NetworkInterface.TOAST_CHECK_MAIL;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_DEFAULT_FAILED;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_DUPLICATE_EMAIL;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_EXCEPTION;
-
 public class SignUpActivity extends AppCompatActivity {
     private EditText viewEmail, viewPassword, viewRepeatPassword, viewFullName, viewAge;
     private RadioGroup viewGender;
@@ -47,16 +42,16 @@ public class SignUpActivity extends AppCompatActivity {
 
                         switch(returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {
                             case NetworkInterface.MESSAGE_SUCCESS :
-                                Utility.displayToastMessage(handler, SignUpActivity.this, TOAST_CHECK_MAIL);
+                                Utility.displayToastMessage(handler, SignUpActivity.this, NetworkInterface.TOAST_CHECK_MAIL);
                                 finish();
                                 break;
                             case NetworkInterface.MESSAGE_FAIL :
                                 switch (returnObject.getString(NetworkInterface.MESSAGE_VALUE)) {
                                     case "already existed":
-                                        Utility.displayToastMessage(handler, SignUpActivity.this, TOAST_DUPLICATE_EMAIL);
+                                        Utility.displayToastMessage(handler, SignUpActivity.this, NetworkInterface.TOAST_DUPLICATE_EMAIL);
                                         break;
                                     default:
-                                        Utility.displayToastMessage(handler, SignUpActivity.this, TOAST_DEFAULT_FAILED);
+                                        Utility.displayToastMessage(handler, SignUpActivity.this, NetworkInterface.TOAST_DEFAULT_FAILED);
                                         break;
                                 }
                                 break;
@@ -65,7 +60,7 @@ public class SignUpActivity extends AppCompatActivity {
                     catch(JSONException e) {
                         e.printStackTrace();
                         Log.e(this.getClass().getName(), "JSON ERROR!");
-                        Utility.displayToastMessage(handler, SignUpActivity.this, TOAST_EXCEPTION);
+                        Utility.displayToastMessage(handler, SignUpActivity.this, NetworkInterface.TOAST_EXCEPTION);
                     }
                     finally {
                         progressDialog.dismiss();
@@ -131,7 +126,7 @@ public class SignUpActivity extends AppCompatActivity {
                     }
                     catch(JSONException e) {
                         Log.e(this.getClass().getName(), "JSON ERROR!");
-                        Utility.displayToastMessage(handler, SignUpActivity.this, TOAST_EXCEPTION);
+                        Utility.displayToastMessage(handler, SignUpActivity.this, NetworkInterface.TOAST_EXCEPTION);
                     }
                 }
             }

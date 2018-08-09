@@ -5,6 +5,66 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <Button
+        android:id="@+id/btnAirSensorRegister4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/sensor_register"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@+id/view"
+        app:layout_constraintEnd_toStartOf="@+id/btnAirSensorDeassociation"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/laAirSensorStatus" />
+
+    <Button
+        android:id="@+id/btnAirSensorDeassociation4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/sensor_deassociation"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@+id/view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btnAirSensorRegister"
+        app:layout_constraintTop_toBottomOf="@+id/txtAirSensorStatus" />
+
+    <Button
+        android:id="@+id/btnAirSensorRegister3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/sensor_register"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@+id/view"
+        app:layout_constraintEnd_toStartOf="@+id/btnAirSensorDeassociation"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/laAirSensorStatus" />
+
+    <Button
+        android:id="@+id/btnAirSensorDeassociation3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/sensor_deassociation"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@+id/view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btnAirSensorRegister"
+        app:layout_constraintTop_toBottomOf="@+id/txtAirSensorStatus" />
+
     <TextView
         android:id="@+id/laAirSensorType"
         android:layout_width="wrap_content"
@@ -100,11 +160,42 @@
         app:layout_constraintStart_toEndOf="@+id/laAirSensorStatus"
         app:layout_constraintTop_toBottomOf="@+id/txtAirSensorAddress" />
 
+    <Button
+        android:id="@+id/btnAirSensorRegister"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/sensor_register"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@+id/view"
+        app:layout_constraintEnd_toStartOf="@+id/btnAirSensorDeassociation"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/laAirSensorStatus" />
+
+    <Button
+        android:id="@+id/btnAirSensorDeassociation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/sensor_deassociation"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@+id/view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btnAirSensorRegister"
+        app:layout_constraintTop_toBottomOf="@+id/txtAirSensorStatus" />
+
     <View
         android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="5dp"
         android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
         android:background="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -122,7 +213,7 @@
         android:text="@string/sensor_type"
         android:textColor="@color/white"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/laHeartSensorAddress"
+        app:layout_constraintBottom_toTopOf="@+id/laHeartDataAddress"
         app:layout_constraintEnd_toStartOf="@+id/txtHeartSensorType"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view" />
@@ -144,7 +235,7 @@
         app:layout_constraintTop_toBottomOf="@+id/view" />
 
     <TextView
-        android:id="@+id/laHeartSensorAddress"
+        android:id="@+id/laHeartDataAddress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -171,7 +262,7 @@
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/txtHeartSensorStatus"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/laHeartSensorAddress"
+        app:layout_constraintStart_toEndOf="@+id/laHeartDataAddress"
         app:layout_constraintTop_toBottomOf="@+id/txtHeartSensorType" />
 
     <TextView
@@ -188,7 +279,7 @@
         app:layout_constraintBottom_toTopOf="@+id/btnHeartSensorRegister"
         app:layout_constraintEnd_toStartOf="@+id/txtHeartSensorStatus"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/laHeartSensorAddress" />
+        app:layout_constraintTop_toBottomOf="@+id/laHeartDataAddress" />
 
     <TextView
         android:id="@+id/txtHeartSensorStatus"
@@ -196,7 +287,6 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:textColor="@color/white"
         android:textSize="20sp"
@@ -209,51 +299,27 @@
         android:id="@+id/btnHeartSensorRegister"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:text="@string/sensor_register"
+        android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btnHeartSensorDeassociation"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/laHeartSensorStatus" />
 
     <Button
-        android:id="@+id/btnAirSensorRegister"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/sensor_register"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toTopOf="@+id/view"
-        app:layout_constraintEnd_toStartOf="@+id/btnAirSensorDeassociation"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/laAirSensorStatus" />
-
-    <Button
-        android:id="@+id/btnAirSensorDeassociation"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/sensor_deassociation"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toTopOf="@+id/view"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btnAirSensorRegister"
-        app:layout_constraintTop_toBottomOf="@+id/txtAirSensorStatus" />
-
-    <Button
         android:id="@+id/btnHeartSensorDeassociation"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:text="@string/sensor_deassociation"
+        android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btnHeartSensorRegister"

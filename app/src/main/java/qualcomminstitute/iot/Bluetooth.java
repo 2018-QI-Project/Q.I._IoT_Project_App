@@ -294,7 +294,7 @@ public class Bluetooth{
             // Create a new listening server socket
             try {
                 if (secure) {
-                    tmp = mAdapter.listenUsingInsecureRfcommWithServiceRecord(NAME_SECURE,
+                    tmp = mAdapter.listenUsingRfcommWithServiceRecord(NAME_SECURE,
                             MY_UUID_SECURE);
                 } else {
                     tmp = mAdapter.listenUsingInsecureRfcommWithServiceRecord(
@@ -382,7 +382,7 @@ public class Bluetooth{
             // given BluetoothDevice
             try {
                 if (secure) {
-                    tmp = device.createInsecureRfcommSocketToServiceRecord(
+                    tmp = device.createRfcommSocketToServiceRecord(
                             MY_UUID_SECURE);
                 } else {
                     tmp = device.createInsecureRfcommSocketToServiceRecord(

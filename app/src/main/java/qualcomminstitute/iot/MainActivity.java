@@ -3,7 +3,10 @@ package qualcomminstitute.iot;
 import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -22,11 +25,6 @@ import android.view.MenuItem;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static qualcomminstitute.iot.NetworkInterface.TOAST_CLIENT_FAILED;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_DEFAULT_FAILED;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_EXCEPTION;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_TOKEN_FAILED;
-
 public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -35,6 +33,10 @@ public class MainActivity extends AppCompatActivity {
 
     private String strToken;
     private ProgressDialog progressDialog;
+
+    private MyPolarBleReceiver mPolarBleUpdateReceiver;
+    private BluetoothAdapter bluetoothAdapter;
+
     @SuppressLint("HandlerLeak")
     private final Handler handler = new Handler() {
         @Override
@@ -53,22 +55,32 @@ public class MainActivity extends AppCompatActivity {
                         switch(returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {
                             case NetworkInterface.MESSAGE_SUCCESS :
                                 dataEditor.remove(PreferenceName.preferenceToken);
+                                for(int i = 0; i < NetworkInterface.CSV_DATA.length; ++i) {
+                                    dataEditor.remove(NetworkInterface.CSV_DATA[i]);
+                                }
+                                dataEditor.remove(PreferenceName.preferenceRealHeart);
+                                dataEditor.remove(PreferenceName.preferenceRealRR);
                                 dataEditor.apply();
                                 MainActivity.this.finish();
                                 break;
                             case NetworkInterface.MESSAGE_FAIL :
                                 switch (returnObject.getString(NetworkInterface.MESSAGE_VALUE)) {
                                     case "invalid client type":
-                                        Utility.displayToastMessage(handler, MainActivity.this, TOAST_CLIENT_FAILED);
+                                        Utility.displayToastMessage(handler, MainActivity.this, NetworkInterface.TOAST_CLIENT_FAILED);
                                         break;
                                     case "invalid tokenApp":
-                                        Utility.displayToastMessage(handler, MainActivity.this, TOAST_TOKEN_FAILED);
+                                        Utility.displayToastMessage(handler, MainActivity.this, NetworkInterface.TOAST_TOKEN_FAILED);
                                         dataEditor.remove(PreferenceName.preferenceToken);
+                                        for(int i = 0; i < NetworkInterface.CSV_DATA.length; ++i) {
+                                            dataEditor.remove(NetworkInterface.CSV_DATA[i]);
+                                        }
+                                        dataEditor.remove(PreferenceName.preferenceRealHeart);
+                                        dataEditor.remove(PreferenceName.preferenceRealRR);
                                         dataEditor.apply();
                                         MainActivity.this.finish();
                                         break;
                                     default:
-                                        Utility.displayToastMessage(handler, MainActivity.this, TOAST_DEFAULT_FAILED);
+                                        Utility.displayToastMessage(handler, MainActivity.this, NetworkInterface.TOAST_DEFAULT_FAILED);
                                         break;
                                 }
                                 break;
@@ -77,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
                     catch(JSONException e) {
                         e.printStackTrace();
                         Log.e(this.getClass().getName(), "JSON ERROR!");
-                        Utility.displayToastMessage(handler, MainActivity.this, TOAST_EXCEPTION);
+                        Utility.displayToastMessage(handler, MainActivity.this, NetworkInterface.TOAST_EXCEPTION);
                     }
                     finally {
                         progressDialog.dismiss();
@@ -91,6 +103,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
         // Progress Dialog 초기화
         progressDialog = new ProgressDialog(MainActivity.this, R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
@@ -98,7 +112,16 @@ public class MainActivity extends AppCompatActivity {
 
         // Token 얻어오기
         SharedPreferences preferences = MainActivity.this.getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
-        strToken = preferences.getString(PreferenceName.preferenceToken, "");
+        strToken = preferences.getString(PreferenceName.preferenceToken, null);
+
+        // Bluetooth 연결
+        String bluetoothAddress = preferences.getString(PreferenceName.preferenceBluetoothAir, null);
+        if(bluetoothAddress != null) {
+            BluetoothDevice device = bluetoothAdapter.getRemoteDevice(preferences.getString(PreferenceName.preferenceBluetoothAir, null));
+            new Bluetooth(this, Utility.getBluetoothHandler(MainActivity.this, handler)).connect(device, false);
+        }
+        mPolarBleUpdateReceiver = new MyPolarBleReceiver(strToken, MainActivity.this);
+        activatePolar();
 
         drawerLayout = findViewById(R.id.layDrawerLayout);
         navigationView = findViewById(R.id.navView);
@@ -176,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
                                             new RequestMessage(NetworkInterface.REST_SIGN_OUT, "POST", rootObject, handler).start();
                                         } catch (JSONException e) {
                                             Log.e(this.getClass().getName(), "JSON ERROR!");
-                                            Utility.displayToastMessage(handler, MainActivity.this, TOAST_EXCEPTION);
+                                            Utility.displayToastMessage(handler, MainActivity.this, NetworkInterface.TOAST_EXCEPTION);
                                         }
                                     }
                                 },
@@ -268,5 +291,22 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             getFragmentManager().beginTransaction().replace(R.id.layFrameLayout, fragment).commit();
         }
+    }
+
+    protected void activatePolar() {
+        Log.w(this.getClass().getName(), "activatePolar()");
+        this.registerReceiver(mPolarBleUpdateReceiver, makePolarGattUpdateIntentFilter());
+    }
+
+    protected void deactivatePolar() {
+        this.unregisterReceiver(mPolarBleUpdateReceiver);
+    }
+
+    private static IntentFilter makePolarGattUpdateIntentFilter() {
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(MyPolarBleReceiver.ACTION_GATT_CONNECTED);
+        intentFilter.addAction(MyPolarBleReceiver.ACTION_GATT_DISCONNECTED);
+        intentFilter.addAction(MyPolarBleReceiver.ACTION_HR_DATA_AVAILABLE);
+        return intentFilter;
     }
 }

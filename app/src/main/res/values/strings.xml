@@ -81,6 +81,8 @@
     <string name="sensor_type">Type : </string>
     <string name="sensor_address">Address : </string>
     <string name="sensor_status">Status : </string>
+    <string name="sensor_heart_rate">Heart Rate : </string>
+    <string name="sensor_rr_interval">RR Interval : </string>
     <string name="sensor_register">Register</string>
     <string name="sensor_deassociation">Deassociation</string>
     <string name="sensor_air">Air Pollution Sensor</string>
