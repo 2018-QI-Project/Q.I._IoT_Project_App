@@ -57,6 +57,7 @@ public interface NetworkInterface {
     String MESSAGE_VALUE = "value";
     String MESSAGE_TOKEN = "token_app";
     String MESSAGE_AIR_ADDRESS = "airAddress";
+    String MESSAGE_HEART_ADDRESS = "heartAddress";
     String MESSAGE_AIR_DATA = "airData";
     String MESSAGE_HEART_DATA = "heartData";
     String MESSAGE_HOUR = "hour";

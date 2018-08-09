@@ -45,6 +45,8 @@ public class Bluetooth{
     private int mState;
     private int mNewState;
 
+    private Context context;
+
     // Constants that indicate the current connection state
     public static final int STATE_NONE = 0;       // we're doing nothing
     public static final int STATE_LISTEN = 1;     // now listening for incoming connections
@@ -62,6 +64,7 @@ public class Bluetooth{
         mState = STATE_NONE;
         mNewState = mState;
         mHandler = handler;
+        this.context = context;
     }
 
     /**

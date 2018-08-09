@@ -23,6 +23,7 @@ public class MyPolarBleReceiver extends BroadcastReceiver {
             "edu.ucsd.healthware.fw.device.ble.ACTION_HR_DATA_AVAILABLE";
     public final static String EXTRA_DATA =
             "edu.ucsd.healthware.fw.device.ble.EXTRA_DATA";
+    private SharedPreferences preferences;
     private String strToken;
     private Context context;
 
@@ -42,6 +43,8 @@ public class MyPolarBleReceiver extends BroadcastReceiver {
                             case NetworkInterface.MESSAGE_SUCCESS:
                                 break;
                             case NetworkInterface.MESSAGE_FAIL:
+                                preferences.edit().remove(PreferenceName.preferenceRealHeart).apply();
+                                preferences.edit().remove(PreferenceName.preferenceRealRR).apply();
                                 switch (returnObject.getString(NetworkInterface.MESSAGE_VALUE)) {
                                     case "invalid client type":
                                         break;
@@ -68,12 +71,12 @@ public class MyPolarBleReceiver extends BroadcastReceiver {
     public MyPolarBleReceiver(String strToken, Context context) {
         this.strToken = strToken;
         this.context = context;
+        preferences = context.getSharedPreferences(PreferenceName.preferenceName, Context.MODE_PRIVATE);
     }
 
     @Override
     public void onReceive(Context ctx, Intent intent) {
         final String action = intent.getAction();
-        SharedPreferences preferences = context.getSharedPreferences(PreferenceName.preferenceName, Context.MODE_PRIVATE);
         if(preferences.getString(PreferenceName.preferenceBluetoothHeart, null) != null) {
             if (ACTION_GATT_CONNECTED.equals(action)) {
                 Log.w(this.getClass().getName(), "####ACTION_GATT_CONNECTED");
@@ -96,7 +99,7 @@ public class MyPolarBleReceiver extends BroadcastReceiver {
                     JSONObject rootObject = new JSONObject();
                     rootObject.put(NetworkInterface.REQUEST_CLIENT_TYPE, NetworkInterface.REQUEST_CLIENT);
                     rootObject.put(NetworkInterface.REQUEST_TOKEN, strToken);
-                    rootObject.put(NetworkInterface.REQUEST_ADDRESS, sessionId);
+                    rootObject.put(NetworkInterface.REQUEST_ADDRESS, preferences.getString(PreferenceName.preferenceBluetoothHeart, null));
                     rootObject.put(NetworkInterface.REQUEST_HEART_RATE, heartRate);
                     rootObject.put(NetworkInterface.REQUEST_RR_INTERVAL, lastRRvalue);
 
@@ -108,7 +111,7 @@ public class MyPolarBleReceiver extends BroadcastReceiver {
                 } catch (JSONException e) {
                     Log.e(this.getClass().getName(), "JSON ERROR!");
                 }
-                // Log.w(this.getClass().getName(), "####Received heartRate: " +heartRate+" pnnPercentage: "+pnnPercentage+" pnnCount: "+pnnCount+" rrThreshold: "+rrThreshold+" totalNN: "+totalNN+" lastRRvalue: "+lastRRvalue+" sessionId: "+sessionId);
+                Log.w(this.getClass().getName(), "####Received heartRate: " +heartRate+" pnnPercentage: "+pnnPercentage+" pnnCount: "+pnnCount+" rrThreshold: "+rrThreshold+" totalNN: "+totalNN+" lastRRvalue: "+lastRRvalue+" sessionId: "+sessionId);
             }
         }
     }

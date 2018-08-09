@@ -345,6 +345,8 @@ public class MainActivity extends AppCompatActivity {
         }
         dataEditor.remove(PreferenceName.preferenceRealHeart);
         dataEditor.remove(PreferenceName.preferenceRealRR);
+        dataEditor.remove(PreferenceName.preferenceBluetoothAir);
+        dataEditor.remove(PreferenceName.preferenceBluetoothHeart);
         dataEditor.apply();
     }
 

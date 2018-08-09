@@ -170,7 +170,7 @@ public class Utility {
             SharedPreferences data = activity.getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
             SharedPreferences.Editor dataEditor = data.edit();
             @Override
-            public void handleMessage(Message msg) {
+            public void handleMessage(final Message msg) {
                 switch (msg.what) {
                     case Constants.MESSAGE_STATE_CHANGE:
                         switch (msg.arg1) {
@@ -211,6 +211,10 @@ public class Utility {
                                                 case NetworkInterface.MESSAGE_SUCCESS :
                                                     break;
                                                 case NetworkInterface.MESSAGE_FAIL :
+                                                    for(int i = 0; i < NetworkInterface.CSV_DATA.length; ++i) {
+                                                        dataEditor.remove(NetworkInterface.CSV_DATA[i]);
+                                                    }
+                                                    dataEditor.apply();
                                                     switch (returnObject.getString(NetworkInterface.MESSAGE_VALUE)) {
                                                         case "invalid client type":
                                                             Utility.displayToastMessage(handler, activity, NetworkInterface.TOAST_CLIENT_FAILED);
