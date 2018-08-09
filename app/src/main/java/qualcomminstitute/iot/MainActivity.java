@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -120,8 +121,10 @@ public class MainActivity extends AppCompatActivity {
             BluetoothDevice device = bluetoothAdapter.getRemoteDevice(preferences.getString(PreferenceName.preferenceBluetoothAir, null));
             new Bluetooth(this, Utility.getBluetoothHandler(MainActivity.this, handler)).connect(device, false);
         }
-        mPolarBleUpdateReceiver = new MyPolarBleReceiver(strToken, MainActivity.this);
-        activatePolar();
+        String heartAddress = preferences.getString(PreferenceName.preferenceBluetoothHeart, null);
+        if(heartAddress != null) {
+            activatePolar();
+        }
 
         drawerLayout = findViewById(R.id.layDrawerLayout);
         navigationView = findViewById(R.id.navView);
@@ -247,7 +250,31 @@ public class MainActivity extends AppCompatActivity {
         if(drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            Utility.showYesNoDialog(MainActivity.this, "Sign Out", "Do you want to Sign Out?",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            // ProgressDialog 생성
+                            progressDialog.show();
+
+                            try {
+                                // POST 데이터 전송을 위한 자료구조
+                                JSONObject rootObject = new JSONObject();
+                                rootObject.put(NetworkInterface.REQUEST_TOKEN, strToken);
+                                rootObject.put(NetworkInterface.REQUEST_CLIENT_TYPE, NetworkInterface.REQUEST_CLIENT);
+
+                                new RequestMessage(NetworkInterface.REST_SIGN_OUT, "POST", rootObject, handler).start();
+                            } catch (JSONException e) {
+                                Log.e(this.getClass().getName(), "JSON ERROR!");
+                                Utility.displayToastMessage(handler, MainActivity.this, NetworkInterface.TOAST_EXCEPTION);
+                            }
+                        }
+                    },
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                        }
+                    });
         }
     }
 
@@ -295,17 +322,30 @@ public class MainActivity extends AppCompatActivity {
 
     protected void activatePolar() {
         Log.w(this.getClass().getName(), "activatePolar()");
+        mPolarBleUpdateReceiver = new MyPolarBleReceiver(strToken, MainActivity.this);
         this.registerReceiver(mPolarBleUpdateReceiver, makePolarGattUpdateIntentFilter());
     }
 
     protected void deactivatePolar() {
-        this.unregisterReceiver(mPolarBleUpdateReceiver);
+        if(mPolarBleUpdateReceiver != null) {
+            this.unregisterReceiver(mPolarBleUpdateReceiver);
+            mPolarBleUpdateReceiver = null;
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         deactivatePolar();
+        SharedPreferences preferences = this.getSharedPreferences(PreferenceName.preferenceName, Context.MODE_PRIVATE);
+        SharedPreferences.Editor dataEditor = preferences.edit();
+        dataEditor.remove(PreferenceName.preferenceToken);
+        for(int i = 0; i < NetworkInterface.CSV_DATA.length; ++i) {
+            dataEditor.remove(NetworkInterface.CSV_DATA[i]);
+        }
+        dataEditor.remove(PreferenceName.preferenceRealHeart);
+        dataEditor.remove(PreferenceName.preferenceRealRR);
+        dataEditor.apply();
     }
 
     private static IntentFilter makePolarGattUpdateIntentFilter() {

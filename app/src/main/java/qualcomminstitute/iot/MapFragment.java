@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -17,10 +18,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -30,6 +33,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
@@ -79,31 +83,31 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                                                     case "CO":
                                                         strData = "Date : " + Utility.convertUnixTime(dataObject.getLong(NetworkInterface.MESSAGE_DATE)) + "\n" +
                                                                 "CO : " + dataObject.getDouble(NetworkInterface.MESSAGE_CO);
-                                                        mMap.addMarker(new MarkerOptions().position(location).title(strData).alpha(0f));
+                                                        mMap.addMarker(new MarkerOptions().position(location).title("Data").snippet(strData).alpha(0f));
                                                         mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.good)));
                                                         break;
                                                     case "NO2":
                                                         strData = "Date : " + Utility.convertUnixTime(dataObject.getLong(NetworkInterface.MESSAGE_DATE)) + "\n" +
                                                                 "NO2 : " + dataObject.getDouble(NetworkInterface.MESSAGE_NO2);
-                                                        mMap.addMarker(new MarkerOptions().position(location).title(strData).alpha(0f));
+                                                        mMap.addMarker(new MarkerOptions().position(location).title("Data").snippet(strData).alpha(0f));
                                                         mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.moderate)));
                                                         break;
                                                     case "SO2":
                                                         strData = "Date : " + Utility.convertUnixTime(dataObject.getLong(NetworkInterface.MESSAGE_DATE)) + "\n" +
                                                                 "SO2 : " + dataObject.getDouble(NetworkInterface.MESSAGE_SO2);
-                                                        mMap.addMarker(new MarkerOptions().position(location).title(strData).alpha(0f));
+                                                        mMap.addMarker(new MarkerOptions().position(location).title("Data").snippet(strData).alpha(0f));
                                                         mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.unhealthy)));
                                                         break;
                                                     case "O3":
                                                         strData = "Date : " + Utility.convertUnixTime(dataObject.getLong(NetworkInterface.MESSAGE_DATE)) + "\n" +
                                                                 "O3 : " + dataObject.getDouble(NetworkInterface.MESSAGE_O3);
-                                                        mMap.addMarker(new MarkerOptions().position(location).title(strData).alpha(0f));
+                                                        mMap.addMarker(new MarkerOptions().position(location).title("Data").snippet(strData).alpha(0f));
                                                         mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.unhealthy)));
                                                         break;
                                                     case "PM2.5":
                                                         strData = "Date : " + Utility.convertUnixTime(dataObject.getLong(NetworkInterface.MESSAGE_DATE)) + "\n" +
                                                                 "PM2.5 : " + dataObject.getDouble(NetworkInterface.MESSAGE_PM25);
-                                                        mMap.addMarker(new MarkerOptions().position(location).title(strData).alpha(0f));
+                                                        mMap.addMarker(new MarkerOptions().position(location).title("Data").snippet(strData).alpha(0f));
                                                         mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.hazardous)));
                                                         break;
                                                     default:
@@ -216,6 +220,35 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+            @Override
+            public View getInfoWindow(Marker arg0) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+
+                LinearLayout info = new LinearLayout(getActivity());
+                info.setOrientation(LinearLayout.VERTICAL);
+
+                TextView title = new TextView(getActivity());
+                title.setTextColor(Color.BLACK);
+                title.setGravity(Gravity.CENTER);
+                title.setTypeface(null, Typeface.BOLD);
+                title.setText(marker.getTitle());
+
+                TextView snippet = new TextView(getActivity());
+                snippet.setTextColor(Color.GRAY);
+                snippet.setText(marker.getSnippet());
+
+                info.addView(title);
+                info.addView(snippet);
+
+                return info;
+            }
+        });
         settingGPS();
         getMyLocation();
         if (currentLocation != null) {

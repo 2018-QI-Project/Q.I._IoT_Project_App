@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -45,11 +46,10 @@ public class SensorInformationFragment extends Fragment {
     private Button viewAirRegister, viewAirDeassociation, viewHeartRegister, viewHeartDeassociation;
     private TextView viewAirAddress, viewAirStatus, viewHeartAddress, viewHeartStatus;
     private String strToken, strAddress;
+    private MyPolarBleReceiver mPolarBleUpdateReceiver;
 
     private Handler handler;
     private ProgressDialog progressDialog;
-
-    private Thread bluetoothCheck;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -108,21 +108,32 @@ public class SensorInformationFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_sensor_information, container, false);
 
         // Bluetooth 연결 검사
-        bluetoothCheck = new Thread() {
+        new Thread() {
             @Override
             public void run() {
                 while(true) {
-                    if(airBluetooth.getState() != Bluetooth.STATE_CONNECTED) {
-                        handler.post(new Thread() {
-                            @Override
-                            public void run() {
-                                viewHeartStatus.setText(getResources().getString(R.string.bluetooth_offline));
-                            }
-                        });
+                    if(airBluetooth != null) {
+                        if (airBluetooth.getState() != Bluetooth.STATE_CONNECTED) {
+                            handler.post(new Thread() {
+                                @Override
+                                public void run() {
+                                    viewAirStatus.setText(getResources().getString(R.string.bluetooth_offline));
+                                }
+                            });
+                        }
+                    }
+                    else {
+                        viewAirStatus.setText(getResources().getString(R.string.bluetooth_offline));
+                    }
+                    try {
+                        Thread.sleep(100000);
+                    }
+                    catch(InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
             }
-        };
+        }.start();
 
         // Token 얻어오기
         SharedPreferences preferences = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
@@ -140,6 +151,7 @@ public class SensorInformationFragment extends Fragment {
         viewAirStatus = view.findViewById(R.id.txtAirSensorStatus);
         viewHeartAddress = view.findViewById(R.id.txtHeartSensorAddress);
         viewHeartStatus = view.findViewById(R.id.txtHeartSensorStatus);
+        viewHeartStatus.setText(getResources().getString(R.string.bluetooth_offline));
         viewAirRegister = view.findViewById(R.id.btnAirSensorRegister);
         viewAirRegister.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -169,6 +181,7 @@ public class SensorInformationFragment extends Fragment {
             public void onClick(View view) {
                 if(!viewHeartAddress.getText().equals("")) {
                     setSensorDeassociation(viewHeartAddress.getText().toString());
+                    deactivatePolar();
                 }
             }
         });
@@ -229,6 +242,7 @@ public class SensorInformationFragment extends Fragment {
                                             case NetworkInterface.MESSAGE_SUCCESS :
                                                 dataEditor.putString(PreferenceName.preferenceBluetoothHeart, heartAddress);
                                                 dataEditor.apply();
+
                                                 getSensorList();
                                                 break;
                                             case NetworkInterface.MESSAGE_FAIL :
@@ -335,6 +349,7 @@ public class SensorInformationFragment extends Fragment {
                                 case NetworkInterface.MESSAGE_SUCCESS :
                                     dataEditor.putString(PreferenceName.preferenceBluetoothAir, strAddress);
                                     dataEditor.apply();
+                                    activatePolar();
                                     getSensorList();
                                     break;
                                 case NetworkInterface.MESSAGE_FAIL :
@@ -431,12 +446,21 @@ public class SensorInformationFragment extends Fragment {
                                         public void run() {
                                             try {
                                                 if (returnObject.getString(NetworkInterface.MESSAGE_AIR_ADDRESS) != null) {
+                                                    SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
+                                                    data.edit().putString(PreferenceName.preferenceBluetoothAir, returnObject.getString(NetworkInterface.MESSAGE_AIR_ADDRESS)).apply();
                                                     viewAirAddress.setText(returnObject.getString(NetworkInterface.MESSAGE_AIR_ADDRESS));
                                                     viewAirStatus.setText(getResources().getString(R.string.bluetooth_online));
                                                 }
                                                 else {
                                                     viewAirAddress.setText("");
                                                     viewAirStatus.setText(getResources().getString(R.string.bluetooth_offline));
+                                                }
+                                                SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
+                                                if(data.getString(PreferenceName.preferenceBluetoothHeart, null) != null) {
+                                                    viewHeartAddress.setText(data.getString(PreferenceName.preferenceBluetoothHeart, null));
+                                                }
+                                                if(data.getString(PreferenceName.preferenceBluetoothHeartConnect, "Disconnect").equals("Connect")) {
+                                                    viewHeartAddress.setText(data.getString(PreferenceName.preferenceBluetoothHeartConnect, null));
                                                 }
                                             }
                                             catch(JSONException e){
@@ -558,5 +582,23 @@ public class SensorInformationFragment extends Fragment {
             Log.e(this.getClass().getName(), "JSON ERROR!");
             Utility.displayToastMessage(listHandler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
         }
+    }
+
+    protected void activatePolar() {
+        Log.w(this.getClass().getName(), "activatePolar()");
+        mPolarBleUpdateReceiver = new MyPolarBleReceiver(strToken, getActivity());
+        getActivity().registerReceiver(mPolarBleUpdateReceiver, makePolarGattUpdateIntentFilter());
+    }
+
+    protected void deactivatePolar() {
+        getActivity().unregisterReceiver(mPolarBleUpdateReceiver);
+    }
+
+    private static IntentFilter makePolarGattUpdateIntentFilter() {
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(MyPolarBleReceiver.ACTION_GATT_CONNECTED);
+        intentFilter.addAction(MyPolarBleReceiver.ACTION_GATT_DISCONNECTED);
+        intentFilter.addAction(MyPolarBleReceiver.ACTION_HR_DATA_AVAILABLE);
+        return intentFilter;
     }
 }

@@ -78,6 +78,7 @@ public class MyPolarBleReceiver extends BroadcastReceiver {
             if (ACTION_GATT_CONNECTED.equals(action)) {
                 Log.w(this.getClass().getName(), "####ACTION_GATT_CONNECTED");
             } else if (ACTION_GATT_DISCONNECTED.equals(action)) {
+                preferences.edit().putString(PreferenceName.preferenceBluetoothHeartConnect, "Disconnect").apply();
             } else if (ACTION_HR_DATA_AVAILABLE.equals(action)) {
                 //broadcastUpdate(ACTION_HR_DATA_AVAILABLE, heartRate+";"+pnnPercentage+";"+pnnCount+";"+rrThreshold+";"+bioHarnessSessionData.totalNN+";"+bioHarnessSessionData.lastRRvalue+";"+bioHarnessSessionData.sessionId);
                 String data = intent.getStringExtra(EXTRA_DATA);
@@ -99,6 +100,7 @@ public class MyPolarBleReceiver extends BroadcastReceiver {
                     rootObject.put(NetworkInterface.REQUEST_HEART_RATE, heartRate);
                     rootObject.put(NetworkInterface.REQUEST_RR_INTERVAL, lastRRvalue);
 
+                    preferences.edit().putString(PreferenceName.preferenceBluetoothHeartConnect, "Connect").apply();
                     preferences.edit().putString(PreferenceName.preferenceRealHeart, Integer.toString(heartRate)).apply();
                     preferences.edit().putString(PreferenceName.preferenceRealRR, Integer.toString(lastRRvalue)).apply();
 
