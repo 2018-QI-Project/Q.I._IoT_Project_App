@@ -50,6 +50,14 @@
 
     <!-- Previous Data Fragment -->
     <string name="previous_data_main">Previous Data</string>
+    <string name="currentSensor">Choose Sensor</string>
+    <string-array name="sensors">
+        <item>CO</item>
+        <item>SO2</item>
+        <item>NO2</item>
+        <item>O3</item>
+        <item>PM2.5</item>
+    </string-array>
 
     <!-- Bluetooth -->
     <string name="bluetooth_not_connected">You are not connected to a device</string>

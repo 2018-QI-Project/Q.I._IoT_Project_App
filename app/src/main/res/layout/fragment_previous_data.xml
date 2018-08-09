@@ -5,148 +5,48 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/txtPreviousCO"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="8dp"
-        android:paddingBottom="4dp"
-        android:text="@string/co"
-        android:textColor="@color/white"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toTopOf="@+id/chaPreviousCO"
+    <Spinner
+        android:id="@+id/spiFilter"
+        android:layout_width="fill_parent"
+        android:layout_height="34dp"
+        android:background="@color/yellow"
+        android:entries="@array/sensors"
+        android:prompt="@string/currentSensor"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/chaPreviousCO"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/txtPreviousSO2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtPreviousCO">
-
-    </com.github.mikephil.charting.charts.LineChart>
-
-    <TextView
-        android:id="@+id/txtPreviousSO2"
+    <DatePicker
+        android:id="@+id/dpkDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:paddingBottom="4dp"
-        android:text="@string/so2"
-        android:textColor="@color/white"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toTopOf="@+id/chaPreviousSO2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        android:calendarViewShown="false"
+        android:datePickerMode="spinner"
+        app:layout_constraintBottom_toTopOf="@+id/chaPreviousData"
+        app:layout_constraintEnd_toStartOf="@+id/btnSearch"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chaPreviousCO" />
+        app:layout_constraintTop_toBottomOf="@+id/spiFilter" />a
 
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/chaPreviousSO2"
+    <Button
+        android:id="@+id/btnSearch"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/txtPreviousNO2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtPreviousSO2">
-
-    </com.github.mikephil.charting.charts.LineChart>
-
-    <TextView
-        android:id="@+id/txtPreviousNO2"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="8dp"
-        android:paddingBottom="4dp"
-        android:text="@string/no2"
-        android:textColor="@color/white"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toTopOf="@+id/chaPreviousNO2"
+        android:text="@android:string/search_go"
+        app:layout_constraintBottom_toTopOf="@+id/chaPreviousData"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chaPreviousSO2" />
+        app:layout_constraintStart_toEndOf="@+id/dpkDate"
+        app:layout_constraintTop_toBottomOf="@+id/spiFilter" />
 
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/chaPreviousNO2"
+    <com.github.mikephil.charting.charts.BarChart
+        android:id="@+id/chaPreviousData"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/txtPreviousO3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtPreviousNO2">
-
-    </com.github.mikephil.charting.charts.LineChart>
-
-    <TextView
-        android:id="@+id/txtPreviousO3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="8dp"
-        android:paddingBottom="4dp"
-        android:text="@string/o3"
-        android:textColor="@color/white"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toTopOf="@+id/chaPreviousO3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chaPreviousNO2" />
-
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/chaPreviousO3"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/txtPreviousTemperature"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtPreviousO3">
-
-    </com.github.mikephil.charting.charts.LineChart>
-
-    <TextView
-        android:id="@+id/txtPreviousTemperature"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="8dp"
-        android:paddingBottom="4dp"
-        android:text="@string/temperature"
-        android:textColor="@color/white"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toTopOf="@+id/chaPreviousTemperature"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chaPreviousO3" />
-
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/chaPreviousTemperature"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtPreviousTemperature">
+        app:layout_constraintTop_toBottomOf="@+id/dpkDate">
 
-    </com.github.mikephil.charting.charts.LineChart>
+    </com.github.mikephil.charting.charts.BarChart>
 
 </android.support.constraint.ConstraintLayout>

@@ -22,6 +22,7 @@ public interface NetworkInterface {
     String TOAST_SENSOR_EXIST = "Already Have Sensor";
     String TOAST_SENSOR_NOTHING = "Please Registration Sensor First";
     String TOAST_UNUSED_SENSOR = "This Sensor Isn't Registered";
+    String TOAST_NO_DATA = "No Sensor Data";
 
     // Network Request
     String REQUEST_CLIENT_TYPE = "client";
@@ -46,6 +47,7 @@ public interface NetworkInterface {
     String REQUEST_LON = "longitude";
     String REQUEST_HEART_RATE = "heartRate";
     String REQUEST_RR_INTERVAL = "rrInterval";
+    String REQUEST_DATE = "day";
 
     // Network Response
     String MESSAGE_TYPE = "type";
@@ -68,6 +70,7 @@ public interface NetworkInterface {
     String MESSAGE_LON = "longitude";
     String MESSAGE_HEART_RATE = "heartRate";
     String MESSAGE_RR_INTERVAL = "rrInterval";
+    String MESSAGE_HOUR = "hour";
 
     // CSV Data Order
     String[] CSV_DATA = {"co", "so2", "no2", "o3", "pm25"};
