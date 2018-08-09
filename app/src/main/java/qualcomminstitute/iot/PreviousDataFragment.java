@@ -129,6 +129,7 @@ public class PreviousDataFragment extends Fragment {
                                         Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_UNUSED_SENSOR);
                                         break;
                                     case "nothing data":
+                                    case "You have not air sensor":
                                         Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_NO_DATA);
                                         barChart.clear();
                                         barChart.invalidate();

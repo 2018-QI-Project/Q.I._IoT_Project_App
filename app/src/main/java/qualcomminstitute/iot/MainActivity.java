@@ -302,6 +302,12 @@ public class MainActivity extends AppCompatActivity {
         this.unregisterReceiver(mPolarBleUpdateReceiver);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        deactivatePolar();
+    }
+
     private static IntentFilter makePolarGattUpdateIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(MyPolarBleReceiver.ACTION_GATT_CONNECTED);

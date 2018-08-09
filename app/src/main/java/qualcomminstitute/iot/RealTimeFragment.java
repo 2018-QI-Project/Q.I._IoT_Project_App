@@ -74,6 +74,7 @@ public class RealTimeFragment extends Fragment {
                                         getActivity().finish();
                                         break;
                                     case "not registered sensor":
+                                    case "You have not air sensor":
                                         Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_UNUSED_SENSOR);
                                         break;
                                     case "nothing data":
@@ -139,6 +140,7 @@ public class RealTimeFragment extends Fragment {
                                         getActivity().finish();
                                         break;
                                     case "nothing data":
+                                    case "You have not heart sensor":
                                         Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_NO_DATA);
                                         break;
                                     case "not registered sensor":

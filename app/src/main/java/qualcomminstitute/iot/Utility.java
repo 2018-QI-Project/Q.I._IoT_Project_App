@@ -127,8 +127,7 @@ public class Utility {
 
     public static String convertUnixTime(long timestamp) {
         Date date = new Date(timestamp * 1000);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT+04:00"));
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
         return dateFormat.format(date);
     }
 
