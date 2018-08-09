@@ -20,6 +20,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,6 +30,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,7 +40,10 @@ import java.util.Locale;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
     private MapView mapView = null;
+    private Spinner viewSpinner;
+    private TextView viewDate;
     private GoogleMap mMap;
+    private String strToken;
     private Location currentLocation;
     private CircleOptions myCircle;
     private final int LOCATION_PERMISSION = 0;
@@ -52,7 +59,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 case NetworkInterface.REQUEST_SUCCESS :
                     try {
                         // 응답 메세지 JSON 파싱
-                        JSONObject returnObject = new JSONObject(message.getData().getString(NetworkInterface.RESPONSE_DATA));
+                        final JSONObject returnObject = new JSONObject(message.getData().getString(NetworkInterface.RESPONSE_DATA));
 
                         switch(returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {
                             case NetworkInterface.MESSAGE_SUCCESS :
@@ -64,10 +71,46 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                                         try {
                                             for(int i = 0; i < dataArray.length(); ++i) {
                                                 JSONObject dataObject = dataArray.getJSONObject(i);
+                                                String strData;
+
                                                 LatLng location = new LatLng(dataObject.getDouble(NetworkInterface.MESSAGE_LAT), dataObject.getDouble(NetworkInterface.MESSAGE_LON));
                                                 mMap.addCircle(myCircle);
-                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.good)));
+                                                switch(viewSpinner.getSelectedItem().toString()){
+                                                    case "CO":
+                                                        strData = "Date : " + Utility.convertUnixTime(dataObject.getLong(NetworkInterface.MESSAGE_DATE)) + "\n" +
+                                                                "CO : " + dataObject.getDouble(NetworkInterface.MESSAGE_CO);
+                                                        mMap.addMarker(new MarkerOptions().position(location).title(strData).alpha(0f));
+                                                        mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.good)));
+                                                        break;
+                                                    case "NO2":
+                                                        strData = "Date : " + Utility.convertUnixTime(dataObject.getLong(NetworkInterface.MESSAGE_DATE)) + "\n" +
+                                                                "NO2 : " + dataObject.getDouble(NetworkInterface.MESSAGE_NO2);
+                                                        mMap.addMarker(new MarkerOptions().position(location).title(strData).alpha(0f));
+                                                        mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.moderate)));
+                                                        break;
+                                                    case "SO2":
+                                                        strData = "Date : " + Utility.convertUnixTime(dataObject.getLong(NetworkInterface.MESSAGE_DATE)) + "\n" +
+                                                                "SO2 : " + dataObject.getDouble(NetworkInterface.MESSAGE_SO2);
+                                                        mMap.addMarker(new MarkerOptions().position(location).title(strData).alpha(0f));
+                                                        mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.unhealthy)));
+                                                        break;
+                                                    case "O3":
+                                                        strData = "Date : " + Utility.convertUnixTime(dataObject.getLong(NetworkInterface.MESSAGE_DATE)) + "\n" +
+                                                                "O3 : " + dataObject.getDouble(NetworkInterface.MESSAGE_O3);
+                                                        mMap.addMarker(new MarkerOptions().position(location).title(strData).alpha(0f));
+                                                        mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.unhealthy)));
+                                                        break;
+                                                    case "PM2.5":
+                                                        strData = "Date : " + Utility.convertUnixTime(dataObject.getLong(NetworkInterface.MESSAGE_DATE)) + "\n" +
+                                                                "PM2.5 : " + dataObject.getDouble(NetworkInterface.MESSAGE_PM25);
+                                                        mMap.addMarker(new MarkerOptions().position(location).title(strData).alpha(0f));
+                                                        mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.hazardous)));
+                                                        break;
+                                                    default:
+                                                        break;
+                                                }
                                             }
+                                            viewDate.setText(Utility.convertUnixTime(returnObject.getLong(NetworkInterface.MESSAGE_TIME_STAMP)));
                                         }
                                         catch(JSONException e) {
                                             e.printStackTrace();
@@ -118,22 +161,36 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
+
+        // Token 가져오기
+        SharedPreferences preferences = getActivity().getSharedPreferences(PreferenceName.preferenceName, Context.MODE_PRIVATE);
+        strToken = preferences.getString(PreferenceName.preferenceToken, null);
+
+        viewDate = view.findViewById(R.id.txtMapDate);
+        viewSpinner = view.findViewById(R.id.spiMapFilter);
+        viewSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                try {
+                    JSONObject rootObject = new JSONObject();
+                    rootObject.put(NetworkInterface.REQUEST_CLIENT_TYPE, NetworkInterface.REQUEST_CLIENT);
+                    rootObject.put(NetworkInterface.REQUEST_TOKEN, strToken);
+                    rootObject.put(NetworkInterface.REQUEST_USER_TYPE, NetworkInterface.REQUEST_ALL);
+
+                    new RequestMessage(NetworkInterface.REST_AIR_QUALITY_REAL_TIME, "POST", rootObject, handler).start();
+                }
+                catch(JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
         mapView = view.findViewById(R.id.mapNearAir);
         mapView.getMapAsync(this);
-
-        SharedPreferences preferences = getActivity().getSharedPreferences(PreferenceName.preferenceName, Context.MODE_PRIVATE);
-        String strToken = preferences.getString(PreferenceName.preferenceToken, null);
-        try {
-            JSONObject rootObject = new JSONObject();
-            rootObject.put(NetworkInterface.REQUEST_CLIENT_TYPE, NetworkInterface.REQUEST_CLIENT);
-            rootObject.put(NetworkInterface.REQUEST_TOKEN, strToken);
-            rootObject.put(NetworkInterface.REQUEST_USER_TYPE, NetworkInterface.REQUEST_ALL);
-
-            new RequestMessage(NetworkInterface.REST_AIR_QUALITY_REAL_TIME, "POST", rootObject, handler).start();
-        }
-        catch(JSONException e) {
-            e.printStackTrace();
-        }
 
         return view;
     }

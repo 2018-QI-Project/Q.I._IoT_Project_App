@@ -138,6 +138,9 @@ public class RealTimeFragment extends Fragment {
                                         dataEditor.apply();
                                         getActivity().finish();
                                         break;
+                                    case "nothing data":
+                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_NO_DATA);
+                                        break;
                                     case "not registered sensor":
                                         Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_UNUSED_SENSOR);
                                         break;
@@ -188,6 +191,13 @@ public class RealTimeFragment extends Fragment {
             rootObject.put(NetworkInterface.REQUEST_USER_TYPE, NetworkInterface.REQUEST_USER);
 
             new RequestMessage(NetworkInterface.REST_AIR_QUALITY_REAL_TIME, "POST", rootObject, airHandler).start();
+
+            rootObject = new JSONObject();
+            rootObject.put(NetworkInterface.REQUEST_CLIENT_TYPE, NetworkInterface.REQUEST_CLIENT);
+            rootObject.put(NetworkInterface.REQUEST_TOKEN, strToken);
+            rootObject.put(NetworkInterface.REQUEST_USER_TYPE, NetworkInterface.REQUEST_USER);
+
+            new RequestMessage(NetworkInterface.REST_HEART_REAL_TIME, "POST", rootObject, heartHandler).start();
         } catch (JSONException e) {
             Log.e(this.getClass().getName(), "JSON ERROR!");
             Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);

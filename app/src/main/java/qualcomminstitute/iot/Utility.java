@@ -26,6 +26,7 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import static android.content.Context.MODE_PRIVATE;
 import static qualcomminstitute.iot.NetworkInterface.TOAST_EXCEPTION;
@@ -126,7 +127,8 @@ public class Utility {
 
     public static String convertUnixTime(long timestamp) {
         Date date = new Date(timestamp * 1000);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+        dateFormat.setTimeZone(TimeZone.getTimeZone());
         return dateFormat.format(date);
     }
 

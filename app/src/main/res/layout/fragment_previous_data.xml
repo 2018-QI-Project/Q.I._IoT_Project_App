@@ -9,7 +9,7 @@
         android:id="@+id/spiFilter"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/yellow"
+        android:background="@color/iron"
         android:entries="@array/sensors"
         android:prompt="@string/currentSensor"
         app:layout_constraintBottom_toTopOf="@+id/dpkDate"

@@ -32,8 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PreviousDataFragment extends Fragment {
-    private Spinner spiFilter;
-    private Button btnSearch;
+    private Spinner viewFilter;
+    private Button viewSearch;
     private DatePicker dpkDate;
     private int year, month, date;
 
@@ -62,7 +62,7 @@ public class PreviousDataFragment extends Fragment {
                                             for(int i = 0; i < dataArray.length(); ++i)  {
                                                 JSONObject dataObject = dataArray.getJSONObject(i);
 
-                                                switch((String)spiFilter.getSelectedItem()){
+                                                switch(viewFilter.getSelectedItem().toString()){
                                                     case "CO":
                                                         BarEntry.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_CO))));
                                                         break;
@@ -158,12 +158,12 @@ public class PreviousDataFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_previous_data, container, false);
         barChart = view.findViewById(R.id.chaPreviousData);
-        spiFilter = view.findViewById(R.id.spiFilter);
+        viewFilter = view.findViewById(R.id.spiFilter);
         dpkDate = view.findViewById(R.id.dpkDate);
         dpkDate.setMaxDate(System.currentTimeMillis() - 1000);
 
-        btnSearch = view.findViewById(R.id.btnSearch);
-        btnSearch.setOnClickListener(new View.OnClickListener() {
+        viewSearch = view.findViewById(R.id.btnSearch);
+        viewSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 year = dpkDate.getYear();

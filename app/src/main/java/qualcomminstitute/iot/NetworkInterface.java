@@ -59,6 +59,8 @@ public interface NetworkInterface {
     String MESSAGE_AIR_ADDRESS = "airAddress";
     String MESSAGE_AIR_DATA = "airData";
     String MESSAGE_HEART_DATA = "heartData";
+    String MESSAGE_HOUR = "hour";
+    String MESSAGE_TIME_STAMP = "timestamp";
 
     // Sensor Data
     String MESSAGE_CO = "co";
@@ -71,7 +73,6 @@ public interface NetworkInterface {
     String MESSAGE_LON = "longitude";
     String MESSAGE_HEART_RATE = "heartRate";
     String MESSAGE_RR_INTERVAL = "rrInterval";
-    String MESSAGE_HOUR = "hour";
 
     // CSV Data Order
     String[] CSV_DATA = {"co", "so2", "no2", "o3", "pm25"};
