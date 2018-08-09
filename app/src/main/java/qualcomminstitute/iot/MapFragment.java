@@ -1,17 +1,22 @@
 package qualcomminstitute.iot;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,12 +27,89 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Locale;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
     private MapView mapView = null;
     private GoogleMap mMap;
+    private Location currentLocation;
+    private CircleOptions myCircle;
     private final int LOCATION_PERMISSION = 0;
+
+    @SuppressLint("HandlerLeak")
+    private final Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message message) {
+            switch (message.what) {
+                case NetworkInterface.REQUEST_FAIL :
+                    Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
+                    break;
+                case NetworkInterface.REQUEST_SUCCESS :
+                    try {
+                        // 응답 메세지 JSON 파싱
+                        JSONObject returnObject = new JSONObject(message.getData().getString(NetworkInterface.RESPONSE_DATA));
+
+                        switch(returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {
+                            case NetworkInterface.MESSAGE_SUCCESS :
+                                final JSONArray dataArray = returnObject.getJSONArray(NetworkInterface.MESSAGE_AIR_DATA);
+                                handler.post(new Thread(){
+                                    @Override
+                                    public void run() {
+                                        mMap.clear();
+                                        try {
+                                            for(int i = 0; i < dataArray.length(); ++i) {
+                                                JSONObject dataObject = dataArray.getJSONObject(i);
+                                                LatLng location = new LatLng(dataObject.getDouble(NetworkInterface.MESSAGE_LAT), dataObject.getDouble(NetworkInterface.MESSAGE_LON));
+                                                mMap.addCircle(myCircle);
+                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.good)));
+                                            }
+                                        }
+                                        catch(JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                });
+                                break;
+                            case NetworkInterface.MESSAGE_FAIL :
+                                switch (returnObject.getString(NetworkInterface.MESSAGE_VALUE)) {
+                                    case "invalid client type":
+                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_CLIENT_FAILED);
+                                        break;
+                                    case "not valid token":
+                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_TOKEN_FAILED);
+                                        SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, Context.MODE_PRIVATE);
+                                        SharedPreferences.Editor dataEditor = data.edit();
+                                        dataEditor.remove(PreferenceName.preferenceToken);
+                                        dataEditor.apply();
+                                        getActivity().finish();
+                                        break;
+                                    case "not registered sensor":
+                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_UNUSED_SENSOR);
+                                        break;
+                                    case "nothing data":
+                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_NO_DATA);
+                                        break;
+                                    default:
+                                        Log.d("TEST", returnObject.getString(NetworkInterface.MESSAGE_VALUE));
+                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_DEFAULT_FAILED);
+                                        break;
+                                }
+                                break;
+                        }
+                    }
+                    catch(JSONException e) {
+                        e.printStackTrace();
+                        Log.e(this.getClass().getName(), "JSON ERROR!");
+                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
+                    }
+            }
+        }
+    };
 
     public MapFragment() {
     }
@@ -38,6 +120,21 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
         mapView = view.findViewById(R.id.mapNearAir);
         mapView.getMapAsync(this);
+
+        SharedPreferences preferences = getActivity().getSharedPreferences(PreferenceName.preferenceName, Context.MODE_PRIVATE);
+        String strToken = preferences.getString(PreferenceName.preferenceToken, null);
+        try {
+            JSONObject rootObject = new JSONObject();
+            rootObject.put(NetworkInterface.REQUEST_CLIENT_TYPE, NetworkInterface.REQUEST_CLIENT);
+            rootObject.put(NetworkInterface.REQUEST_TOKEN, strToken);
+            rootObject.put(NetworkInterface.REQUEST_USER_TYPE, NetworkInterface.REQUEST_ALL);
+
+            new RequestMessage(NetworkInterface.REST_AIR_QUALITY_REAL_TIME, "POST", rootObject, handler).start();
+        }
+        catch(JSONException e) {
+            e.printStackTrace();
+        }
+
         return view;
     }
 
@@ -64,13 +161,23 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mMap = googleMap;
         settingGPS();
         getMyLocation();
+        if (currentLocation != null) {
+            double lng = currentLocation.getLongitude();
+            double lat = currentLocation.getLatitude();
+            LatLng myPlace = new LatLng(lat, lng);
+            // mMap.addMarker(new MarkerOptions().position(myPlace).title("Here is my position!"));
+            myCircle = new CircleOptions().center(myPlace).radius(10).fillColor(getResources().getColor(R.color.my_location));
+            mMap.addCircle(myCircle);
+            // 2.0f is Most Zoom Out
+            // 21.0f is Most Zoom In
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myPlace, 19.0f));
+        }
     }
 
     private LocationManager locationManager;
     private LocationListener locationListener;
 
     private void getMyLocation() {
-        Location currentLocation = null;
         // Register the listener with the Location Manager to receive location updates
         if(getActivity() != null) {
             if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -83,16 +190,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 // 수동으로 위치 구하기
                 String locationProvider = LocationManager.GPS_PROVIDER;
                 currentLocation = locationManager.getLastKnownLocation(locationProvider);
-                if (currentLocation != null) {
-                    double lng = currentLocation.getLongitude();
-                    double lat = currentLocation.getLatitude();
-                    LatLng myPlace = new LatLng(lat, lng);
-                    mMap.addMarker(new MarkerOptions().position(myPlace).title("Here is my position!"));
-                    mMap.addCircle(new CircleOptions().center(myPlace).radius(100).strokeColor(Color.RED).fillColor(Color.BLUE));
-                    // 2.0f is Most Zoom Out
-                    // 21.0f is Most Zoom In
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myPlace, 19.0f));
-                }
             }
         }
 
@@ -107,7 +204,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 double latitude = location.getLatitude();
                 double longitude = location.getLongitude();
                 // TODO 위도, 경도로 하고 싶은 것
-                getMyLocation();
+                LatLng myPlace = new LatLng(latitude, longitude);
+                myCircle.center(myPlace);
+                // 2.0f is Most Zoom Out
+                // 21.0f is Most Zoom In
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(myPlace));
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {

@@ -42,6 +42,7 @@ public interface NetworkInterface {
     String REQUEST_AIR = "air";
     String REQUEST_HEART_SENSOR = "heart";
     String REQUEST_USER_TYPE = "allUser";
+    String REQUEST_ALL = "true";
     String REQUEST_USER = "false";
     String REQUEST_LAT = "latitude";
     String REQUEST_LON = "longitude";

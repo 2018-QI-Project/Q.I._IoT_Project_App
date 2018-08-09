@@ -7,11 +7,12 @@
 
     <Spinner
         android:id="@+id/spiFilter"
-        android:layout_width="fill_parent"
-        android:layout_height="34dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:background="@color/yellow"
         android:entries="@array/sensors"
         android:prompt="@string/currentSensor"
+        app:layout_constraintBottom_toTopOf="@+id/dpkDate"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

@@ -21,11 +21,9 @@ import java.util.Locale;
 
 public class RealTimeFragment extends Fragment {
     private TextView viewRealTimeCO, viewRealTimeSO2, viewRealTimeNO2, viewRealTimeO3, viewRealTimePM25;
-    private TextView viewRealTimeAirDate, viewRealTimeHeartDate;
+    private TextView viewRealTimeAirDate;
     private TextView viewRealTimeHeartRate, viewRealTimeRRInterval;
     private String strToken, strAddress;
-
-    private double lat, lon;
 
     private Handler handler;
 
@@ -55,9 +53,6 @@ public class RealTimeFragment extends Fragment {
                                             viewRealTimeO3.setText(String.format(Locale.US, "%.2f", dataObject.getDouble(NetworkInterface.MESSAGE_O3)));
                                             viewRealTimePM25.setText(String.format(Locale.US, "%.2f", dataObject.getDouble(NetworkInterface.MESSAGE_PM25)));
                                             viewRealTimeAirDate.setText(Utility.convertUnixTime(dataObject.getLong(NetworkInterface.MESSAGE_DATE)));
-
-                                            lat = dataObject.getDouble(NetworkInterface.MESSAGE_LAT);
-                                            lon = dataObject.getDouble(NetworkInterface.MESSAGE_LON);
                                         }
                                         catch(JSONException e) {
                                             e.printStackTrace();
@@ -80,6 +75,9 @@ public class RealTimeFragment extends Fragment {
                                         break;
                                     case "not registered sensor":
                                         Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_UNUSED_SENSOR);
+                                        break;
+                                    case "nothing data":
+                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_NO_DATA);
                                         break;
                                     default:
                                         Log.d("TEST", returnObject.getString(NetworkInterface.MESSAGE_VALUE));
@@ -120,7 +118,6 @@ public class RealTimeFragment extends Fragment {
                                         try {
                                             viewRealTimeHeartRate.setText(String.format(Locale.US, "%.2f", dataObject.getDouble(NetworkInterface.MESSAGE_HEART_RATE)));
                                             viewRealTimeRRInterval.setText(String.format(Locale.US, "%.2f", dataObject.getDouble(NetworkInterface.MESSAGE_RR_INTERVAL)));
-                                            viewRealTimeHeartDate.setText(Utility.convertUnixTime(dataObject.getLong(NetworkInterface.MESSAGE_DATE)));
                                         }
                                         catch(JSONException e) {
                                             e.printStackTrace();
@@ -171,8 +168,8 @@ public class RealTimeFragment extends Fragment {
 
         // Token 얻어오기
         SharedPreferences preferences = getActivity().getSharedPreferences(PreferenceName.preferenceName, Context.MODE_PRIVATE);
-        strToken = preferences.getString(PreferenceName.preferenceToken, "");
-        strAddress = preferences.getString(PreferenceName.preferenceBluetoothAir, "");
+        strToken = preferences.getString(PreferenceName.preferenceToken, null);
+        strAddress = preferences.getString(PreferenceName.preferenceBluetoothAir, null);
 
         viewRealTimeCO = view.findViewById(R.id.txtRealTimeCO);
         viewRealTimeSO2 = view.findViewById(R.id.txtRealTimeSO2);
@@ -182,21 +179,18 @@ public class RealTimeFragment extends Fragment {
         viewRealTimeAirDate = view.findViewById(R.id.txtRealTimeAirDate);
         viewRealTimeHeartRate = view.findViewById(R.id.txtRealTimeHeartRate);
         viewRealTimeRRInterval = view.findViewById(R.id.txtRealTimeRRInterval);
-        viewRealTimeHeartDate = view.findViewById(R.id.txtRealTimeHeartDate);
 
-        if(!strAddress.isEmpty()) {
-            try {
-                // POST 데이터 전송을 위한 자료구조
-                JSONObject rootObject = new JSONObject();
-                rootObject.put(NetworkInterface.REQUEST_CLIENT_TYPE, NetworkInterface.REQUEST_CLIENT);
-                rootObject.put(NetworkInterface.REQUEST_TOKEN, strToken);
-                rootObject.put(NetworkInterface.REQUEST_USER_TYPE, NetworkInterface.REQUEST_USER);
+        try {
+            // POST 데이터 전송을 위한 자료구조
+            JSONObject rootObject = new JSONObject();
+            rootObject.put(NetworkInterface.REQUEST_CLIENT_TYPE, NetworkInterface.REQUEST_CLIENT);
+            rootObject.put(NetworkInterface.REQUEST_TOKEN, strToken);
+            rootObject.put(NetworkInterface.REQUEST_USER_TYPE, NetworkInterface.REQUEST_USER);
 
-                new RequestMessage(NetworkInterface.REST_AIR_QUALITY_REAL_TIME, "POST", rootObject, airHandler).start();
-            } catch (JSONException e) {
-                Log.e(this.getClass().getName(), "JSON ERROR!");
-                Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
-            }
+            new RequestMessage(NetworkInterface.REST_AIR_QUALITY_REAL_TIME, "POST", rootObject, airHandler).start();
+        } catch (JSONException e) {
+            Log.e(this.getClass().getName(), "JSON ERROR!");
+            Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
         }
 
         return view;

@@ -48,6 +48,11 @@
     <!-- Forgot Password Activity -->
     <string name="forgot_password_main">Reset Password</string>
 
+    <!-- RealTime Data Fragment -->
+    <string name="date">Date : </string>
+    <string name="heart_rate">Heart Rate : </string>
+    <string name="rr_interval">RR Interval : </string>
+
     <!-- Previous Data Fragment -->
     <string name="previous_data_main">Previous Data</string>
     <string name="currentSensor">Choose Sensor</string>
@@ -89,14 +94,12 @@
     <string name="sensor_type">Type : </string>
     <string name="sensor_address">Address : </string>
     <string name="sensor_status">Status : </string>
-    <string name="sensor_heart_rate">Heart Rate : </string>
-    <string name="sensor_rr_interval">RR Interval : </string>
     <string name="sensor_register">Register</string>
     <string name="sensor_deassociation">Deassociation</string>
     <string name="sensor_air">Air Pollution Sensor</string>
     <string name="sensor_heart">Heart Sensor</string>
 
-    <!-- DeviceListActivity -->
+    <!-- Bluetooth Connect Activity -->
     <string name="scanning">scanning for devices...</string>
     <string name="select_device">select a device to connect</string>
     <string name="none_paired">No devices have been paired</string>

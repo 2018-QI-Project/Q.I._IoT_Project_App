@@ -31,4 +31,13 @@
 
     <!-- Sign In Main Activity -->
     <color name="sign_in_activity_forgot_password_color">#000000</color>
+
+    <!-- AQI Color -->
+    <color name='my_location'>#7D003E7D</color>
+    <color name="good">#01E400</color>
+    <color name="moderate">#FFFF01</color>
+    <color name="unhealthy_for_sensitive_groups">#FD7000</color>
+    <color name="unhealthy">#FE0000</color>
+    <color name="very_unhealthy">#98004B</color>
+    <color name="hazardous">#7E0123</color>
 </resources>

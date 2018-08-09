@@ -105,7 +105,7 @@ public class ChangePasswordFragment extends Fragment {
 
         // Token 얻어오기
         SharedPreferences preferences = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
-        strToken = preferences.getString(PreferenceName.preferenceToken, "");
+        strToken = preferences.getString(PreferenceName.preferenceToken, null);
 
         // Progress Dialog 초기화
         progressDialog = new ProgressDialog(getActivity(), R.style.AppTheme_Dark_Dialog);
