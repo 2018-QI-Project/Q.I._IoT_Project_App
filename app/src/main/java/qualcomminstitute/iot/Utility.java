@@ -281,6 +281,8 @@ public class Utility {
                                     }
                                 }
 
+                                Log.d("JSON DATA", rootObject.toString());
+
                                 new RequestMessage(NetworkInterface.REST_AIR_QUALITY_INSERT, "POST", rootObject, airHandler).start();
                             }
                         } catch (JSONException e) {

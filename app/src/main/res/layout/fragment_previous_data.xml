@@ -26,13 +26,13 @@
         app:layout_constraintBottom_toTopOf="@+id/chaPreviousData"
         app:layout_constraintEnd_toStartOf="@+id/btnSearch"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spiFilter" />a
+        app:layout_constraintTop_toBottomOf="@+id/spiFilter" />
 
     <Button
         android:id="@+id/btnSearch"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@android:string/search_go"
+        android:text="@string/search"
         app:layout_constraintBottom_toTopOf="@+id/chaPreviousData"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/dpkDate"

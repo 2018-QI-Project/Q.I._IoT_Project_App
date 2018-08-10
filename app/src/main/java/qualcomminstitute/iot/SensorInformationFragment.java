@@ -49,10 +49,12 @@ public class SensorInformationFragment extends Fragment {
     private String strToken, strAddress;
     private MyPolarBleReceiver mPolarBleUpdateReceiver;
 
+    private SharedPreferences preferences;
     private Handler handler;
     private ProgressDialog progressDialog;
 
     private Thread checkConnect;
+    private boolean flag;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,7 +87,6 @@ public class SensorInformationFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        checkConnect.interrupt();
     }
 
     @Override
@@ -94,6 +95,7 @@ public class SensorInformationFragment extends Fragment {
         if (airBluetooth != null) {
             airBluetooth.stop();
         }
+        flag = false;
     }
 
     @Override
@@ -110,16 +112,16 @@ public class SensorInformationFragment extends Fragment {
                 airBluetooth.start();
             }
         }
-
-        if(!checkConnect.isAlive()) {
-            checkConnect.start();
-        }
+        flag = true;
+        checkConnect.start();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sensor_information, container, false);
 
+        preferences = getActivity().getSharedPreferences(PreferenceName.preferenceName, Context.MODE_PRIVATE);
+        flag = true;
         // Handler 생성
         handler = new Handler();
 
@@ -127,8 +129,14 @@ public class SensorInformationFragment extends Fragment {
         checkConnect = new Thread() {
             @Override
             public void run() {
-                while(true) {
-                    if(airBluetooth != null) {
+                while(flag) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
+                    if (airBluetooth != null) {
                         if (airBluetooth.getState() != Bluetooth.STATE_CONNECTED) {
                             handler.post(new Thread() {
                                 @Override
@@ -136,8 +144,7 @@ public class SensorInformationFragment extends Fragment {
                                     viewAirStatus.setText(getResources().getString(R.string.bluetooth_offline));
                                 }
                             });
-                        }
-                        else {
+                        } else {
                             handler.post(new Thread() {
                                 @Override
                                 public void run() {
@@ -146,8 +153,7 @@ public class SensorInformationFragment extends Fragment {
                             });
                         }
                     }
-                    SharedPreferences preferences = getActivity().getSharedPreferences(PreferenceName.preferenceName, Context.MODE_PRIVATE);
-                    if(preferences.getString(PreferenceName.preferenceBluetoothHeartConnect, "Disconnect").equals("Disconnect")) {
+                    if (preferences.getString(PreferenceName.preferenceBluetoothHeartConnect, "Disconnect").equals("Disconnect")) {
                         handler.post(new Thread() {
                             @Override
                             public void run() {
@@ -155,8 +161,7 @@ public class SensorInformationFragment extends Fragment {
                                 viewHeartStatus.setText(preference.getString(PreferenceName.preferenceBluetoothHeartConnect, "Disconnect"));
                             }
                         });
-                    }
-                    else {
+                    } else {
                         handler.post(new Thread() {
                             @Override
                             public void run() {
@@ -164,13 +169,6 @@ public class SensorInformationFragment extends Fragment {
                                 viewHeartStatus.setText(preference.getString(PreferenceName.preferenceBluetoothHeartConnect, "Disconnect"));
                             }
                         });
-                    }
-                    try {
-                        Thread.sleep(10000);
-                    }
-                    catch(InterruptedException e) {
-                        e.printStackTrace();
-                        break;
                     }
                 }
             }

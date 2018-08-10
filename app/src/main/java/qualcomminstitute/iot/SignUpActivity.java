@@ -80,7 +80,7 @@ public class SignUpActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Utility.initView(viewEmail, viewPassword, viewRepeatPassword, viewFullName, viewAge);
-        viewEmail.requestFocus();
+        viewSubmit.requestFocus();
     }
 
     @Override

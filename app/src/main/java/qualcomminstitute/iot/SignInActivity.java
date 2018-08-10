@@ -147,6 +147,6 @@ public class SignInActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Utility.initView(viewEmail, viewPassword);
-        viewEmail.requestFocus();
+        viewSignIn.requestFocus();
     }
 }

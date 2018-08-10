@@ -115,17 +115,6 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences preferences = MainActivity.this.getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
         strToken = preferences.getString(PreferenceName.preferenceToken, null);
 
-        // Bluetooth 연결
-        String bluetoothAddress = preferences.getString(PreferenceName.preferenceBluetoothAir, null);
-        if(bluetoothAddress != null) {
-            BluetoothDevice device = bluetoothAdapter.getRemoteDevice(preferences.getString(PreferenceName.preferenceBluetoothAir, null));
-            new Bluetooth(this, Utility.getBluetoothHandler(MainActivity.this, handler)).connect(device, false);
-        }
-        String heartAddress = preferences.getString(PreferenceName.preferenceBluetoothHeart, null);
-        if(heartAddress != null) {
-            activatePolar();
-        }
-
         drawerLayout = findViewById(R.id.layDrawerLayout);
         navigationView = findViewById(R.id.navView);
         toolbar = findViewById(R.id.barMainToolBar);
@@ -218,6 +207,84 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        @SuppressLint("HandlerLeak")
+        Handler listHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                switch (message.what) {
+                    case NetworkInterface.REQUEST_FAIL :
+                        Utility.displayToastMessage(handler, MainActivity.this, NetworkInterface.TOAST_EXCEPTION);
+                        break;
+                    case NetworkInterface.REQUEST_SUCCESS :
+                        try {
+                            // 응답 메세지 JSON 파싱
+                            final JSONObject returnObject = new JSONObject(message.getData().getString(NetworkInterface.RESPONSE_DATA));
+
+                            switch(returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {
+                                case NetworkInterface.MESSAGE_SUCCESS :
+                                    try {
+                                        if (!returnObject.isNull(NetworkInterface.MESSAGE_AIR_ADDRESS)) {
+                                            SharedPreferences data = MainActivity.this.getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
+                                            data.edit().putString(PreferenceName.preferenceBluetoothAir, returnObject.getString(NetworkInterface.MESSAGE_AIR_ADDRESS)).apply();
+                                            BluetoothDevice device = bluetoothAdapter.getRemoteDevice(data.getString(PreferenceName.preferenceBluetoothAir, null));
+                                            new Bluetooth(MainActivity.this, Utility.getBluetoothHandler(MainActivity.this, handler)).connect(device, false);
+                                        }
+                                        if (!returnObject.isNull(NetworkInterface.MESSAGE_HEART_ADDRESS)) {
+                                            SharedPreferences data = MainActivity.this.getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
+                                            data.edit().putString(PreferenceName.preferenceBluetoothHeart, returnObject.getString(NetworkInterface.MESSAGE_HEART_ADDRESS)).apply();
+                                            String heartAddress = data.getString(PreferenceName.preferenceBluetoothHeart, null);
+                                            if(heartAddress != null) {
+                                                activatePolar();
+                                            }
+                                        }
+                                    }
+                                    catch(JSONException e) {
+                                        Log.e(this.getClass().getName(), "JSON ERROR!");
+                                        Utility.displayToastMessage(handler, MainActivity.this, NetworkInterface.TOAST_EXCEPTION);
+                                    }
+                                    break;
+                                case NetworkInterface.MESSAGE_FAIL :
+                                    switch (returnObject.getString(NetworkInterface.MESSAGE_VALUE)) {
+                                        case "invalid client type":
+                                            Utility.displayToastMessage(handler, MainActivity.this, NetworkInterface.TOAST_CLIENT_FAILED);
+                                            break;
+                                        case "invalid tokenApp":
+                                            Utility.displayToastMessage(handler, MainActivity.this, NetworkInterface.TOAST_TOKEN_FAILED);
+                                            SharedPreferences data = MainActivity.this.getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
+                                            SharedPreferences.Editor dataEditor = data.edit();
+                                            dataEditor.clear();
+                                            dataEditor.apply();
+                                            MainActivity.this.finish();
+                                            break;
+                                        case "There are not sensors registered now":
+                                            Utility.displayToastMessage(handler, MainActivity.this, NetworkInterface.TOAST_SENSOR_NOTHING);
+                                            break;
+                                        default:
+                                            Utility.displayToastMessage(handler, MainActivity.this, NetworkInterface.TOAST_DEFAULT_FAILED);
+                                            break;
+                                    }
+                                    break;
+                            }
+                        }
+                        catch(JSONException e) {
+                            Log.e(this.getClass().getName(), "JSON ERROR!");
+                            Utility.displayToastMessage(handler, MainActivity.this, NetworkInterface.TOAST_EXCEPTION);
+                        }
+                }
+            }
+        };
+        try {
+            // POST 데이터 전송을 위한 자료구조
+            JSONObject rootObject = new JSONObject();
+            rootObject.put(NetworkInterface.REQUEST_CLIENT_TYPE, NetworkInterface.REQUEST_CLIENT);
+            rootObject.put(NetworkInterface.REQUEST_TOKEN, strToken);
+
+            new RequestMessage(NetworkInterface.REST_SENSOR_LIST, "POST", rootObject, listHandler).start();
+        } catch (JSONException e) {
+            Log.e(this.getClass().getName(), "JSON ERROR!");
+            Utility.displayToastMessage(listHandler, MainActivity.this, NetworkInterface.TOAST_EXCEPTION);
+        }
     }
 
     @Override

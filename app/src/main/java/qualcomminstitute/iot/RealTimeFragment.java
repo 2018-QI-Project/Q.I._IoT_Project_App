@@ -1,23 +1,16 @@
 package qualcomminstitute.iot;
 
-import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.Locale;
 
 public class RealTimeFragment extends Fragment {
     private TextView viewRealTimeCO, viewRealTimeSO2, viewRealTimeNO2, viewRealTimeO3, viewRealTimePM25;
@@ -27,7 +20,8 @@ public class RealTimeFragment extends Fragment {
 
     private Handler handler;
     private Thread realTimeThread;
-    SharedPreferences preferences;
+    private SharedPreferences preferences;
+    private boolean flag;
 
     /*
     @SuppressLint("HandlerLeak")
@@ -171,13 +165,14 @@ public class RealTimeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        flag = true;
         realTimeThread.start();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        realTimeThread.interrupt();
+        flag = false;
     }
 
     @Nullable
@@ -185,6 +180,7 @@ public class RealTimeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_realtime, container, false);
 
+        flag = true;
         handler = new Handler();
 
         // Token 얻어오기
@@ -204,59 +200,31 @@ public class RealTimeFragment extends Fragment {
         realTimeThread = new Thread() {
             @Override
             public void run() {
-                while(true){
+                while(flag){
                     try {
-                        handler.post(new Thread(){
-                            @Override
-                            public void run() {
-                                viewRealTimeCO.setText(preferences.getString(NetworkInterface.CSV_DATA[0], null));
-                                viewRealTimeSO2.setText(preferences.getString(NetworkInterface.CSV_DATA[1], null));
-                                viewRealTimeNO2.setText(preferences.getString(NetworkInterface.CSV_DATA[2], null));
-                                viewRealTimeO3.setText(preferences.getString(NetworkInterface.CSV_DATA[3], null));
-                                viewRealTimePM25.setText(preferences.getString(NetworkInterface.CSV_DATA[4], null));
-                                viewRealTimeHeartRate.setText(preferences.getString(PreferenceName.preferenceRealHeart, null));
-                                viewRealTimeRRInterval.setText(preferences.getString(PreferenceName.preferenceRealRR, null));
-                            }
-                        });
-                        Thread.sleep(10000);
+                        Thread.sleep(1000);
                     }
-                    catch(InterruptedException e) {
-                        Log.e(this.getClass().getName(), "EXCEPTION!");
+                    catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
                         break;
                     }
+                    handler.post(new Thread(){
+                        @Override
+                        public void run() {
+                            viewRealTimeCO.setText(preferences.getString(NetworkInterface.CSV_DATA[0], null));
+                            viewRealTimeSO2.setText(preferences.getString(NetworkInterface.CSV_DATA[1], null));
+                            viewRealTimeNO2.setText(preferences.getString(NetworkInterface.CSV_DATA[2], null));
+                            viewRealTimeO3.setText(preferences.getString(NetworkInterface.CSV_DATA[3], null));
+                            viewRealTimePM25.setText(preferences.getString(NetworkInterface.CSV_DATA[4], null));
+                            viewRealTimeHeartRate.setText(preferences.getString(PreferenceName.preferenceRealHeart, null));
+                            viewRealTimeRRInterval.setText(preferences.getString(PreferenceName.preferenceRealRR, null));
+                            viewRealTimeAirDate.setText(Utility.convertUnixTime((System.currentTimeMillis() / 1000)));
+                            Log.d("POSTHANDLER", "1234");
+                        }
+                    });
                 }
             }
         };
-            /*
-            @Override
-            public void run() {
-                while(true) {
-                    try {
-                        // POST 데이터 전송을 위한 자료구조
-                        JSONObject rootObject = new JSONObject();
-                        rootObject.put(NetworkInterface.REQUEST_CLIENT_TYPE, NetworkInterface.REQUEST_CLIENT);
-                        rootObject.put(NetworkInterface.REQUEST_TOKEN, strToken);
-                        rootObject.put(NetworkInterface.REQUEST_USER_TYPE, NetworkInterface.REQUEST_USER);
-
-                        new RequestMessage(NetworkInterface.REST_AIR_QUALITY_REAL_TIME, "POST", rootObject, airHandler).start();
-
-                        rootObject = new JSONObject();
-                        rootObject.put(NetworkInterface.REQUEST_CLIENT_TYPE, NetworkInterface.REQUEST_CLIENT);
-                        rootObject.put(NetworkInterface.REQUEST_TOKEN, strToken);
-                        rootObject.put(NetworkInterface.REQUEST_USER_TYPE, NetworkInterface.REQUEST_USER);
-
-                        new RequestMessage(NetworkInterface.REST_HEART_REAL_TIME, "POST", rootObject, heartHandler).start();
-                        Thread.sleep(10000);
-                    }
-                    catch (Exception e) {
-                        Log.e(this.getClass().getName(), "EXCEPTION ERROR!");
-                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
-                        break;
-                    }
-                }
-            }
-        };
-        */
 
         return view;
     }
