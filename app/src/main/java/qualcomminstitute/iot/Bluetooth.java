@@ -31,9 +31,9 @@ public class Bluetooth{
 
     // Unique UUID for this application
     private static final UUID MY_UUID_SECURE =
-            UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb");
+            UUID.fromString(NetworkInterface.SECURE_UUID);
     private static final UUID MY_UUID_INSECURE =
-            UUID.fromString("572f4ed8-c0ce-4f03-af85-2c44fccc3480");
+            UUID.fromString(NetworkInterface.INSECURE_UUID);
 
     // Member fields
     private final BluetoothAdapter mAdapter;

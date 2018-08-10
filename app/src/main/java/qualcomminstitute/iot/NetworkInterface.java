@@ -99,4 +99,8 @@ public interface NetworkInterface {
     String REST_HEART_REAL_TIME = "data/getRealtimeHR";
     String REST_AIR_QUALITY_HISTORICAL = "data/getHistoricalAQ";
     String REST_HEART_HISTORICAL = "data/getHistoricalHR";
+
+    // UUID
+    String SECURE_UUID = "572f4ed8-c0ce-4f03-af85-2c44fccc3480";
+    String INSECURE_UUID = "94f39d29-7d6d-437d-973b-fba39e49d4ee";
 }

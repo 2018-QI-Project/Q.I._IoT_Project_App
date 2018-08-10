@@ -83,7 +83,7 @@ public class PreviousDataFragment extends Fragment {
                                                 }
                                             }
                                             BarDataSet dataSet;
-                                            dataSet = new BarDataSet(BarEntry, "24 Hours Average Data");
+                                            dataSet = new BarDataSet(BarEntry, "24 Hours Average Data | Xaxis=hour,Yaxis=ppm");
                                             dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
 
                                             List<IBarDataSet> dataSets = new ArrayList<>();
@@ -98,9 +98,13 @@ public class PreviousDataFragment extends Fragment {
                                             barChart.setData(data);
 
                                             List<String> list_x_axis_name = new ArrayList<>();
-                                            list_x_axis_name.add("0");
+                                            for(int i = 0; i<24; i++)
+                                            {
+                                                list_x_axis_name.add(Integer.toString(i+1));
+                                                barChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(list_x_axis_name));
 
-                                            barChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(list_x_axis_name));
+                                            }
+
 
                                             barChart.invalidate();
                                         }
