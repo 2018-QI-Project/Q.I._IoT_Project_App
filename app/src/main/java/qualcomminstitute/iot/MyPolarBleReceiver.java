@@ -105,8 +105,8 @@ public class MyPolarBleReceiver extends BroadcastReceiver {
                     rootObject.put(NetworkInterface.REQUEST_RR_INTERVAL, lastRRvalue);
 
                     preferences.edit().putString(PreferenceName.preferenceBluetoothHeartConnect, "Connect").apply();
-                    preferences.edit().putString(PreferenceName.preferenceRealHeart, Integer.toString(heartRate)).apply();
-                    preferences.edit().putString(PreferenceName.preferenceRealRR, Integer.toString(lastRRvalue)).apply();
+                    preferences.edit().putInt(PreferenceName.preferenceRealHeart, heartRate).apply();
+                    preferences.edit().putInt(PreferenceName.preferenceRealRR, lastRRvalue).apply();
 
                     new RequestMessage(NetworkInterface.REST_HEART_INSERT, "POST", rootObject, handler).start();
                 } catch (JSONException e) {

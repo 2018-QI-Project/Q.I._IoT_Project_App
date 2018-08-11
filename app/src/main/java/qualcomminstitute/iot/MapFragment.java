@@ -40,8 +40,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Locale;
-
 public class MapFragment extends Fragment implements OnMapReadyCallback {
     private MapView mapView = null;
     private Spinner viewSpinner;
@@ -76,6 +74,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                                             for(int i = 0; i < dataArray.length(); ++i) {
                                                 JSONObject dataObject = dataArray.getJSONObject(i);
 
+                                                if(dataObject.getLong(NetworkInterface.MESSAGE_DATE) < (System.currentTimeMillis() / 1000) - 3600) {
+                                                    continue;
+                                                }
+
                                                 String strData;
                                                 LatLng location = new LatLng(dataObject.getDouble(NetworkInterface.MESSAGE_LAT), dataObject.getDouble(NetworkInterface.MESSAGE_LON));
                                                 mMap.addCircle(myCircle);
@@ -105,6 +107,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                                                             case 7 :
                                                             case 8 :
                                                             case 9 :
+
+
                                                                 mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.hazardous)));
                                                                 break;
                                                         }

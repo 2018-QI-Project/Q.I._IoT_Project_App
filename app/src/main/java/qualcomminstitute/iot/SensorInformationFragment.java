@@ -25,8 +25,6 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static android.content.Context.MODE_PRIVATE;
-
 /**
  * This fragment controls Bluetooth to communicate with other devices.
  */
@@ -56,6 +54,8 @@ public class SensorInformationFragment extends Fragment {
     private Thread checkConnect;
     private boolean flag;
 
+    public SensorInformationFragment() {}
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +71,11 @@ public class SensorInformationFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
         // If BT is not on, request that it be enabled.
@@ -79,8 +84,6 @@ public class SensorInformationFragment extends Fragment {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
             // Otherwise, setup the chat session
-        } else if (airBluetooth == null) {
-            setupAirBluetooth();
         }
     }
 
@@ -92,9 +95,6 @@ public class SensorInformationFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (airBluetooth != null) {
-            airBluetooth.stop();
-        }
         flag = false;
         checkConnect.interrupt();
     }
@@ -107,10 +107,15 @@ public class SensorInformationFragment extends Fragment {
         // not enabled during onStart(), so we were paused to enable it...
         // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
         if (airBluetooth != null) {
-            // Only if the state is STATE_NONE, do we know that we haven't started already
-            if (airBluetooth.getState() == Bluetooth.STATE_NONE) {
-                // Start the Bluetooth chat services
-                airBluetooth.start();
+            try {
+                // Only if the state is STATE_NONE, do we know that we haven't started already
+                if (airBluetooth.getState() == Bluetooth.STATE_NONE) {
+                    // Start the Bluetooth chat services
+                    airBluetooth.start();
+                }
+            }
+            catch(Exception e){
+                e.printStackTrace();
             }
         }
         flag = true;
@@ -120,8 +125,19 @@ public class SensorInformationFragment extends Fragment {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        flag = false;
+        checkConnect.interrupt();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sensor_information, container, false);
+
+        if (airBluetooth == null) {
+            setupAirBluetooth();
+        }
 
         preferences = getActivity().getSharedPreferences(PreferenceName.preferenceName, Context.MODE_PRIVATE);
         flag = true;
@@ -134,24 +150,34 @@ public class SensorInformationFragment extends Fragment {
             public void run() {
                 while(flag) {
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(100);
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                         break;
                     }
                     if (airBluetooth != null) {
-                        if (airBluetooth.getState() != Bluetooth.STATE_CONNECTED) {
+                        if (airBluetooth.getState() == Bluetooth.STATE_CONNECTED) {
                             handler.post(new Thread() {
                                 @Override
                                 public void run() {
-                                    viewAirStatus.setText(getResources().getString(R.string.bluetooth_offline));
+                                    try {
+                                        viewAirStatus.setText(getResources().getString(R.string.bluetooth_online));
+                                    }
+                                    catch(Exception e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                             });
                         } else {
                             handler.post(new Thread() {
                                 @Override
                                 public void run() {
-                                    viewAirStatus.setText(getResources().getString(R.string.bluetooth_online));
+                                    try {
+                                        viewAirStatus.setText(getResources().getString(R.string.bluetooth_offline));
+                                    }
+                                    catch(Exception e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                             });
                         }
@@ -160,16 +186,25 @@ public class SensorInformationFragment extends Fragment {
                         handler.post(new Thread() {
                             @Override
                             public void run() {
-                                SharedPreferences preference = getActivity().getSharedPreferences(PreferenceName.preferenceName, Context.MODE_PRIVATE);
-                                viewHeartStatus.setText(preference.getString(PreferenceName.preferenceBluetoothHeartConnect, "Disconnect"));
+                                try {
+                                    viewHeartStatus.setText(getResources().getString(R.string.disconnect));
+                                }
+                                catch(Exception e) {
+                                    e.printStackTrace();
+                                }
                             }
                         });
                     } else {
                         handler.post(new Thread() {
                             @Override
                             public void run() {
-                                SharedPreferences preference = getActivity().getSharedPreferences(PreferenceName.preferenceName, Context.MODE_PRIVATE);
-                                viewHeartStatus.setText(preference.getString(PreferenceName.preferenceBluetoothHeartConnect, "Disconnect"));
+                                try {
+                                    SharedPreferences preference = getActivity().getSharedPreferences(PreferenceName.preferenceName, Context.MODE_PRIVATE);
+                                    viewHeartStatus.setText(preference.getString(PreferenceName.preferenceBluetoothHeartConnect, "Disconnect"));
+                                }
+                                catch(Exception e) {
+                                    e.printStackTrace();
+                                }
                             }
                         });
                     }
@@ -180,7 +215,7 @@ public class SensorInformationFragment extends Fragment {
         checkConnect.start();
 
         // Token 얻어오기
-        SharedPreferences preferences = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
+        SharedPreferences preferences = getActivity().getSharedPreferences(PreferenceName.preferenceName, Context.MODE_PRIVATE);
         strToken = preferences.getString(PreferenceName.preferenceToken, null);
 
         // Progress Dialog 초기화
@@ -236,7 +271,7 @@ public class SensorInformationFragment extends Fragment {
      */
     private void setupAirBluetooth() {
         // Initialize the Bluetooth to perform bluetooth connections
-        airBluetooth = new Bluetooth(getActivity(), Utility.getBluetoothHandler(getActivity(), new Handler()));
+        airBluetooth = Bluetooth.getInstance(getActivity(), Utility.getBluetoothHandler(getActivity()));
     }
 
     /**
@@ -276,7 +311,7 @@ public class SensorInformationFragment extends Fragment {
                                         // 응답 메세지 JSON 파싱
                                         JSONObject returnObject = new JSONObject(msg.getData().getString(NetworkInterface.RESPONSE_DATA));
 
-                                        SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
+                                        SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, Context.MODE_PRIVATE);
                                         SharedPreferences.Editor dataEditor = data.edit();
 
                                         switch(returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {
@@ -383,7 +418,7 @@ public class SensorInformationFragment extends Fragment {
                             // 응답 메세지 JSON 파싱
                             JSONObject returnObject = new JSONObject(message.getData().getString(NetworkInterface.RESPONSE_DATA));
 
-                            SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
+                            SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, Context.MODE_PRIVATE);
                             SharedPreferences.Editor dataEditor = data.edit();
 
                             switch(returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {
@@ -483,7 +518,7 @@ public class SensorInformationFragment extends Fragment {
                                         public void run() {
                                             try {
                                                 if (!returnObject.isNull(NetworkInterface.MESSAGE_AIR_ADDRESS)) {
-                                                    SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
+                                                    SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, Context.MODE_PRIVATE);
                                                     data.edit().putString(PreferenceName.preferenceBluetoothAir, returnObject.getString(NetworkInterface.MESSAGE_AIR_ADDRESS)).apply();
                                                     viewAirAddress.setText(returnObject.getString(NetworkInterface.MESSAGE_AIR_ADDRESS));
                                                     viewAirStatus.setText(getResources().getString(R.string.bluetooth_online));
@@ -493,7 +528,7 @@ public class SensorInformationFragment extends Fragment {
                                                     viewAirStatus.setText(getResources().getString(R.string.bluetooth_offline));
                                                 }
                                                 if (!returnObject.isNull(NetworkInterface.MESSAGE_HEART_ADDRESS)) {
-                                                    SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
+                                                    SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, Context.MODE_PRIVATE);
                                                     data.edit().putString(PreferenceName.preferenceBluetoothHeart, returnObject.getString(NetworkInterface.MESSAGE_HEART_ADDRESS)).apply();
                                                     activatePolar();
                                                     if (data.getString(PreferenceName.preferenceBluetoothHeart, null) != null) {
@@ -518,7 +553,7 @@ public class SensorInformationFragment extends Fragment {
                                             break;
                                         case "invalid tokenApp":
                                             Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_TOKEN_FAILED);
-                                            SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
+                                            SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, Context.MODE_PRIVATE);
                                             SharedPreferences.Editor dataEditor = data.edit();
                                             dataEditor.clear();
                                             dataEditor.apply();
@@ -567,7 +602,7 @@ public class SensorInformationFragment extends Fragment {
                         try {
                             // 응답 메세지 JSON 파싱
                             final JSONObject returnObject = new JSONObject(message.getData().getString(NetworkInterface.RESPONSE_DATA));
-                            final SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
+                            final SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, Context.MODE_PRIVATE);
                             final SharedPreferences.Editor dataEditor = data.edit();
 
                             switch(returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {

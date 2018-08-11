@@ -28,9 +28,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import static android.content.Context.MODE_PRIVATE;
-import static qualcomminstitute.iot.NetworkInterface.TOAST_EXCEPTION;
-
 public class Utility {
     public static void initView(TextView...views) {
         for(TextView view : views) {
@@ -132,7 +129,7 @@ public class Utility {
         return dateFormat.format(date);
     }
 
-    public static Handler getBluetoothHandler(final Activity activity, final Handler handler) {
+    public static Handler getBluetoothHandler(final Activity activity) {
         final LocationListener locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
@@ -159,7 +156,7 @@ public class Utility {
 
         @SuppressLint("HandlerLeak")
         final Handler bluetoothHandler = new Handler() {
-            SharedPreferences data = activity.getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
+            SharedPreferences data = activity.getSharedPreferences(PreferenceName.preferenceName, Context.MODE_PRIVATE);
             SharedPreferences.Editor dataEditor = data.edit();
             @Override
             public void handleMessage(final Message msg) {
@@ -210,22 +207,17 @@ public class Utility {
                                                     dataEditor.apply();
                                                     switch (returnObject.getString(NetworkInterface.MESSAGE_VALUE)) {
                                                         case "invalid client type":
-                                                            Utility.displayToastMessage(handler, activity, NetworkInterface.TOAST_CLIENT_FAILED);
                                                             break;
                                                         case "already registered sensor":
-                                                            Utility.displayToastMessage(handler, activity, NetworkInterface.TOAST_USED_SENSOR);
                                                             break;
                                                         case "not valid token":
-                                                            Utility.displayToastMessage(handler, activity, NetworkInterface.TOAST_TOKEN_FAILED);
                                                             dataEditor.remove(PreferenceName.preferenceToken);
                                                             dataEditor.apply();
                                                             activity.finish();
                                                             break;
                                                         case "you already have sensor":
-                                                            Utility.displayToastMessage(handler, activity, NetworkInterface.TOAST_SENSOR_EXIST);
                                                             break;
                                                         default:
-                                                            Utility.displayToastMessage(handler, activity, NetworkInterface.TOAST_DEFAULT_FAILED);
                                                             break;
                                                     }
                                                     break;
@@ -234,7 +226,6 @@ public class Utility {
                                         catch(JSONException e) {
                                             e.printStackTrace();
                                             Log.e(this.getClass().getName(), "JSON ERROR!");
-                                            Utility.displayToastMessage(handler, activity, NetworkInterface.TOAST_EXCEPTION);
                                         }
                                 }
                             }
@@ -293,7 +284,6 @@ public class Utility {
                         catch (JSONException e) {
                             e.printStackTrace();
                             Log.e(this.getClass().getName(), "JSON ERROR!");
-                            Utility.displayToastMessage(handler, activity, TOAST_EXCEPTION);
                         }
                         break;
                     case Constants.MESSAGE_DEVICE_NAME:

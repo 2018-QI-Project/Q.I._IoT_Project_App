@@ -10,6 +10,7 @@
     <string name="gender">Gender</string>
     <string name="submit">Submit</string>
     <string name="search">Search</string>
+    <string name="disconnect">Disconnect</string>
 
     <!-- Sensor String -->
     <string name="co">CO</string>

@@ -59,12 +59,21 @@ public class Bluetooth{
      * @param context The UI Activity Context
      * @param handler A Handler to send messages back to the UI Activity
      */
-    public Bluetooth(Context context, Handler handler) {
+    private static Bluetooth instance;
+
+    private Bluetooth(Context context, Handler handler) {
         mAdapter = BluetoothAdapter.getDefaultAdapter();
         mState = STATE_NONE;
         mNewState = mState;
         mHandler = handler;
         this.context = context;
+    }
+
+    public static Bluetooth getInstance(Context context, Handler handler) {
+        if(instance == null) {
+            instance = new Bluetooth(context, handler);
+        }
+        return instance;
     }
 
     /**
@@ -105,14 +114,19 @@ public class Bluetooth{
             mConnectedThread = null;
         }
 
-        // Start the thread to listen on a BluetoothServerSocket
-        if (mSecureAcceptThread == null) {
-            mSecureAcceptThread = new AcceptThread(true);
-            mSecureAcceptThread.start();
+        try {
+            // Start the thread to listen on a BluetoothServerSocket
+            if (mSecureAcceptThread == null) {
+                mSecureAcceptThread = new AcceptThread(true);
+                mSecureAcceptThread.start();
+            }
+            if (mInsecureAcceptThread == null) {
+                mInsecureAcceptThread = new AcceptThread(false);
+                mInsecureAcceptThread.start();
+            }
         }
-        if (mInsecureAcceptThread == null) {
-            mInsecureAcceptThread = new AcceptThread(false);
-            mInsecureAcceptThread.start();
+        catch(Exception e) {
+            e.printStackTrace();
         }
         // Update UI title
         updateUserInterfaceTitle();

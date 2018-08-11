@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     private MyPolarBleReceiver mPolarBleUpdateReceiver;
     private BluetoothAdapter bluetoothAdapter;
+    private Bluetooth airSensor;
 
     @SuppressLint("HandlerLeak")
     private final Handler handler = new Handler() {
@@ -230,7 +231,8 @@ public class MainActivity extends AppCompatActivity {
                                             SharedPreferences data = MainActivity.this.getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
                                             data.edit().putString(PreferenceName.preferenceBluetoothAir, returnObject.getString(NetworkInterface.MESSAGE_AIR_ADDRESS)).apply();
                                             BluetoothDevice device = bluetoothAdapter.getRemoteDevice(data.getString(PreferenceName.preferenceBluetoothAir, null));
-                                            new Bluetooth(MainActivity.this, Utility.getBluetoothHandler(MainActivity.this, handler)).connect(device, false);
+                                            airSensor = Bluetooth.getInstance(MainActivity.this, Utility.getBluetoothHandler(MainActivity.this));
+                                            airSensor.connect(device, false);
                                         }
                                         if (!returnObject.isNull(NetworkInterface.MESSAGE_HEART_ADDRESS)) {
                                             SharedPreferences data = MainActivity.this.getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
@@ -417,7 +419,9 @@ public class MainActivity extends AppCompatActivity {
         dataEditor.remove(PreferenceName.preferenceRealRR);
         dataEditor.remove(PreferenceName.preferenceBluetoothAir);
         dataEditor.remove(PreferenceName.preferenceBluetoothHeart);
+        dataEditor.remove(PreferenceName.preferenceBluetoothHeartConnect);
         dataEditor.apply();
+        airSensor.stop();
     }
 
     private static IntentFilter makePolarGattUpdateIntentFilter() {
