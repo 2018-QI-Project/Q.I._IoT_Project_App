@@ -57,37 +57,172 @@ public class PreviousDataFragment extends Fragment {
                                     @Override
                                     public void run() {
                                         try {
-                                            List<BarEntry> BarEntry = new ArrayList<>();
+                                            List<BarEntry> goodData = new ArrayList<>();
+                                            List<BarEntry> moderateData = new ArrayList<>();
+                                            List<BarEntry> unhealthyForSensitiveGroupsData = new ArrayList<>();
+                                            List<BarEntry> unhealthyData = new ArrayList<>();
+                                            List<BarEntry> veryUnhealthyData = new ArrayList<>();
+                                            List<BarEntry> hazardousData = new ArrayList<>();
 
                                             for(int i = 0; i < dataArray.length(); ++i)  {
                                                 JSONObject dataObject = dataArray.getJSONObject(i);
 
                                                 switch(viewFilter.getSelectedItem().toString()){
                                                     case "CO":
-                                                        BarEntry.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_CO))));
+                                                        switch((dataObject.getInt(NetworkInterface.SENSOR_AQI_DATA[0]) - 1) / 50) {
+                                                            case 0 :
+                                                                goodData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[0]))));
+                                                                break;
+                                                            case 1 :
+                                                                moderateData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[0]))));
+                                                                break;
+                                                            case 2 :
+                                                                unhealthyForSensitiveGroupsData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[0]))));
+                                                                break;
+                                                            case 3 :
+                                                                unhealthyData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[0]))));
+                                                                break;
+                                                            case 4 :
+                                                            case 5 :
+                                                                veryUnhealthyData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[0]))));
+                                                                break;
+                                                            case 6 :
+                                                            case 7 :
+                                                            case 8 :
+                                                            case 9 :
+                                                                hazardousData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[0]))));
+                                                                break;
+                                                        }
                                                         break;
                                                     case "NO2":
-                                                        BarEntry.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_NO2))));
+                                                        switch((dataObject.getInt(NetworkInterface.SENSOR_AQI_DATA[1]) - 1) / 50) {
+                                                            case 0 :
+                                                                goodData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[1]))));
+                                                                break;
+                                                            case 1 :
+                                                                moderateData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[1]))));
+                                                                break;
+                                                            case 2 :
+                                                                unhealthyForSensitiveGroupsData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[1]))));
+                                                                break;
+                                                            case 3 :
+                                                                unhealthyData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[1]))));
+                                                                break;
+                                                            case 4 :
+                                                            case 5 :
+                                                                veryUnhealthyData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[1]))));
+                                                                break;
+                                                            case 6 :
+                                                            case 7 :
+                                                            case 8 :
+                                                            case 9 :
+                                                                hazardousData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[1]))));
+                                                                break;
+                                                        }
                                                         break;
                                                     case "SO2":
-                                                        BarEntry.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_SO2))));
+                                                        switch((dataObject.getInt(NetworkInterface.SENSOR_AQI_DATA[2]) - 1) / 50) {
+                                                            case 0 :
+                                                                goodData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[2]))));
+                                                                break;
+                                                            case 1 :
+                                                                moderateData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[2]))));
+                                                                break;
+                                                            case 2 :
+                                                                unhealthyForSensitiveGroupsData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[2]))));
+                                                                break;
+                                                            case 3 :
+                                                                unhealthyData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[2]))));
+                                                                break;
+                                                            case 4 :
+                                                            case 5 :
+                                                                veryUnhealthyData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[2]))));
+                                                                break;
+                                                            case 6 :
+                                                            case 7 :
+                                                            case 8 :
+                                                            case 9 :
+                                                                hazardousData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[2]))));
+                                                                break;
+                                                        }
                                                         break;
                                                     case "O3":
-                                                        BarEntry.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_O3))));
+                                                        switch((dataObject.getInt(NetworkInterface.SENSOR_AQI_DATA[3]) - 1) / 50) {
+                                                            case 0 :
+                                                                goodData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[3]))));
+                                                                break;
+                                                            case 1 :
+                                                                moderateData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[3]))));
+                                                                break;
+                                                            case 2 :
+                                                                unhealthyForSensitiveGroupsData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[3]))));
+                                                                break;
+                                                            case 3 :
+                                                                unhealthyData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[3]))));
+                                                                break;
+                                                            case 4 :
+                                                            case 5 :
+                                                                veryUnhealthyData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[3]))));
+                                                                break;
+                                                            case 6 :
+                                                            case 7 :
+                                                            case 8 :
+                                                            case 9 :
+                                                                hazardousData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[3]))));
+                                                                break;
+                                                        }
                                                         break;
                                                     case "PM2.5":
-                                                        BarEntry.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_PM25))));
+                                                        switch((dataObject.getInt(NetworkInterface.SENSOR_AQI_DATA[4]) - 1) / 50) {
+                                                            case 0 :
+                                                                goodData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[4]))));
+                                                                break;
+                                                            case 1 :
+                                                                moderateData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[4]))));
+                                                                break;
+                                                            case 2 :
+                                                                unhealthyForSensitiveGroupsData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[4]))));
+                                                                break;
+                                                            case 3 :
+                                                                unhealthyData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[4]))));
+                                                                break;
+                                                            case 4 :
+                                                            case 5 :
+                                                                veryUnhealthyData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[4]))));
+                                                                break;
+                                                            case 6 :
+                                                            case 7 :
+                                                            case 8 :
+                                                            case 9 :
+                                                                hazardousData.add(new BarEntry(Float.parseFloat(dataObject.getString(NetworkInterface.MESSAGE_HOUR)), Float.parseFloat(dataObject.getString(NetworkInterface.SENSOR_AQI_DATA[4]))));
+                                                                break;
+                                                        }
                                                         break;
                                                     default:
                                                         break;
                                                 }
                                             }
-                                            BarDataSet dataSet;
-                                            dataSet = new BarDataSet(BarEntry, "24 Hours Average Data | Xaxis=hour,Yaxis=ppm");
-                                            dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+
+                                            BarDataSet goodDataSet = new BarDataSet(goodData, "Good");
+                                            goodDataSet.setColor(getResources().getColor(R.color.good));
+                                            BarDataSet moderateDataSet = new BarDataSet(moderateData, "Moderate");
+                                            moderateDataSet.setColor(getResources().getColor(R.color.moderate));
+                                            BarDataSet unhealthyForSensitiveGroupsDataSet = new BarDataSet(unhealthyForSensitiveGroupsData, "Unhealthy for Sensitive Groups");
+                                            unhealthyForSensitiveGroupsDataSet.setColor(getResources().getColor(R.color.unhealthy_for_sensitive_groups));
+                                            BarDataSet unhealthyDataSet = new BarDataSet(unhealthyData, "Unhealthy");
+                                            unhealthyDataSet.setColor(getResources().getColor(R.color.unhealthy));
+                                            BarDataSet veryUnhealthyDataSet = new BarDataSet(veryUnhealthyData, "Very Unhealthy");
+                                            veryUnhealthyDataSet.setColor(getResources().getColor(R.color.very_unhealthy));
+                                            BarDataSet hazardousDataSet = new BarDataSet(hazardousData, "Hazardous");
+                                            hazardousDataSet.setColor(getResources().getColor(R.color.hazardous));
 
                                             List<IBarDataSet> dataSets = new ArrayList<>();
-                                            dataSets.add(dataSet);
+                                            dataSets.add(goodDataSet);
+                                            dataSets.add(moderateDataSet);
+                                            dataSets.add(unhealthyForSensitiveGroupsDataSet);
+                                            dataSets.add(unhealthyDataSet);
+                                            dataSets.add(veryUnhealthyDataSet);
+                                            dataSets.add(hazardousDataSet);
 
                                             BarData data = new BarData(dataSets);
                                             data.setDrawValues(false);
@@ -98,13 +233,10 @@ public class PreviousDataFragment extends Fragment {
                                             barChart.setData(data);
 
                                             List<String> list_x_axis_name = new ArrayList<>();
-                                            for(int i = 0; i<24; i++)
-                                            {
-                                                list_x_axis_name.add(Integer.toString(i+1));
+                                            for(int i = 0; i < 24; ++i) {
+                                                list_x_axis_name.add(Integer.toString(i + 1));
                                                 barChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(list_x_axis_name));
-
                                             }
-
 
                                             barChart.invalidate();
                                         }

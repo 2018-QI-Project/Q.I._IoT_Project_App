@@ -132,14 +132,6 @@ public class Utility {
         return dateFormat.format(date);
     }
 
-    public static String[] parseCSVFile(String fileData) {
-        return fileData.split("\n");
-    }
-
-    public static String[] parseCSVString(String strData) {
-        return strData.split(",");
-    }
-
     public static Handler getBluetoothHandler(final Activity activity, final Handler handler) {
         final LocationListener locationListener = new LocationListener() {
             @Override
@@ -211,8 +203,9 @@ public class Utility {
                                                 case NetworkInterface.MESSAGE_SUCCESS :
                                                     break;
                                                 case NetworkInterface.MESSAGE_FAIL :
-                                                    for(int i = 0; i < NetworkInterface.CSV_DATA.length; ++i) {
-                                                        dataEditor.remove(NetworkInterface.CSV_DATA[i]);
+                                                    for(int i = 0; i < NetworkInterface.SENSOR_DATA.length; ++i) {
+                                                        dataEditor.remove(NetworkInterface.SENSOR_DATA[i]);
+                                                        dataEditor.remove(NetworkInterface.SENSOR_AQI_DATA[i]);
                                                     }
                                                     dataEditor.apply();
                                                     switch (returnObject.getString(NetworkInterface.MESSAGE_VALUE)) {
@@ -248,44 +241,57 @@ public class Utility {
                         };
 
                         try {
-                            String[] sensorData = Utility.parseCSVFile(readMessage);
+                            JSONObject dataObject = new JSONObject(readMessage);
 
-                            for(String csvString : sensorData) {
-                                String[] sensor = Utility.parseCSVString(csvString);
+                            // POST 데이터 전송을 위한 자료구조
+                            JSONObject rootObject = new JSONObject();
+                            rootObject.put(NetworkInterface.REQUEST_CLIENT_TYPE, NetworkInterface.REQUEST_CLIENT);
+                            rootObject.put(NetworkInterface.REQUEST_TOKEN, data.getString(PreferenceName.preferenceToken, null));
+                            rootObject.put(NetworkInterface.REQUEST_ADDRESS, data.getString(PreferenceName.preferenceBluetoothAir, null));
+                            rootObject.put(NetworkInterface.REQUEST_TEMPERATURE, dataObject.getDouble(NetworkInterface.MESSAGE_TEMPERATURE));
+                            rootObject.put(NetworkInterface.REQUEST_TIMESTAMP, dataObject.getLong(NetworkInterface.MESSAGE_DATE));
 
-                                // POST 데이터 전송을 위한 자료구조
-                                JSONObject rootObject = new JSONObject();
-                                rootObject.put(NetworkInterface.REQUEST_CLIENT_TYPE, NetworkInterface.REQUEST_CLIENT);
-                                rootObject.put(NetworkInterface.REQUEST_TOKEN, data.getString(PreferenceName.preferenceToken, null));
-                                rootObject.put(NetworkInterface.REQUEST_ADDRESS, data.getString(PreferenceName.preferenceBluetoothAir, null));
-
-                                for(int i = 0; i < NetworkInterface.CSV_DATA.length; ++i) {
-                                    rootObject.put(NetworkInterface.CSV_DATA[i], sensor[i]);
-                                    dataEditor.putString(NetworkInterface.CSV_DATA[i], sensor[i]);
-                                }
-                                dataEditor.apply();
-
-                                LocationManager locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
-                                if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                                    // 사용자 권한 요청
-                                    ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION);
-                                } else {
-                                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0,locationListener);
-                                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-                                    // 수동으로 위치 구하기
-                                    String locationProvider = LocationManager.NETWORK_PROVIDER;
-                                    Location currentLocation = locationManager.getLastKnownLocation(locationProvider);
-                                    if (currentLocation != null) {
-                                        rootObject.put(NetworkInterface.REQUEST_LAT, currentLocation.getLatitude());
-                                        rootObject.put(NetworkInterface.REQUEST_LON, currentLocation.getLongitude());
-                                    }
-                                }
-
-                                Log.d("JSON DATA", rootObject.toString());
-
-                                new RequestMessage(NetworkInterface.REST_AIR_QUALITY_INSERT, "POST", rootObject, airHandler).start();
+                            for(int i = 0; i < NetworkInterface.SENSOR_DATA.length; ++i) {
+                                rootObject.put(NetworkInterface.SENSOR_DATA[i], dataObject.getDouble(NetworkInterface.SENSOR_DATA[i]));
+                                dataEditor.putString(NetworkInterface.SENSOR_DATA[i], Double.toString(dataObject.getDouble(NetworkInterface.SENSOR_DATA[i])));
                             }
-                        } catch (JSONException e) {
+
+                            rootObject.put(NetworkInterface.SENSOR_AQI_DATA[0], dataObject.getInt(NetworkInterface.MESSAGE_AQI_DATA[0]));
+                            dataEditor.putInt(NetworkInterface.SENSOR_AQI_DATA[0], dataObject.getInt(NetworkInterface.MESSAGE_AQI_DATA[0]));
+                            rootObject.put(NetworkInterface.SENSOR_AQI_DATA[1], dataObject.getInt(NetworkInterface.MESSAGE_AQI_DATA[1]));
+                            dataEditor.putInt(NetworkInterface.SENSOR_AQI_DATA[1], dataObject.getInt(NetworkInterface.MESSAGE_AQI_DATA[1]));
+                            rootObject.put(NetworkInterface.SENSOR_AQI_DATA[2], dataObject.getInt(NetworkInterface.MESSAGE_AQI_DATA[2]) > dataObject.getInt(NetworkInterface.MESSAGE_AQI_DATA[3]) ? dataObject.getInt(NetworkInterface.MESSAGE_AQI_DATA[2]) : dataObject.getInt(NetworkInterface.MESSAGE_AQI_DATA[3]));
+                            dataEditor.putInt(NetworkInterface.SENSOR_AQI_DATA[2], dataObject.getInt(NetworkInterface.MESSAGE_AQI_DATA[2]) > dataObject.getInt(NetworkInterface.MESSAGE_AQI_DATA[3]) ? dataObject.getInt(NetworkInterface.MESSAGE_AQI_DATA[2]) : dataObject.getInt(NetworkInterface.MESSAGE_AQI_DATA[3]));
+                            rootObject.put(NetworkInterface.SENSOR_AQI_DATA[3], dataObject.getInt(NetworkInterface.MESSAGE_AQI_DATA[4]) > dataObject.getInt(NetworkInterface.MESSAGE_AQI_DATA[5]) ? dataObject.getInt(NetworkInterface.MESSAGE_AQI_DATA[4]) : dataObject.getInt(NetworkInterface.MESSAGE_AQI_DATA[5]));
+                            dataEditor.putInt(NetworkInterface.SENSOR_AQI_DATA[3], dataObject.getInt(NetworkInterface.MESSAGE_AQI_DATA[4]) > dataObject.getInt(NetworkInterface.MESSAGE_AQI_DATA[5]) ? dataObject.getInt(NetworkInterface.MESSAGE_AQI_DATA[4]) : dataObject.getInt(NetworkInterface.MESSAGE_AQI_DATA[5]));
+                            rootObject.put(NetworkInterface.SENSOR_AQI_DATA[4], dataObject.getInt(NetworkInterface.MESSAGE_AQI_DATA[6]));
+                            dataEditor.putInt(NetworkInterface.SENSOR_AQI_DATA[4], dataObject.getInt(NetworkInterface.MESSAGE_AQI_DATA[6]));
+                            dataEditor.putLong(PreferenceName.preferenceDate, dataObject.getLong(NetworkInterface.MESSAGE_DATE));
+
+                            dataEditor.apply();
+
+                            LocationManager locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
+                            if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                // 사용자 권한 요청
+                                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION);
+                            } else {
+                                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0,locationListener);
+                                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+                                // 수동으로 위치 구하기
+                                String locationProvider = LocationManager.NETWORK_PROVIDER;
+                                Location currentLocation = locationManager.getLastKnownLocation(locationProvider);
+                                if (currentLocation != null) {
+                                    rootObject.put(NetworkInterface.REQUEST_LAT, currentLocation.getLatitude());
+                                    rootObject.put(NetworkInterface.REQUEST_LON, currentLocation.getLongitude());
+                                }
+                            }
+
+                            Log.d("JSON DATA", rootObject.toString());
+
+                            new RequestMessage(NetworkInterface.REST_AIR_QUALITY_INSERT, "POST", rootObject, airHandler).start();
+                        }
+                        catch (JSONException e) {
+                            e.printStackTrace();
                             Log.e(this.getClass().getName(), "JSON ERROR!");
                             Utility.displayToastMessage(handler, activity, TOAST_EXCEPTION);
                         }

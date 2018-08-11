@@ -100,6 +100,7 @@ public class MyPolarBleReceiver extends BroadcastReceiver {
                     rootObject.put(NetworkInterface.REQUEST_CLIENT_TYPE, NetworkInterface.REQUEST_CLIENT);
                     rootObject.put(NetworkInterface.REQUEST_TOKEN, strToken);
                     rootObject.put(NetworkInterface.REQUEST_ADDRESS, preferences.getString(PreferenceName.preferenceBluetoothHeart, null));
+                    rootObject.put(NetworkInterface.REQUEST_TIMESTAMP, System.currentTimeMillis() / 1000);
                     rootObject.put(NetworkInterface.REQUEST_HEART_RATE, heartRate);
                     rootObject.put(NetworkInterface.REQUEST_RR_INTERVAL, lastRRvalue);
 

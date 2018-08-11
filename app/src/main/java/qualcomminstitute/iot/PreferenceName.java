@@ -8,4 +8,5 @@ public interface PreferenceName {
     String preferenceBluetoothHeartConnect = "heartConnect";
     String preferenceRealHeart = "heartRate";
     String preferenceRealRR = "rrInterval";
+    String preferenceDate = "date";
 }

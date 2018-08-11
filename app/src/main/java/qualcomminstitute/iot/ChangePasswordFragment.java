@@ -64,8 +64,9 @@ public class ChangePasswordFragment extends Fragment {
                                         SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
                                         SharedPreferences.Editor dataEditor = data.edit();
                                         dataEditor.remove(PreferenceName.preferenceToken);
-                                        for(int i = 0; i < NetworkInterface.CSV_DATA.length; ++i) {
-                                            dataEditor.remove(NetworkInterface.CSV_DATA[i]);
+                                        for(int i = 0; i < NetworkInterface.SENSOR_DATA.length; ++i) {
+                                            dataEditor.remove(NetworkInterface.SENSOR_DATA[i]);
+                                            dataEditor.remove(NetworkInterface.SENSOR_AQI_DATA[i]);
                                         }
                                         dataEditor.remove(PreferenceName.preferenceRealHeart);
                                         dataEditor.remove(PreferenceName.preferenceRealRR);

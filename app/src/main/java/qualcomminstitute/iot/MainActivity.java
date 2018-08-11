@@ -56,8 +56,9 @@ public class MainActivity extends AppCompatActivity {
                         switch(returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {
                             case NetworkInterface.MESSAGE_SUCCESS :
                                 dataEditor.remove(PreferenceName.preferenceToken);
-                                for(int i = 0; i < NetworkInterface.CSV_DATA.length; ++i) {
-                                    dataEditor.remove(NetworkInterface.CSV_DATA[i]);
+                                for(int i = 0; i < NetworkInterface.SENSOR_DATA.length; ++i) {
+                                    dataEditor.remove(NetworkInterface.SENSOR_DATA[i]);
+                                    dataEditor.remove(NetworkInterface.SENSOR_AQI_DATA[i]);
                                 }
                                 dataEditor.remove(PreferenceName.preferenceRealHeart);
                                 dataEditor.remove(PreferenceName.preferenceRealRR);
@@ -72,8 +73,9 @@ public class MainActivity extends AppCompatActivity {
                                     case "invalid tokenApp":
                                         Utility.displayToastMessage(handler, MainActivity.this, NetworkInterface.TOAST_TOKEN_FAILED);
                                         dataEditor.remove(PreferenceName.preferenceToken);
-                                        for(int i = 0; i < NetworkInterface.CSV_DATA.length; ++i) {
-                                            dataEditor.remove(NetworkInterface.CSV_DATA[i]);
+                                        for(int i = 0; i < NetworkInterface.SENSOR_DATA.length; ++i) {
+                                            dataEditor.remove(NetworkInterface.SENSOR_DATA[i]);
+                                            dataEditor.remove(NetworkInterface.SENSOR_AQI_DATA[i]);
                                         }
                                         dataEditor.remove(PreferenceName.preferenceRealHeart);
                                         dataEditor.remove(PreferenceName.preferenceRealRR);
@@ -407,8 +409,9 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences preferences = this.getSharedPreferences(PreferenceName.preferenceName, Context.MODE_PRIVATE);
         SharedPreferences.Editor dataEditor = preferences.edit();
         dataEditor.remove(PreferenceName.preferenceToken);
-        for(int i = 0; i < NetworkInterface.CSV_DATA.length; ++i) {
-            dataEditor.remove(NetworkInterface.CSV_DATA[i]);
+        for(int i = 0; i < NetworkInterface.SENSOR_DATA.length; ++i) {
+            dataEditor.remove(NetworkInterface.SENSOR_DATA[i]);
+            dataEditor.remove(NetworkInterface.SENSOR_AQI_DATA[i]);
         }
         dataEditor.remove(PreferenceName.preferenceRealHeart);
         dataEditor.remove(PreferenceName.preferenceRealRR);

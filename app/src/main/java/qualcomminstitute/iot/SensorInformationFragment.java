@@ -96,6 +96,7 @@ public class SensorInformationFragment extends Fragment {
             airBluetooth.stop();
         }
         flag = false;
+        checkConnect.interrupt();
     }
 
     @Override
@@ -113,7 +114,9 @@ public class SensorInformationFragment extends Fragment {
             }
         }
         flag = true;
-        checkConnect.start();
+        if(checkConnect.isInterrupted()) {
+            checkConnect.start();
+        }
     }
 
     @Override
@@ -173,6 +176,8 @@ public class SensorInformationFragment extends Fragment {
                 }
             }
         };
+
+        checkConnect.start();
 
         // Token 얻어오기
         SharedPreferences preferences = getActivity().getSharedPreferences(PreferenceName.preferenceName, MODE_PRIVATE);
@@ -292,8 +297,9 @@ public class SensorInformationFragment extends Fragment {
                                                     case "not valid token":
                                                         Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_TOKEN_FAILED);
                                                         dataEditor.remove(PreferenceName.preferenceToken);
-                                                        for(int i = 0; i < NetworkInterface.CSV_DATA.length; ++i) {
-                                                            dataEditor.remove(NetworkInterface.CSV_DATA[i]);
+                                                        for(int i = 0; i < NetworkInterface.SENSOR_DATA.length; ++i) {
+                                                            dataEditor.remove(NetworkInterface.SENSOR_DATA[i]);
+                                                            dataEditor.remove(NetworkInterface.SENSOR_AQI_DATA[i]);
                                                         }
                                                         dataEditor.remove(PreferenceName.preferenceRealHeart);
                                                         dataEditor.remove(PreferenceName.preferenceRealRR);
@@ -396,8 +402,8 @@ public class SensorInformationFragment extends Fragment {
                                         case "not valid token":
                                             Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_TOKEN_FAILED);
                                             dataEditor.remove(PreferenceName.preferenceToken);
-                                            for(int i = 0; i < NetworkInterface.CSV_DATA.length; ++i) {
-                                                dataEditor.remove(NetworkInterface.CSV_DATA[i]);
+                                            for(int i = 0; i < NetworkInterface.SENSOR_DATA.length; ++i) {
+                                                dataEditor.remove(NetworkInterface.SENSOR_DATA[i]);
                                             }
                                             dataEditor.remove(PreferenceName.preferenceRealHeart);
                                             dataEditor.remove(PreferenceName.preferenceRealRR);
@@ -550,7 +556,7 @@ public class SensorInformationFragment extends Fragment {
 
     private void setSensorDeassociation(final String strType, String strAddress) {
         @SuppressLint("HandlerLeak")
-        Handler listHandler = new Handler() {
+        Handler deassociationHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {
                 switch (message.what) {
@@ -573,7 +579,7 @@ public class SensorInformationFragment extends Fragment {
                                                 public void run() {
                                                     viewAirAddress.setText("");
                                                     viewAirStatus.setText(getResources().getString(R.string.bluetooth_offline));
-                                                    airBluetooth = null;
+                                                    airBluetooth.stop();
                                                     dataEditor.remove(PreferenceName.preferenceBluetoothAir);
                                                     dataEditor.apply();
                                                 }
@@ -629,10 +635,10 @@ public class SensorInformationFragment extends Fragment {
             rootObject.put(NetworkInterface.REQUEST_TOKEN, strToken);
             rootObject.put(NetworkInterface.REQUEST_ADDRESS, strAddress);
 
-            new RequestMessage(NetworkInterface.REST_SENSOR_DEREGISTRATION, "PUT", rootObject, listHandler).start();
+            new RequestMessage(NetworkInterface.REST_SENSOR_DEREGISTRATION, "PUT", rootObject, deassociationHandler).start();
         } catch (JSONException e) {
             Log.e(this.getClass().getName(), "JSON ERROR!");
-            Utility.displayToastMessage(listHandler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
+            Utility.displayToastMessage(deassociationHandler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
         }
     }
 

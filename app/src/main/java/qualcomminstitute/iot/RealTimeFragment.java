@@ -12,8 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.github.pavlospt.roundedletterview.RoundedLetterView;
+
+import java.util.Locale;
+
 public class RealTimeFragment extends Fragment {
     private TextView viewRealTimeCO, viewRealTimeSO2, viewRealTimeNO2, viewRealTimeO3, viewRealTimePM25;
+    private RoundedLetterView viewAqiCO, viewAqiSO2, viewAqiNO2, viewAqiO3, viewAqiPM25;
     private TextView viewRealTimeAirDate;
     private TextView viewRealTimeHeartRate, viewRealTimeRRInterval;
     private String strToken, strAddress;
@@ -23,156 +28,28 @@ public class RealTimeFragment extends Fragment {
     private SharedPreferences preferences;
     private boolean flag;
 
-    /*
-    @SuppressLint("HandlerLeak")
-    private final Handler airHandler = new Handler() {
-        @Override
-        public void handleMessage(Message message) {
-            switch (message.what) {
-                case NetworkInterface.REQUEST_FAIL :
-                    Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
-                    break;
-                case NetworkInterface.REQUEST_SUCCESS :
-                    try {
-                        // 응답 메세지 JSON 파싱
-                        JSONObject returnObject = new JSONObject(message.getData().getString(NetworkInterface.RESPONSE_DATA));
-
-                        switch(returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {
-                            case NetworkInterface.MESSAGE_SUCCESS :
-                                final JSONObject dataObject = returnObject.getJSONObject(NetworkInterface.MESSAGE_AIR_DATA);
-                                handler.post(new Thread(){
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            viewRealTimeCO.setText(String.format(Locale.US, "%.2f", dataObject.getDouble(NetworkInterface.MESSAGE_CO)));
-                                            viewRealTimeSO2.setText(String.format(Locale.US, "%.2f", dataObject.getDouble(NetworkInterface.MESSAGE_SO2)));
-                                            viewRealTimeNO2.setText(String.format(Locale.US, "%.2f", dataObject.getDouble(NetworkInterface.MESSAGE_NO2)));
-                                            viewRealTimeO3.setText(String.format(Locale.US, "%.2f", dataObject.getDouble(NetworkInterface.MESSAGE_O3)));
-                                            viewRealTimePM25.setText(String.format(Locale.US, "%.2f", dataObject.getDouble(NetworkInterface.MESSAGE_PM25)));
-                                            viewRealTimeAirDate.setText(Utility.convertUnixTime(dataObject.getLong(NetworkInterface.MESSAGE_DATE)));
-                                        }
-                                        catch(JSONException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                });
-                                break;
-                            case NetworkInterface.MESSAGE_FAIL :
-                                switch (returnObject.getString(NetworkInterface.MESSAGE_VALUE)) {
-                                    case "invalid client type":
-                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_CLIENT_FAILED);
-                                        break;
-                                    case "not valid token":
-                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_TOKEN_FAILED);
-                                        SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, Context.MODE_PRIVATE);
-                                        SharedPreferences.Editor dataEditor = data.edit();
-                                        dataEditor.remove(PreferenceName.preferenceToken);
-                                        dataEditor.apply();
-                                        getActivity().finish();
-                                        break;
-                                    case "not registered sensor":
-                                    case "You have not air sensor":
-                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_UNUSED_SENSOR);
-                                        break;
-                                    case "nothing data":
-                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_NO_DATA);
-                                        break;
-                                    default:
-                                        Log.d("TEST", returnObject.getString(NetworkInterface.MESSAGE_VALUE));
-                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_DEFAULT_FAILED);
-                                        break;
-                                }
-                                break;
-                        }
-                    }
-                    catch(JSONException e) {
-                        e.printStackTrace();
-                        Log.e(this.getClass().getName(), "JSON ERROR!");
-                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
-                    }
-            }
-        }
-    };
-
-    @SuppressLint("HandlerLeak")
-    private final Handler heartHandler = new Handler() {
-        @Override
-        public void handleMessage(Message message) {
-            switch (message.what) {
-                case NetworkInterface.REQUEST_FAIL :
-                    Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
-                    break;
-                case NetworkInterface.REQUEST_SUCCESS :
-                    try {
-                        // 응답 메세지 JSON 파싱
-                        JSONObject returnObject = new JSONObject(message.getData().getString(NetworkInterface.RESPONSE_DATA));
-
-                        switch(returnObject.getString(NetworkInterface.MESSAGE_TYPE)) {
-                            case NetworkInterface.MESSAGE_SUCCESS :
-                                final JSONObject dataObject = returnObject.getJSONObject(NetworkInterface.MESSAGE_HEART_DATA);
-                                handler.post(new Thread(){
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            viewRealTimeHeartRate.setText(String.format(Locale.US, "%d", dataObject.getInt(NetworkInterface.MESSAGE_HEART_RATE)));
-                                            viewRealTimeRRInterval.setText(String.format(Locale.US, "%d", dataObject.getInt(NetworkInterface.MESSAGE_RR_INTERVAL)));
-                                        }
-                                        catch(JSONException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                });
-                                break;
-                            case NetworkInterface.MESSAGE_FAIL :
-                                switch (returnObject.getString(NetworkInterface.MESSAGE_VALUE)) {
-                                    case "invalid client type":
-                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_CLIENT_FAILED);
-                                        break;
-                                    case "not valid token":
-                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_TOKEN_FAILED);
-                                        SharedPreferences data = getActivity().getSharedPreferences(PreferenceName.preferenceName, Context.MODE_PRIVATE);
-                                        SharedPreferences.Editor dataEditor = data.edit();
-                                        dataEditor.remove(PreferenceName.preferenceToken);
-                                        dataEditor.apply();
-                                        getActivity().finish();
-                                        break;
-                                    case "nothing data":
-                                    case "You have not heart sensor":
-                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_NO_DATA);
-                                        break;
-                                    case "not registered sensor":
-                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_UNUSED_SENSOR);
-                                        break;
-                                    default:
-                                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_DEFAULT_FAILED);
-                                        break;
-                                }
-                                break;
-                        }
-                    }
-                    catch(JSONException e) {
-                        e.printStackTrace();
-                        Log.e(this.getClass().getName(), "JSON ERROR!");
-                        Utility.displayToastMessage(handler, getActivity(), NetworkInterface.TOAST_EXCEPTION);
-                    }
-            }
-        }
-    };
-    */
-
     public RealTimeFragment(){}
 
     @Override
     public void onResume() {
         super.onResume();
         flag = true;
-        realTimeThread.start();
+        if(realTimeThread.isInterrupted()) {
+            realTimeThread.start();
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        realTimeThread.interrupt();
     }
 
     @Override
     public void onPause() {
         super.onPause();
         flag = false;
+        realTimeThread.interrupt();
     }
 
     @Nullable
@@ -196,6 +73,11 @@ public class RealTimeFragment extends Fragment {
         viewRealTimeAirDate = view.findViewById(R.id.txtRealTimeAirDate);
         viewRealTimeHeartRate = view.findViewById(R.id.txtRealTimeHeartRate);
         viewRealTimeRRInterval = view.findViewById(R.id.txtRealTimeRRInterval);
+        viewAqiCO = view.findViewById(R.id.laRealTimeCO);
+        viewAqiNO2 = view.findViewById(R.id.laRealTimeNO2);
+        viewAqiO3 = view.findViewById(R.id.laRealTimeO3);
+        viewAqiSO2 = view.findViewById(R.id.laRealTimeSO2);
+        viewAqiPM25 = view.findViewById(R.id.laRealTimePM25);
 
         realTimeThread = new Thread() {
             @Override
@@ -211,20 +93,184 @@ public class RealTimeFragment extends Fragment {
                     handler.post(new Thread(){
                         @Override
                         public void run() {
-                            viewRealTimeCO.setText(preferences.getString(NetworkInterface.CSV_DATA[0], null));
-                            viewRealTimeSO2.setText(preferences.getString(NetworkInterface.CSV_DATA[1], null));
-                            viewRealTimeNO2.setText(preferences.getString(NetworkInterface.CSV_DATA[2], null));
-                            viewRealTimeO3.setText(preferences.getString(NetworkInterface.CSV_DATA[3], null));
-                            viewRealTimePM25.setText(preferences.getString(NetworkInterface.CSV_DATA[4], null));
-                            viewRealTimeHeartRate.setText(preferences.getString(PreferenceName.preferenceRealHeart, null));
-                            viewRealTimeRRInterval.setText(preferences.getString(PreferenceName.preferenceRealRR, null));
-                            viewRealTimeAirDate.setText(Utility.convertUnixTime((System.currentTimeMillis() / 1000)));
-                            Log.d("POSTHANDLER", "1234");
+                            if(preferences.getString(NetworkInterface.SENSOR_DATA[0], null) != null) {
+                                viewRealTimeCO.setText(String.format(Locale.US, "%.2f", Double.parseDouble(preferences.getString(NetworkInterface.SENSOR_DATA[0], null))));
+                            }
+                            else {
+                                viewRealTimeCO.setText(preferences.getString(NetworkInterface.SENSOR_DATA[0], null));
+                            }
+                            if(preferences.getString(NetworkInterface.SENSOR_DATA[1], null) != null) {
+                                viewRealTimeSO2.setText(String.format(Locale.US, "%.2f", Double.parseDouble(preferences.getString(NetworkInterface.SENSOR_DATA[1], null))));
+                            }
+                            else {
+                                viewRealTimeSO2.setText(preferences.getString(NetworkInterface.SENSOR_DATA[1], null));
+                            }
+                            if(preferences.getString(NetworkInterface.SENSOR_DATA[2], null) != null) {
+                                viewRealTimeNO2.setText(String.format(Locale.US, "%.2f", Double.parseDouble(preferences.getString(NetworkInterface.SENSOR_DATA[2], null))));
+                            }
+                            else {
+                                viewRealTimeNO2.setText(preferences.getString(NetworkInterface.SENSOR_DATA[2], null));
+                            }
+                            if(preferences.getString(NetworkInterface.SENSOR_DATA[3], null) != null) {
+                                viewRealTimeO3.setText(String.format(Locale.US, "%.2f", Double.parseDouble(preferences.getString(NetworkInterface.SENSOR_DATA[3], null))));
+                            }
+                            else {
+                                viewRealTimeO3.setText(preferences.getString(NetworkInterface.SENSOR_DATA[3], null));
+                            }
+                            if(preferences.getString(NetworkInterface.SENSOR_DATA[4], null) != null) {
+                                viewRealTimePM25.setText(String.format(Locale.US, "%.2f", Double.parseDouble(preferences.getString(NetworkInterface.SENSOR_DATA[4], null))));
+                            }
+                            else {
+                                viewRealTimePM25.setText(preferences.getString(NetworkInterface.SENSOR_DATA[4], null));
+                            }
+                            if(preferences.getString(PreferenceName.preferenceRealHeart, null) != null) {
+                                viewRealTimeHeartRate.setText(String.format(Locale.US, "%.2f", Double.parseDouble(preferences.getString(PreferenceName.preferenceRealHeart, null))));
+                            }
+                            else {
+                                viewRealTimeHeartRate.setText(preferences.getString(PreferenceName.preferenceRealHeart, null));
+                            }
+                            if(preferences.getString(PreferenceName.preferenceRealRR, null) != null) {
+                                viewRealTimeRRInterval.setText(String.format(Locale.US, "%.2f", Double.parseDouble(preferences.getString(PreferenceName.preferenceRealRR, null))));
+                            }
+                            else {
+                                viewRealTimeRRInterval.setText(preferences.getString(PreferenceName.preferenceRealRR, null));
+                            }
+
+                            switch((preferences.getInt(NetworkInterface.SENSOR_AQI_DATA[0], 500) - 1) / 50) {
+                                case 0 :
+                                    viewAqiCO.setBackgroundColor(getResources().getColor(R.color.good));
+                                    break;
+                                case 1 :
+                                    viewAqiCO.setBackgroundColor(getResources().getColor(R.color.moderate));
+                                    break;
+                                case 2 :
+                                    viewAqiCO.setBackgroundColor(getResources().getColor(R.color.unhealthy_for_sensitive_groups));
+                                    break;
+                                case 3 :
+                                    viewAqiCO.setBackgroundColor(getResources().getColor(R.color.unhealthy));
+                                    break;
+                                case 4 :
+                                case 5 :
+                                    viewAqiCO.setBackgroundColor(getResources().getColor(R.color.very_unhealthy));
+                                    break;
+                                case 6 :
+                                case 7 :
+                                case 8 :
+                                case 9 :
+                                    viewAqiCO.setBackgroundColor(getResources().getColor(R.color.hazardous));
+                                    break;
+                            }
+                            switch((preferences.getInt(NetworkInterface.SENSOR_AQI_DATA[1], 500) - 1) / 50) {
+                                case 0 :
+                                    viewAqiNO2.setBackgroundColor(getResources().getColor(R.color.good));
+                                    break;
+                                case 1 :
+                                    viewAqiNO2.setBackgroundColor(getResources().getColor(R.color.moderate));
+                                    break;
+                                case 2 :
+                                    viewAqiNO2.setBackgroundColor(getResources().getColor(R.color.unhealthy_for_sensitive_groups));
+                                    break;
+                                case 3 :
+                                    viewAqiNO2.setBackgroundColor(getResources().getColor(R.color.unhealthy));
+                                    break;
+                                case 4 :
+                                case 5 :
+                                    viewAqiNO2.setBackgroundColor(getResources().getColor(R.color.very_unhealthy));
+                                    break;
+                                case 6 :
+                                case 7 :
+                                case 8 :
+                                case 9 :
+                                    viewAqiNO2.setBackgroundColor(getResources().getColor(R.color.hazardous));
+                                    break;
+                            }
+                            switch((preferences.getInt(NetworkInterface.SENSOR_AQI_DATA[2], 500) - 1) / 50) {
+                                case 0 :
+                                    viewAqiSO2.setBackgroundColor(getResources().getColor(R.color.good));
+                                    break;
+                                case 1 :
+                                    viewAqiSO2.setBackgroundColor(getResources().getColor(R.color.moderate));
+                                    break;
+                                case 2 :
+                                    viewAqiSO2.setBackgroundColor(getResources().getColor(R.color.unhealthy_for_sensitive_groups));
+                                    break;
+                                case 3 :
+                                    viewAqiSO2.setBackgroundColor(getResources().getColor(R.color.unhealthy));
+                                    break;
+                                case 4 :
+                                case 5 :
+                                    viewAqiSO2.setBackgroundColor(getResources().getColor(R.color.very_unhealthy));
+                                    break;
+                                case 6 :
+                                case 7 :
+                                case 8 :
+                                case 9 :
+                                    viewAqiSO2.setBackgroundColor(getResources().getColor(R.color.hazardous));
+                                    break;
+                            }
+                            switch((preferences.getInt(NetworkInterface.SENSOR_AQI_DATA[3], 500) - 1) / 50) {
+                                case 0 :
+                                    viewAqiO3.setBackgroundColor(getResources().getColor(R.color.good));
+                                    break;
+                                case 1 :
+                                    viewAqiO3.setBackgroundColor(getResources().getColor(R.color.moderate));
+                                    break;
+                                case 2 :
+                                    viewAqiO3.setBackgroundColor(getResources().getColor(R.color.unhealthy_for_sensitive_groups));
+                                    break;
+                                case 3 :
+                                    viewAqiO3.setBackgroundColor(getResources().getColor(R.color.unhealthy));
+                                    break;
+                                case 4 :
+                                case 5 :
+                                    viewAqiO3.setBackgroundColor(getResources().getColor(R.color.very_unhealthy));
+                                    break;
+                                case 6 :
+                                case 7 :
+                                case 8 :
+                                case 9 :
+                                    viewAqiO3.setBackgroundColor(getResources().getColor(R.color.hazardous));
+                                    break;
+                            }
+                            switch((preferences.getInt(NetworkInterface.SENSOR_AQI_DATA[4], 500) - 1) / 50) {
+                                case 0 :
+                                    viewAqiPM25.setBackgroundColor(getResources().getColor(R.color.good));
+                                    break;
+                                case 1 :
+                                    viewAqiPM25.setBackgroundColor(getResources().getColor(R.color.moderate));
+                                    break;
+                                case 2 :
+                                    viewAqiPM25.setBackgroundColor(getResources().getColor(R.color.unhealthy_for_sensitive_groups));
+                                    break;
+                                case 3 :
+                                    viewAqiPM25.setBackgroundColor(getResources().getColor(R.color.unhealthy));
+                                    break;
+                                case 4 :
+                                case 5 :
+                                    viewAqiPM25.setBackgroundColor(getResources().getColor(R.color.very_unhealthy));
+                                    break;
+                                case 6 :
+                                case 7 :
+                                case 8 :
+                                case 9 :
+                                    viewAqiPM25.setBackgroundColor(getResources().getColor(R.color.hazardous));
+                                    break;
+                            }
+
+                            viewAqiCO.invalidate();
+                            viewAqiNO2.invalidate();
+                            viewAqiSO2.invalidate();
+                            viewAqiO3.invalidate();
+                            viewAqiPM25.invalidate();
+
+                            viewRealTimeAirDate.setText(Utility.convertUnixTime(preferences.getLong(PreferenceName.preferenceDate, System.currentTimeMillis())));
                         }
                     });
                 }
             }
         };
+
+        realTimeThread.start();
 
         return view;
     }

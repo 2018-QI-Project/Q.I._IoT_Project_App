@@ -75,8 +75,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                                         try {
                                             for(int i = 0; i < dataArray.length(); ++i) {
                                                 JSONObject dataObject = dataArray.getJSONObject(i);
-                                                String strData;
 
+                                                String strData;
                                                 LatLng location = new LatLng(dataObject.getDouble(NetworkInterface.MESSAGE_LAT), dataObject.getDouble(NetworkInterface.MESSAGE_LON));
                                                 mMap.addCircle(myCircle);
                                                 switch(viewSpinner.getSelectedItem().toString()){
@@ -84,31 +84,146 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                                                         strData = "Date : " + Utility.convertUnixTime(dataObject.getLong(NetworkInterface.MESSAGE_DATE)) + "\n" +
                                                                 "CO : " + dataObject.getDouble(NetworkInterface.MESSAGE_CO);
                                                         mMap.addMarker(new MarkerOptions().position(location).title("Data").snippet(strData).alpha(0f));
-                                                        mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.good)));
+                                                        switch((dataObject.getInt(NetworkInterface.SENSOR_AQI_DATA[0]) - 1) / 50) {
+                                                            case 0 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.good)));
+                                                                break;
+                                                            case 1 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.moderate)));
+                                                                break;
+                                                            case 2 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.unhealthy_for_sensitive_groups)));
+                                                                break;
+                                                            case 3 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.unhealthy)));
+                                                                break;
+                                                            case 4 :
+                                                            case 5 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.very_unhealthy)));
+                                                                break;
+                                                            case 6 :
+                                                            case 7 :
+                                                            case 8 :
+                                                            case 9 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.hazardous)));
+                                                                break;
+                                                        }
                                                         break;
                                                     case "NO2":
                                                         strData = "Date : " + Utility.convertUnixTime(dataObject.getLong(NetworkInterface.MESSAGE_DATE)) + "\n" +
                                                                 "NO2 : " + dataObject.getDouble(NetworkInterface.MESSAGE_NO2);
                                                         mMap.addMarker(new MarkerOptions().position(location).title("Data").snippet(strData).alpha(0f));
-                                                        mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.moderate)));
+                                                        switch((dataObject.getInt(NetworkInterface.SENSOR_AQI_DATA[1]) - 1) / 50) {
+                                                            case 0 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.good)));
+                                                                break;
+                                                            case 1 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.moderate)));
+                                                                break;
+                                                            case 2 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.unhealthy_for_sensitive_groups)));
+                                                                break;
+                                                            case 3 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.unhealthy)));
+                                                                break;
+                                                            case 4 :
+                                                            case 5 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.very_unhealthy)));
+                                                                break;
+                                                            case 6 :
+                                                            case 7 :
+                                                            case 8 :
+                                                            case 9 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.hazardous)));
+                                                                break;
+                                                        }
                                                         break;
                                                     case "SO2":
                                                         strData = "Date : " + Utility.convertUnixTime(dataObject.getLong(NetworkInterface.MESSAGE_DATE)) + "\n" +
                                                                 "SO2 : " + dataObject.getDouble(NetworkInterface.MESSAGE_SO2);
                                                         mMap.addMarker(new MarkerOptions().position(location).title("Data").snippet(strData).alpha(0f));
-                                                        mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.unhealthy)));
+                                                        switch((dataObject.getInt(NetworkInterface.SENSOR_AQI_DATA[2]) - 1) / 50) {
+                                                            case 0 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.good)));
+                                                                break;
+                                                            case 1 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.moderate)));
+                                                                break;
+                                                            case 2 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.unhealthy_for_sensitive_groups)));
+                                                                break;
+                                                            case 3 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.unhealthy)));
+                                                                break;
+                                                            case 4 :
+                                                            case 5 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.very_unhealthy)));
+                                                                break;
+                                                            case 6 :
+                                                            case 7 :
+                                                            case 8 :
+                                                            case 9 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.hazardous)));
+                                                                break;
+                                                        }
                                                         break;
                                                     case "O3":
                                                         strData = "Date : " + Utility.convertUnixTime(dataObject.getLong(NetworkInterface.MESSAGE_DATE)) + "\n" +
                                                                 "O3 : " + dataObject.getDouble(NetworkInterface.MESSAGE_O3);
                                                         mMap.addMarker(new MarkerOptions().position(location).title("Data").snippet(strData).alpha(0f));
-                                                        mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.unhealthy)));
+                                                        switch((dataObject.getInt(NetworkInterface.SENSOR_AQI_DATA[3]) - 1) / 50) {
+                                                            case 0 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.good)));
+                                                                break;
+                                                            case 1 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.moderate)));
+                                                                break;
+                                                            case 2 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.unhealthy_for_sensitive_groups)));
+                                                                break;
+                                                            case 3 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.unhealthy)));
+                                                                break;
+                                                            case 4 :
+                                                            case 5 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.very_unhealthy)));
+                                                                break;
+                                                            case 6 :
+                                                            case 7 :
+                                                            case 8 :
+                                                            case 9 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.hazardous)));
+                                                                break;
+                                                        }
                                                         break;
                                                     case "PM2.5":
                                                         strData = "Date : " + Utility.convertUnixTime(dataObject.getLong(NetworkInterface.MESSAGE_DATE)) + "\n" +
                                                                 "PM2.5 : " + dataObject.getDouble(NetworkInterface.MESSAGE_PM25);
                                                         mMap.addMarker(new MarkerOptions().position(location).title("Data").snippet(strData).alpha(0f));
-                                                        mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.hazardous)));
+                                                        switch((dataObject.getInt(NetworkInterface.SENSOR_AQI_DATA[4]) - 1) / 50) {
+                                                            case 0 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.good)));
+                                                                break;
+                                                            case 1 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.moderate)));
+                                                                break;
+                                                            case 2 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.unhealthy_for_sensitive_groups)));
+                                                                break;
+                                                            case 3 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.unhealthy)));
+                                                                break;
+                                                            case 4 :
+                                                            case 5 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.very_unhealthy)));
+                                                                break;
+                                                            case 6 :
+                                                            case 7 :
+                                                            case 8 :
+                                                            case 9 :
+                                                                mMap.addCircle(new CircleOptions().center(location).radius(10).fillColor(getResources().getColor(R.color.hazardous)));
+                                                                break;
+                                                        }
                                                         break;
                                                     default:
                                                         break;

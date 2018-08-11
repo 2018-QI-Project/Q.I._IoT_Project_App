@@ -49,6 +49,8 @@ public interface NetworkInterface {
     String REQUEST_HEART_RATE = "heartRate";
     String REQUEST_RR_INTERVAL = "rrInterval";
     String REQUEST_DATE = "day";
+    String REQUEST_TIMESTAMP = "date";
+    String REQUEST_TEMPERATURE = "temperature";
 
     // Network Response
     String MESSAGE_TYPE = "type";
@@ -62,6 +64,7 @@ public interface NetworkInterface {
     String MESSAGE_HEART_DATA = "heartData";
     String MESSAGE_HOUR = "hour";
     String MESSAGE_TIME_STAMP = "timestamp";
+    String MESSAGE_TEMPERATURE = "temp";
 
     // Sensor Data
     String MESSAGE_CO = "co";
@@ -75,8 +78,10 @@ public interface NetworkInterface {
     String MESSAGE_HEART_RATE = "heartRate";
     String MESSAGE_RR_INTERVAL = "rrInterval";
 
-    // CSV Data Order
-    String[] CSV_DATA = {"co", "so2", "no2", "o3", "pm25"};
+    // Sensor Data
+    String[] SENSOR_DATA = {"co", "no2", "so2", "o3", "pm25"};
+    String[] SENSOR_AQI_DATA = {"coAqi", "no2Aqi", "so2Aqi", "o3Aqi", "pm25Aqi"};
+    String[] MESSAGE_AQI_DATA = {"co_8h_aqi", "no2_1h_aqi", "so2_1h_aqi", "so2_24h_aqi", "o3_1h_aqi", "o3_8h_aqi", "pm25_aqi"};
 
     // Handler Message
     int REQUEST_FAIL = 0;
