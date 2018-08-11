@@ -116,16 +116,9 @@ public class RealTimeFragment extends Fragment {
                                 } else {
                                     viewRealTimePM25.setText(preferences.getString(NetworkInterface.SENSOR_DATA[4], null));
                                 }
-                                if (preferences.getInt(PreferenceName.preferenceRealHeart, 0) != 0) {
-                                    viewRealTimeHeartRate.setText(String.format(Locale.US, "%d", preferences.getInt(PreferenceName.preferenceRealHeart, 0)));
-                                } else {
-                                    viewRealTimeHeartRate.setText(String.format(Locale.US, "%d", preferences.getInt(PreferenceName.preferenceRealHeart, 0)));
-                                }
-                                if (preferences.getInt(PreferenceName.preferenceRealRR, 0) != 0) {
-                                    viewRealTimeRRInterval.setText(String.format(Locale.US, "%d", preferences.getInt(PreferenceName.preferenceRealRR, 0)));
-                                } else {
-                                    viewRealTimeRRInterval.setText(String.format(Locale.US, "%d", preferences.getInt(PreferenceName.preferenceRealRR, 0)));
-                                }
+                                viewRealTimeHeartRate.setText(String.format(Locale.US, "%d", preferences.getInt(PreferenceName.preferenceRealHeart, 0)));
+                                viewRealTimeRRInterval.setText(String.format(Locale.US, "%d", preferences.getInt(PreferenceName.preferenceRealRR, 0)));
+                                
 
                                 switch ((preferences.getInt(NetworkInterface.SENSOR_AQI_DATA[0], 500) - 1) / 50) {
                                     case 0:
