@@ -118,7 +118,7 @@ public class RealTimeFragment extends Fragment {
                                 }
                                 viewRealTimeHeartRate.setText(String.format(Locale.US, "%d", preferences.getInt(PreferenceName.preferenceRealHeart, 0)));
                                 viewRealTimeRRInterval.setText(String.format(Locale.US, "%d", preferences.getInt(PreferenceName.preferenceRealRR, 0)));
-                                
+
 
                                 switch ((preferences.getInt(NetworkInterface.SENSOR_AQI_DATA[0], 500) - 1) / 50) {
                                     case 0:
